@@ -38,14 +38,24 @@
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-
   <div class="section categories">
     <div class="container">
       <h3 class="section-heading">News</h3>
       <div class="row">
-        <div class="four columns category linktext"><a href="http://www.watson.ch" target="_blank" class="button button-primary">watson</a></div>
-        <div class="four columns category linktext"><a href="https://www.heise.de" target="_blank" class="button button-primary">heise</a></div>
-        <div class="four columns category linktext"><a href="http://www.tagesanzeiger.ch" target="_blank" class="button button-primary">tagi</a></div>
+	    <?php 
+		// get the data out from the data base
+		$sqlString = "SELECT * FROM `links` WHERE userid = 1 AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 1000"; // <ToDo> change userid to be variable 
+
+		if ($result = $dbConnection->query($sqlString)) {
+		  // printf("Select returned %d rows.\n", $result->num_rows);
+		  while ($row = $result->fetch_assoc()) { 
+     		echo "<div class=\"four columns category linktext\"><a href=\"".$row["link"]."\" target=\"_blank\" class=\"button button-primary\">".$row["text"]."</a></div>";
+		  } // while
+		$result->close(); // free result set
+		} else {
+			echo "<div class=\"four columns category linktext\"><a href=\"none\" target=\"_blank\" class=\"button button-primary\">db-error: no query result</a></div>";
+		} // if
+		?>
       </div> <!-- /row -->
       <h3 class="section-heading">Work</h3>
       <div class="row">        
