@@ -40,38 +40,45 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="section categories">
     <div class="container">
-      <h3 class="section-heading">News</h3>
-      <div class="row">
-	    <?php 
-		// get the data out from the data base
-		$sqlString = "SELECT * FROM `links` WHERE userid = 1 AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 1000"; // <ToDo> change userid to be variable 
+	    <?php
+      
+      //                  ...those vary              ...  ... those are equal for all 3 cases ...
+      function printLinks($modulo, $divClass, $sqlString, $dbConnection, $href, $endHref, $endDiv) {
+        if ($result = $dbConnection->query($sqlString)) {
+          $counter = 0;
+          while ($row = $result->fetch_assoc()) {
+            echo $divClass.$href.$row["link"].$endHref.$row["text"].$endDiv;
+            $counter++;
 
-		if ($result = $dbConnection->query($sqlString)) {
-		  // printf("Select returned %d rows.\n", $result->num_rows);
-		  while ($row = $result->fetch_assoc()) { 
-     		echo "<div class=\"four columns category linktext\"><a href=\"".$row["link"]."\" target=\"_blank\" class=\"button button-primary\">".$row["text"]."</a></div>";
-		  } // while
-		$result->close(); // free result set
-		} else {
-			echo "<div class=\"four columns category linktext\"><a href=\"none\" target=\"_blank\" class=\"button button-primary\">db-error: no query result</a></div>";
-		} // if
-		?>
-      </div> <!-- /row -->
-      <h3 class="section-heading">Work</h3>
-      <div class="row">        
-        <div class="three columns linktext"><a href="https://mail.google.com/" target="_blank" class="button button-primary">gmail</a></div>
-        <div class="three columns linktext"><a href="https://varian.okta.com/" target="_blank" class="button button-primary">varian okta</a></div>
-        <div class="three columns linktext"><a href="http://dict.leo.org/" target="_blank" class="button button-primary">dict</a></div>
-        <div class="three columns linktext"><a href="https://direct.credit-suisse.com/" target="_blank" class="button button-primary">cs</a></div>        
-      </div>
-      <div class="row">        
-        <div class="three columns linktext"><a href="https://www.metanet.ch/" target="_blank" class="button button-primary">metanet</a></div>        
-      </div>
-      <h3 class="section-heading">Div</h3>
-      <div class="row">
-        <div class="four columns category linktext"><a href="http://www.9gag.com" target="_blank" class="button button-primary">9 gag</a></div>
-        <div class="four columns category linktext"><a href="https://web.whatsapp.com/" target="_blank" class="button button-primary">WA</a></div>
-        <div class="four columns category linktext"><a href="https://www.sports-tracker.com/login" target="_blank" class="button button-primary">sports-tracker</a></div>
+            if (($counter % $modulo) == 0) {
+              echo "</div><div class=\"row\">";
+            }
+          } // while    
+          $result->close(); // free result set
+        } // if  
+      } // function  
+        
+		// get the data out from the data base
+		$sqlStringCat1 = "SELECT * FROM `links` WHERE userid = 1 AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 1000"; // <ToDo> change userid to be variable 
+    $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = 1 AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 1000"; 
+    $sqlStringCat3 = "SELECT * FROM `links` WHERE userid = 1 AND category = 3 ORDER BY `links`.`sort` ASC LIMIT 1000"; 
+        
+		$divClass4Columns = "<div class=\"four columns category linktext\">";
+    $divClass3Columns = "<div class=\"three columns linktext\">";
+    $href             = "<a href=\"";
+		$endHref          =  "\" target=\"_blank\" class=\"button button-primary\">";
+    $endDiv           = "</a></div>";
+    
+    
+    echo "<h3 class=\"section-heading\">News</h3><div class=\"row\">";   
+    printLinks(3, $divClass4Columns, $sqlStringCat1, $dbConnection,$href,$endHref,$endDiv);        
+    
+    echo "</div><h3 class=\"section-heading\">Work</h3><div class=\"row\">";
+    printLinks(4, $divClass3Columns, $sqlStringCat2, $dbConnection,$href,$endHref,$endDiv);      
+        
+    echo "</div><h3 class=\"section-heading\">Div</h3><div class=\"row\">";
+    printLinks(3, $divClass4Columns, $sqlStringCat3, $dbConnection,$href,$endHref,$endDiv);    
+   	?>                
       </div>
     </div> <!-- /container -->
     
