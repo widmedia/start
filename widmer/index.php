@@ -38,37 +38,6 @@
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<<<<<<< HEAD
-  <?php
-    // get the data
-?> 
-  
-  
-  
-  <div class="section categories">
-    <div class="container">
-      <h3 class="section-heading">News</h3>
-      <div class="row">
-        <div class="four columns category linktext"><a href="http://www.watson.ch" target="_blank" class="button button-primary">watson</a></div>
-        <div class="four columns category linktext"><a href="https://www.heise.de" target="_blank" class="button button-primary">heise</a></div>
-        <div class="four columns category linktext"><a href="http://www.tagesanzeiger.ch" target="_blank" class="button button-primary">tagi</a></div>
-      </div> <!-- /row -->
-      <h3 class="section-heading">Work</h3>
-      <div class="row">        
-        <div class="three columns linktext"><a href="https://mail.google.com/" target="_blank" class="button button-primary">gmail</a></div>
-        <div class="three columns linktext"><a href="https://varian.okta.com/" target="_blank" class="button button-primary">varian okta</a></div>
-        <div class="three columns linktext"><a href="http://dict.leo.org/" target="_blank" class="button button-primary">dict</a></div>
-        <div class="three columns linktext"><a href="https://direct.credit-suisse.com/" target="_blank" class="button button-primary">cs</a></div>        
-      </div>
-      <div class="row">        
-        <div class="three columns linktext"><a href="https://www.metanet.ch/" target="_blank" class="button button-primary">metanet</a></div>        
-      </div>
-      <h3 class="section-heading">Div</h3>
-      <div class="row">
-        <div class="four columns category linktext"><a href="http://www.9gag.com" target="_blank" class="button button-primary">9 gag</a></div>
-        <div class="four columns category linktext"><a href="https://web.whatsapp.com/" target="_blank" class="button button-primary">WA</a></div>
-        <div class="four columns category linktext"><a href="https://www.sports-tracker.com/login" target="_blank" class="button button-primary">sports-tracker</a></div>
-=======
   <div class="section categories">
     <div class="container">
      <?php
@@ -107,7 +76,6 @@
       echo "</div><h3 class=\"section-heading\">Div</h3><div class=\"row\">";
       printLinks(3, $divClass4Columns, $sqlStringCat3, $dbConnection,$href,$endHref,$endDiv);
     ?>                
->>>>>>> aabb2ba2f506403c0a6b926dc0f4bc6f0196accc
       </div>
     </div> <!-- /container -->
     
@@ -124,11 +92,6 @@
     </div>
   </div> <!-- /section categories -->
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> aabb2ba2f506403c0a6b926dc0f4bc6f0196accc
 <!-- End Document -->
 </body>
 </html>
