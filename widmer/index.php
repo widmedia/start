@@ -41,12 +41,12 @@
   <div class="section categories">
     <div class="container">
      <?php
-      //                  ...those vary              ...  ... those are equal for all 3 cases ...
-      function printLinks($modulo, $divClass, $sqlString, $dbConnection, $href, $endHref, $endDiv) {
+      //                  ...those vary              ...  ... those are equal for all 3 cases                   ...
+      function printLinks($modulo, $divClass, $sqlString, $dbConnection, $href, $hrefEnd, $linkEndSpanStart, $endDiv) {
         if ($result = $dbConnection->query($sqlString)) {
           $counter = 0;
           while ($row = $result->fetch_assoc()) {
-            echo $divClass.$href.$row["link"].$endHref.$row["text"].$endDiv;
+            echo $divClass.$href.$row["link"].$hrefEnd.$row["text"].$linkEndSpanStart.$row["cntTot"].$endDiv;
             $counter++;
 
             if (($counter % $modulo) == 0) {
@@ -61,20 +61,21 @@
       $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = 1 AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 1000";
       $sqlStringCat3 = "SELECT * FROM `links` WHERE userid = 1 AND category = 3 ORDER BY `links`.`sort` ASC LIMIT 1000";
       
-      $divClass4Columns = "<div class=\"four columns category linktext\">";
+      $divClass4Columns = "<div class=\"four columns linktext\">";
       $divClass3Columns = "<div class=\"three columns linktext\">";
       $href             = "<a href=\"";
-      $endHref          =  "\" target=\"_blank\" class=\"button button-primary\">";
-      $endDiv           = "</a></div>";
+      $hrefEnd          = "\" target=\"_blank\" class=\"button button-primary\">";
+      $linkEndSpanStart = "</a><span class=\"counter\">";
+      $endDiv           = "</span></div>";
       
       echo "<h3 class=\"section-heading\">News</h3><div class=\"row\">";
-      printLinks(3, $divClass4Columns, $sqlStringCat1, $dbConnection,$href,$endHref,$endDiv);
+      printLinks(3, $divClass4Columns, $sqlStringCat1, $dbConnection,$href,$hrefEnd,$linkEndSpanStart,$endDiv);
       
       echo "</div><h3 class=\"section-heading\">Work</h3><div class=\"row\">";
-      printLinks(4, $divClass3Columns, $sqlStringCat2, $dbConnection,$href,$endHref,$endDiv);
+      printLinks(4, $divClass3Columns, $sqlStringCat2, $dbConnection,$href,$hrefEnd,$linkEndSpanStart,$endDiv);
       
       echo "</div><h3 class=\"section-heading\">Div</h3><div class=\"row\">";
-      printLinks(3, $divClass4Columns, $sqlStringCat3, $dbConnection,$href,$endHref,$endDiv);
+      printLinks(3, $divClass4Columns, $sqlStringCat3, $dbConnection,$href,$hrefEnd,$linkEndSpanStart,$endDiv);
     ?>                
       </div>
     </div> <!-- /container -->
@@ -82,11 +83,11 @@
     <div class="section get-help">
       <div class="container">
 	<div class="row">
-          <div class="twelve columns category"><hl></div>
+          <div class="twelve columns"><hl></div>
 	</div>
 	<div class="row">
-          <div class="six columns category"><a href="linkEdit.html">edit</a></div>
-          <div class="six columns category"><a href="about.html">about</a></div>
+          <div class="six columns"><a href="linkEdit.html">edit</a></div>
+          <div class="six columns"><a href="about.html">about</a></div>
 	</div>
       </div>
     </div>
