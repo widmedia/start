@@ -15,8 +15,8 @@
   <!-- Basic Page Needs -->
   <meta charset="utf-8">
   <title>Startpage</title>
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <meta name="description" content="a modifiable page containing various links, intended to be used as a personal start page">
+  <meta name="author" content="Daniel Widmer">
 
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
