@@ -38,7 +38,7 @@
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <div class="section categories">
+  <div class="section categories noBottom">
     <div class="container">
      <?php
       function printLinks($modulo, $divClass, $sqlString, $dbConnection) {
@@ -77,15 +77,15 @@
       </div>
     </div> <!-- /container -->
     
-    <div class="section get-help">
+    <div class="section noBottom">
       <div class="container">
-	<div class="row">
+        <div class="row">
           <div class="twelve columns"><hr /></div>
-	</div>
-	<div class="row">
+        </div>
+        <div class="row">
           <div class="six columns"><a href="linkEdit.html">edit</a></div>
           <div class="six columns"><a href="about.html">about</a></div>
-	</div>
+        </div>
       </div>
     </div>
   </div> <!-- /section categories -->
