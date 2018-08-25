@@ -46,7 +46,7 @@
           $counter = 0;
           
           while ($row = $result->fetch_assoc()) {
-            echo $divClass."<a href=\"".$row["link"]."\" target=\"_blank\" class=\"button button-primary\">".
+            echo $divClass."<a href=\"link.php?id=".$row["id"]."\" target=\"_blank\" class=\"button button-primary\">".
                  $row["text"]."</a><span class=\"counter\">".$row["cntTot"]."</span></div>\n";
             $counter++;
 
