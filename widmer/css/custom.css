@@ -28,14 +28,12 @@
   letter-spacing: -.08rem;
 }
 .counter {
-  font-size: 1.2rem; 
-  vertical-align: super;
+  font-size: 1.5rem;
+  vertical-align: 1rem; 
+  /* vertical-align: super; does not work on the huawei tablet*/
 }
 
-/* Larger than phablet */
-@media (min-width: 550px) {
-  .linktext { font-size: 3.0rem; }
-}
+
 /* Hero
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .phones {
@@ -53,8 +51,6 @@
 /* Values
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .values {
-  /* background-image: url('../images/2560x1440.jpg'); 
-  background-size: cover; */
   color: #fff;
   padding-bottom: 5rem;
 }
@@ -74,10 +70,7 @@
 /* Categories
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .categories {
-  background-image: url('../images/2560x1440.jpg');
-  background-size: cover;
-  background-color: #e6e6fa
-  color: #fff;
+  color: #ABCC14;
 }
 .categories .section-description { 
   margin-bottom: 0rem;
