@@ -40,13 +40,14 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="section categories">
     <div class="container">
-     <?php
-      //                  ...those vary              ...  ... those are equal for all 3 cases ...
-      function printLinks($modulo, $divClass, $sqlString, $dbConnection, $href, $endHref, $endDiv) {
+     <?php      
+      function printLinks($modulo, $divClass, $sqlString, $dbConnection) {
         if ($result = $dbConnection->query($sqlString)) {
           $counter = 0;
+          
           while ($row = $result->fetch_assoc()) {
-            echo $divClass.$href.$row["link"].$endHref.$row["text"].$endDiv;
+            echo $divClass."<a href=\"link.php?id=".$row["id"]."\" target=\"_blank\" class=\"button button-primary\">".
+                 $row["text"]."</a><span class=\"counter\">".$row["cntTot"]."</span></div>\n";
             $counter++;
 
             if (($counter % $modulo) == 0) {
@@ -67,8 +68,9 @@
       $endDiv           = "</a></div>";
       
       echo "<h3 class=\"section-heading\">Work</h3><div class=\"row\">";
-      printLinks(4, $divClass3Columns, $sqlStringCat2, $dbConnection,$href,$endHref,$endDiv);      
+      printLinks(4, $divClass3Columns, $sqlStringCat2, $dbConnection);
       echo "</div>";
+      
       
       // code above prints the current state. Now I need to have the edit fields:
       // - link name
@@ -79,19 +81,19 @@
     ?>                
     </div> <!-- /container -->
     
-    <div class="section get-help">
+      <!-- ToDo: code below should be included. Somehow...  -->
+    <div class="section noBottom">
       <div class="container">
-	<div class="row">
-          <div class="twelve columns category"><hl></div>
-	</div>
-	<div class="row">
-          <div class="six columns category"><a href="linkEdit.html">edit</a></div>
-          <div class="six columns category"><a href="about.html">about</a></div>
-	</div>
+        <div class="row">
+          <div class="twelve columns"><hr /></div>
+        </div>
+        <div class="row">
+          <div class="six columns"><a href="editLinks.php">edit</a></div>
+          <div class="six columns"><a href="about.html">about</a></div>
+        </div>
       </div>
     </div>
   </div> <!-- /section categories -->
-
 <!-- End Document -->
 </body>
 </html>

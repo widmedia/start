@@ -83,7 +83,7 @@
           <div class="twelve columns"><hr /></div>
         </div>
         <div class="row">
-          <div class="six columns"><a href="linkEdit.html">edit</a></div>
+          <div class="six columns"><a href="editLinks.php">edit</a></div>
           <div class="six columns"><a href="about.html">about</a></div>
         </div>
       </div>
