@@ -4,7 +4,7 @@
     // Check connection
     if ($dbConnection->connect_error) {
         die("Connection failed: " . $dbConnection->connect_error);
-    }
+    }      
 ?> 
 
 
@@ -40,7 +40,34 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="section categories">
     <div class="container">
-     <?php      
+     <?php
+
+      // Form processing
+      $actionFromPost = htmlspecialchars($_POST["action"]); // this should be an integer
+      $actionFiltered = 0;  
+      if (filter_var($actionFromPost, FILTER_VALIDATE_INT)) {
+        $actionFiltered = $actionFromPost;
+      
+        if($actionFiltered == 1) {
+          // ToDo: validate link and text!
+          
+            echo "<h3 class=\"section-heading\">Link added</h3><div class=\"row\">";
+            echo "<div class=\"three columns linktext\"><a href=\"".$_POST["link"]."\" target=\"_blank\" class=\"button button-primary\">".
+            $_POST["text"]."</a><span class=\"counter\">0</span></div>\n";
+            echo "<div class=\"nine columns linktext\">&nbsp</div>\n";
+            echo "</div>";     
+        } // would like to add a link      
+        exit(); // finish the php part
+      } // form processing: have an integer
+
+      
+
+
+
+
+
+
+     
       function printLinks($modulo, $divClass, $sqlString, $dbConnection) {
         if ($result = $dbConnection->query($sqlString)) {
           $counter = 0;
@@ -80,6 +107,16 @@
       
     ?>                
     </div> <!-- /container -->
+    <div class="container">
+      <form action="editLinks.php" method="post">
+      <h3 class="section-heading">New link<input name="action" type="hidden" value="1"></h3>
+      <div class="row">          
+          <div class="four columns"><input name="link" type="url"  maxlength="1023" value="https://" required></div>
+          <div class="four columns"><input name="text" type="text" maxlength="255"  value="text" required></div>
+          <div class="four columns"><input name="submit" type="submit" value="Add link"></div>
+      </div>
+      </form>
+    </div>
     
       <!-- ToDo: code below should be included. Somehow...  -->
     <div class="section noBottom">
