@@ -44,28 +44,33 @@
 
       // Form processing
       $actionFromPost = htmlspecialchars($_POST["action"]); // this should be an integer
-      $actionFiltered = 0;  
+      $actionFiltered = 0;
+      $dispErrorMsg = false;
       if (filter_var($actionFromPost, FILTER_VALIDATE_INT)) {
         $actionFiltered = $actionFromPost;
-      
-        if($actionFiltered == 1) {
-          // ToDo: validate link and text!
+        if($actionFiltered == 1) {  // have a valid action (is a post variable)
+          if (filter_var($_POST["link"], FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) { // have a validUrl
+            // filtering it for both HTML display and sqli insertion
+            $textSafe = htmlspecialchars(mysqli_real_escape_string($dbConnection, $_POST["text"]));                               
+            $linkSafe = htmlspecialchars(mysqli_real_escape_string($dbConnection, $_POST["link"]));
           
+            // TODO: actually execute the data base insertion of a new entry.
+            
             echo "<h3 class=\"section-heading\">Link added</h3><div class=\"row\">";
-            echo "<div class=\"three columns linktext\"><a href=\"".$_POST["link"]."\" target=\"_blank\" class=\"button button-primary\">".
-            $_POST["text"]."</a><span class=\"counter\">0</span></div>\n";
+            echo "<div class=\"three columns linktext\"><a href=\"".$linkSafe."\" target=\"_blank\" class=\"button button-primary\">".
+            $textSafe."</a><span class=\"counter\">0</span></div>\n";
             echo "<div class=\"nine columns linktext\">&nbsp</div>\n";
-            echo "</div>";     
-        } // would like to add a link      
+            echo "</div>";   
+          } else { $dispErrorMsg = true; } // have a validUrl
+        } else { $dispErrorMsg = true; } // have a valid action, would like to add a link              
+      } else { $dispErrorMsg = true; } // form processing: have an integer
+
+      if ($dispErrorMsg) {
+        echo "<h3 class=\"section-heading\">Error</h3><div class=\"row\">";
+        echo "<div class=\"three columns linktext\">Something went wrong when processing user input data. Might try again?</div>\n";
+        echo "<div class=\"nine columns linktext\">&nbsp</div>\n</div>";           
         exit(); // finish the php part
-      } // form processing: have an integer
-
-      
-
-
-
-
-
+      }
 
      
       function printLinks($modulo, $divClass, $sqlString, $dbConnection) {
