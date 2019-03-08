@@ -15,14 +15,14 @@
   <!-- Basic Page Needs -->
   <meta charset="utf-8">
   <title>Edit my links</title>
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <meta name="description" content="page to add or edit links">
+  <meta name="author" content="Daniel Widmer">
 
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- FONT -->
-  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="css/font.css" type="text/css">
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/normalize.css">
@@ -36,43 +36,53 @@
 </head>
 <body>
 
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!-- Primary Page Layout -->
   <div class="section categories">
     <div class="container">
-     <?php
-
+     <?php     
+      $category = 2;  // TODO: category is fixed... (and userid)
+      
       // Form processing
-      $actionFromPost = htmlspecialchars($_POST["action"]); // this should be an integer
+      $actionFromPost = htmlspecialchars($_POST["action"]); // this should be either an integer or not set.
       $actionFiltered = 0;
-      $dispErrorMsg = false;
+      $dispErrorMsg = 0;      
       if (filter_var($actionFromPost, FILTER_VALIDATE_INT)) {
         $actionFiltered = $actionFromPost;
         if($actionFiltered == 1) {  // have a valid action (is a post variable)
-          if (filter_var($_POST["link"], FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) { // have a validUrl
+          if (filter_var($_POST["link"], FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) { // have a validUrl
             // filtering it for both HTML display and sqli insertion
             $textSafe = htmlspecialchars(mysqli_real_escape_string($dbConnection, $_POST["text"]));                               
             $linkSafe = htmlspecialchars(mysqli_real_escape_string($dbConnection, $_POST["link"]));
-          
-            // TODO: actually execute the data base insertion of a new entry.
             
-            echo "<h3 class=\"section-heading\">Link added</h3><div class=\"row\">";
-            echo "<div class=\"three columns linktext\"><a href=\"".$linkSafe."\" target=\"_blank\" class=\"button button-primary\">".
-            $textSafe."</a><span class=\"counter\">0</span></div>\n";
-            echo "<div class=\"nine columns linktext\">&nbsp</div>\n";
-            echo "</div>";   
-          } else { $dispErrorMsg = true; } // have a validUrl
-        } else { $dispErrorMsg = true; } // have a valid action, would like to add a link              
-      } else { $dispErrorMsg = true; } // form processing: have an integer
+            // NB: statement below is not allowed as the same table is used for insert and for data generation. Need to split into two operations...
+            // $sql = "INSERT INTO `links` (`id`, `userid`, `category`, `sort`, `text`, `link`, `cntTot`) VALUES 
+            // (NULL, '1', '2', ((SELECT MAX(sort) FROM `links` WHERE `userid` = 1 AND `category` = 2) + 1), '".$textSafe"', '".$linkSafe."', '0')";
+            $sqlGetMax = "SELECT MAX(sort) FROM `links` WHERE `userid` = 1 AND `category` = ".$category;
+            
+            if ($result = $dbConnection->query($sqlGetMax)) {
+              $row = $result->fetch_row(); // guaranteed to get only one row and one column
+              $maxPlus1 = ($row[0]) + 1;              
+                          
+              $sqlInsert = "INSERT INTO `links` (`id`, `userid`, `category`, `sort`, `text`, `link`, `cntTot`) VALUES (NULL, '1', '".$category."', '".$maxPlus1."', '".$textSafe."', '".$linkSafe."', '0')";
+              if ($result = $dbConnection->query($sqlInsert)) {
+                echo "<h3 class=\"section-heading\">Link added</h3><div class=\"row\">\n";
+                echo "<div class=\"three columns linktext\"><a href=\"".$linkSafe."\" target=\"_blank\" class=\"button button-primary\">".$textSafe."</a><span class=\"counter\">0</span></div>\n";
+                echo "<div class=\"nine columns linktext\">&nbsp</div>\n";
+                echo "</div>";                   
+              } else { $dispErrorMsg = 4;} // insert query did work
+            } else {$dispErrorMsg = 3;} // getMax query did work
+          } else { $dispErrorMsg = 2;} // have a validUrl
+        } else { $dispErrorMsg = 1;} // have a valid action, would like to add a link  
+      } // form processing: have an integer. When entering the page, there is not action set, 
 
-      if ($dispErrorMsg) {
+      if ($dispErrorMsg > 0) {
         echo "<h3 class=\"section-heading\">Error</h3><div class=\"row\">";
-        echo "<div class=\"three columns linktext\">Something went wrong when processing user input data. Might try again?</div>\n";
-        echo "<div class=\"nine columns linktext\">&nbsp</div>\n</div>";           
+        echo "<div class=\"nine columns linktext\">'Something' at step ".$dispErrorMsg." went wrong when processing user input data (very helpful error message, I know...). Might try again?</div>\n";
+        echo "<div class=\"three columns linktext\">&nbsp</div>\n</div>";                   
         exit(); // finish the php part
       }
 
-     
+      
       function printLinks($modulo, $divClass, $sqlString, $dbConnection) {
         if ($result = $dbConnection->query($sqlString)) {
           $counter = 0;
@@ -92,7 +102,7 @@
       // get the data out from the data base
       
       
-      $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = 1 AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 1000";
+      $sqlString = "SELECT * FROM `links` WHERE userid = 1 AND category = ".$category." ORDER BY `links`.`sort` ASC LIMIT 1000";
 
       $divClass3Columns = "<div class=\"three columns linktext\">";
       $href             = "<a href=\"";
@@ -100,7 +110,7 @@
       $endDiv           = "</a></div>";
       
       echo "<h3 class=\"section-heading\">Work</h3><div class=\"row\">";
-      printLinks(4, $divClass3Columns, $sqlStringCat2, $dbConnection);
+      printLinks(4, $divClass3Columns, $sqlString, $dbConnection);
       echo "</div>";
       
       
