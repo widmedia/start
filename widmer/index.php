@@ -41,22 +41,8 @@
   <div class="section categories noBottom">
     <div class="container">
      <?php
-      function printLinks($modulo, $divClass, $sqlString, $dbConnection) {
-        if ($result = $dbConnection->query($sqlString)) {
-          $counter = 0;
-          
-          while ($row = $result->fetch_assoc()) {
-            echo $divClass."<a href=\"link.php?id=".$row["id"]."\" target=\"_blank\" class=\"button button-primary\">".
-                 $row["text"]."</a><span class=\"counter\">".$row["cntTot"]."</span></div>\n";
-            $counter++;
-
-            if (($counter % $modulo) == 0) {
-              echo "</div><div class=\"row\">";
-            }
-          } // while    
-          $result->close(); // free result set
-        } // if  
-      } // function  
+      require_once("functions.php");
+      
       // get the data out from the data base
       $sqlStringCat1 = "SELECT * FROM `links` WHERE userid = 1 AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 1000"; // <ToDo> change userid to be variable 
       $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = 1 AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 1000";
