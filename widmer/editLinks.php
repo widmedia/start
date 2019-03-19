@@ -43,6 +43,7 @@
     <div class="container">
      <?php     
       require_once("php/dbConnection.php"); // this will return the $dbConnection variable
+      require_once("functions.php");
       // Check connection
       if ($dbConnection->connect_error) { die("Connection failed: " . $dbConnection->connect_error); }      
       
@@ -63,8 +64,8 @@
         
         if (filter_var($categoryFromPost, FILTER_VALIDATE_INT)) {
           $categorySafe = $categoryFromPost;          
-          $heading = getCategory($userid,$categoryFromPost,$dbConnection)                    
-        } else { $dispErrorMsg = 5; }// have an integer on category
+          $heading = getCategory($userid,$categoryFromPost,$dbConnection);                    
+        } else { $dispErrorMsg = 5; } // have an integer on category
         // TODO: if-else-switch monster construct is kind of, well, a monster... and not really correct.
        
         switch ($actionSafe) {
@@ -74,8 +75,7 @@
             // b) edit/delete existing links: edit "link name" / "link href". Delete the whole link
             // c) Change link ordering: add +/- buttons  --> this submits instantly. Needs to swap values (is more robust than +/- 1, works with gaps as well and basically same operation)           
 
-            // b/c: TODO: this currently just prints the present state
-            require_once("functions.php");
+            // b/c: TODO: this currently just prints the present state            
             
             $divClass3Columns = "<div class=\"three columns linktext\">";  // using the smallest size (for four links in one row)
             $sqlString = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = ".$categorySafe." ORDER BY `links`.`sort` ASC LIMIT 100"; // more than 100 links do not make sense
@@ -133,7 +133,7 @@
         for ($i = 1; $i <= 3; $i++) {
           echo "<div class=\"four columns\"><form action=\"editLinks.php\" method=\"post\">
           <input name=\"action\" type=\"hidden\" value=\"2\"><input name=\"categoryInput\" type=\"hidden\" value=\"".$i."\">
-          <input name=\"submit\" type=\"submit\" value=\"Category ".getCategory($userid,$i,$dbConnection)."\"></form></div>";         
+          <input name=\"submit\" type=\"submit\" value=\"Category ".getCategory($userid, $i, $dbConnection)."\"></form></div>";         
         }        
         echo "</div>\n"; // row
 
