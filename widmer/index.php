@@ -42,22 +42,23 @@
     <div class="container">
      <?php
       require_once("functions.php");
+      $userid = 1; // TODO: userid is fixed.
       
       // get the data out from the data base
-      $sqlStringCat1 = "SELECT * FROM `links` WHERE userid = 1 AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 1000"; // <ToDo> change userid to be variable 
-      $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = 1 AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 1000";
-      $sqlStringCat3 = "SELECT * FROM `links` WHERE userid = 1 AND category = 3 ORDER BY `links`.`sort` ASC LIMIT 1000";
+      $sqlStringCat1 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 1000";
+      $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 1000";
+      $sqlStringCat3 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 3 ORDER BY `links`.`sort` ASC LIMIT 1000";
       
       $divClass4Columns = "<div class=\"four columns linktext\">";
       $divClass3Columns = "<div class=\"three columns linktext\">";      
       
-      echo "<h3 class=\"section-heading\">News</h3><div class=\"row\">";
+      echo "<h3 class=\"section-heading\">".getCategory($userid,1,$dbConnection)."</h3><div class=\"row\">";
       printLinks(3, $divClass4Columns, $sqlStringCat1, $dbConnection);
       
-      echo "</div><h3 class=\"section-heading\">Work</h3><div class=\"row\">";
+      echo "</div><h3 class=\"section-heading\">".getCategory($userid,2,$dbConnection)."</h3><div class=\"row\">";
       printLinks(4, $divClass3Columns, $sqlStringCat2, $dbConnection);
       
-      echo "</div><h3 class=\"section-heading\">Div</h3><div class=\"row\">";
+      echo "</div><h3 class=\"section-heading\">".getCategory($userid,3,$dbConnection)."</h3><div class=\"row\">";
       printLinks(3, $divClass4Columns, $sqlStringCat3, $dbConnection);
     ?>                
       </div>
@@ -69,7 +70,7 @@
           <div class="twelve columns"><hr /></div>
         </div>
         <div class="row">
-          <div class="six columns"><a href="editLinks.php">edit</a></div>
+          <div class="six columns"><a class="button button-primary" href="editLinks.php">edit</a></div>
           <div class="six columns"><a href="about.html">about</a></div>
         </div>
       </div>

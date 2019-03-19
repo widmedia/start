@@ -46,9 +46,8 @@
       // Check connection
       if ($dbConnection->connect_error) { die("Connection failed: " . $dbConnection->connect_error); }      
       
-      $userid = 1;   // TODO: userid is fixed...
-      
-      // TODO the numbering of the 'action' is not logical (2 comes before 1). Could also work with enum/list
+      $userid = 1;   // TODO: userid is fixed...      
+      // TODO the numbering of the 'action' is not logical (2 comes before 1). Could also work with enums/list
       
       
       // Form processing
@@ -56,15 +55,15 @@
       $categoryFromPost = htmlspecialchars($_POST["categoryInput"]); // this should be an integer (when action is set)
       $actionSafe = 0;
       $categorySafe = 0;
-      $dispErrorMsg = 0;      
-      $heading = "News"; // TODO: section headings are 3 fixed values. Need another table for that
+      $dispErrorMsg = 0;
+      $heading = " "; // default value, in case some error happens
       
       if (filter_var($actionFromPost, FILTER_VALIDATE_INT)) {
         $actionSafe = $actionFromPost;        
         
         if (filter_var($categoryFromPost, FILTER_VALIDATE_INT)) {
-          $categorySafe = $categoryFromPost;
-          if ($categoryFromPost == 2) { $heading = "Work"; } elseif ($categoryFromPost == 3) { $heading = "Div"; }           
+          $categorySafe = $categoryFromPost;          
+          $heading = getCategory($userid,$categoryFromPost,$dbConnection)                    
         } else { $dispErrorMsg = 5; }// have an integer on category
         // TODO: if-else-switch monster construct is kind of, well, a monster... and not really correct.
        
@@ -130,35 +129,28 @@
           exit(); // finish the php part
         } // dispErrorMsg > 0        
       } else { // form processing: do not have a valid integer. When entering the page, there is no $actionFromPost set... Most probably it's not a fault but just the entry point
-        echo "<h2 class=\"section-heading\">What would you like to edit?</h2><div class=\"row\">";
-
-        // TODO: the text 'News' has to be retrieved from data base      
-        echo "<div class=\"four columns\"><form action=\"editLinks.php\" method=\"post\">
-        <input name=\"action\" type=\"hidden\" value=\"2\"><input name=\"categoryInput\" type=\"hidden\" value=\"1\">
-        <input name=\"submit\" type=\"submit\" value=\"Category News\"></form></div>";        
-        echo "<div class=\"four columns\"><form action=\"editLinks.php\" method=\"post\">
-        <input name=\"action\" type=\"hidden\" value=\"2\"><input name=\"categoryInput\" type=\"hidden\" value=\"2\">
-        <input name=\"submit\" type=\"submit\" value=\"Category Work\"></form></div>";
-        echo "<div class=\"four columns\"><form action=\"editLinks.php\" method=\"post\">
-        <input name=\"action\" type=\"hidden\" value=\"2\"><input name=\"categoryInput\" type=\"hidden\" value=\"3\">
-        <input name=\"submit\" type=\"submit\" value=\"Category Div\"></form></div>";
+        echo "<h2 class=\"section-heading\">What would you like to edit?</h2><div class=\"row\">";          
+        for ($i = 1; $i <= 3; $i++) {
+          echo "<div class=\"four columns\"><form action=\"editLinks.php\" method=\"post\">
+          <input name=\"action\" type=\"hidden\" value=\"2\"><input name=\"categoryInput\" type=\"hidden\" value=\"".$i."\">
+          <input name=\"submit\" type=\"submit\" value=\"Category ".getCategory($userid,$i,$dbConnection)."\"></form></div>";         
+        }        
         echo "</div>\n"; // row
 
-        // --- working here --- //    
-        
         echo "<div class=\"row\"><div class=\"twelve columns\"><hr /></div></div>\n";
+        // TODO: those two applications
         echo "<div class=\"row\"><div class=\"six columns\"><a href=\"#\">set all counters to 0</a></div><div class=\"six columns\"><a href=\"#\">(account management)</a></div></div>\n";        
-      }// action = integer           
+      } // action = integer          
     ?>                
     </div> <!-- /container -->    
-    <!-- ToDo: code below should be included. Somehow...  -->
+    <!-- TODO: code below should be included. Somehow...  -->
     <div class="section noBottom">
       <div class="container">
         <div class="row">
           <div class="twelve columns"><hr /></div>
         </div>
         <div class="row">
-          <div class="six columns"><a href="editLinks.php">edit</a></div>
+          <div class="six columns"><a class="button button-primary" href="editLinks.php">edit</a></div>
           <div class="six columns"><a href="about.html">about</a></div>
         </div>
       </div>
