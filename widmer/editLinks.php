@@ -42,14 +42,12 @@
   <div class="section categories">
     <div class="container">
      <?php     
-      require_once("php/dbConnection.php"); // this will return the $dbConnection variable
+      require_once("php/dbConnection.php"); // this will return the $dbConnection variable as "new mysqli"
+      if ($dbConnection->connect_error) { die("Connection failed: " . $dbConnection->connect_error); }
       require_once("functions.php");
-      // Check connection
-      if ($dbConnection->connect_error) { die("Connection failed: " . $dbConnection->connect_error); }      
-      
+            
       $userid = 1;   // TODO: userid is fixed...      
-      // TODO the numbering of the 'action' is not logical (2 comes before 1). Could also work with enums/list
-      
+      // TODO the numbering of the 'action' is not logical (2 comes before 1). Could also work with enums/list     
       
       // Form processing
       $actionFromPost = htmlspecialchars($_POST["action"]); // this should be either an integer or not set.
@@ -65,8 +63,11 @@
         if (filter_var($categoryFromPost, FILTER_VALIDATE_INT)) {
           $categorySafe = $categoryFromPost;          
           $heading = getCategory($userid,$categoryFromPost,$dbConnection);                    
-        } else { $dispErrorMsg = 5; } // have an integer on category
-        // TODO: if-else-switch monster construct is kind of, well, a monster... and not really correct.
+        } elseif (($actionSafe == 2) or ($actionSafe == 1)) { // I'm expecting a category only for actions 1 and 2
+          $dispErrorMsg = 5; 
+        } // have an integer on category
+        
+        // TODO: if-else-switch monster construct is kind of, well, a monster...
        
         switch ($actionSafe) {
         case 2: // category selection thing        
@@ -119,6 +120,15 @@
             } else { $dispErrorMsg = 3; } // getMax query did work
           } else { $dispErrorMsg = 2; } // have a validUrl -> TODO: add an additional error msg here because this really depends on user input
           break;
+        case 3: // I want to reset all the link counters to 0
+          $sqlCntReset = "UPDATE `links` SET `cntTot` = 0 WHERE `userid` = ".$userid;
+          if ($dbConnection->query($sqlCntReset)) { // should return true
+            echo "<h3 class=\"section-heading\">Counters have been reset to 0</h3><div class=\"row\">\n";
+            echo "<div class=\"six columns linktext\"><a href=\"index.php\" class=\"button button-primary\">home</a></div>\n";
+            echo "<div class=\"six columns linktext\">&nbsp</div>\n";
+            echo "</div>";                   
+          } else { $dispErrorMsg = 6; } // insert query did work
+          break;
         default: 
           $dispErrorMsg = 1;
         } // switch
@@ -136,25 +146,19 @@
           <input name=\"submit\" type=\"submit\" value=\"Category ".getCategory($userid, $i, $dbConnection)."\"></form></div>";         
         }        
         echo "</div>\n"; // row
-
         echo "<div class=\"row\"><div class=\"twelve columns\"><hr /></div></div>\n";
-        // TODO: those two applications
-        echo "<div class=\"row\"><div class=\"six columns\"><a href=\"#\">set all counters to 0</a></div><div class=\"six columns\"><a href=\"#\">(account management)</a></div></div>\n";        
+        // TODO: might need an image in counter reset to make it more clear..?
+        // images/linkCnt3.png -> images/linkCnt0.png. Img is: width_114 x height_64
+        // TODO: the account management functionality
+        echo "<div class=\"row\"><div class=\"six columns\">
+                <form action=\"editLinks.php\" method=\"post\"><input name=\"action\" type=\"hidden\" value=\"3\"><input name=\"submit\" type=\"submit\" value=\"set all counters to 0\"></form>
+              </div>
+              <div class=\"six columns\"><a href=\"#\">(account management)</a></div></div>\n";        
       } // action = integer          
+    
+    echo "</div> <!-- /container -->\n";
+    printFooter("editLinks");
     ?>                
-    </div> <!-- /container -->    
-    <!-- TODO: code below should be included. Somehow...  -->
-    <div class="section noBottom">
-      <div class="container">
-        <div class="row">
-          <div class="twelve columns"><hr /></div>
-        </div>
-        <div class="row">
-          <div class="six columns"><a class="button button-primary" href="editLinks.php">edit</a></div>
-          <div class="six columns"><a href="about.html">about</a></div>
-        </div>
-      </div>
-    </div>
   </div> <!-- /section categories -->
 <!-- End Document -->
 </body>

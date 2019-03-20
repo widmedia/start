@@ -36,4 +36,29 @@
       return ($row["text"]);      
     } // if  
   } // function
+  
+  // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input
+  // TODO: the about page is not yet existing...
+  function printFooter($currentSite) {
+    $firstLink = "href=\"editLinks.php\">edit"; // default value
+    if ($currentSite == "editLinks") {
+        $firstLink = "href=\"index.php\">home";
+    }
+    echo "      
+    <div class=\"section noBottom\">
+      <div class=\"container\">
+        <div class=\"row\">
+          <div class=\"twelve columns\"><hr /></div>
+        </div>
+        <div class=\"row\">
+          <div class=\"six columns\"><a class=\"button button-primary differentColor\" ".$firstLink."</a></div>
+          <div class=\"six columns\"><a href=\"about.html\">about</a></div>
+        </div>
+      </div>
+    </div>
+    "; 
+  } // function
+  
+  
+  
 ?>                

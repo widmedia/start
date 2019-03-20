@@ -1,13 +1,3 @@
- <?php
-    require_once("php/dbConnection.php"); // this will return the $dbConnection variable
-
-    // Check connection
-    if ($dbConnection->connect_error) {
-        die("Connection failed: " . $dbConnection->connect_error);
-    }
-?> 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,13 +31,16 @@
   <div class="section categories noBottom">
     <div class="container">
      <?php
+      require_once("php/dbConnection.php"); // this will return the $dbConnection variable as "new mysqli"
+      if ($dbConnection->connect_error) { die("Connection failed: " . $dbConnection->connect_error); }
+
       require_once("functions.php");
       $userid = 1; // TODO: userid is fixed.
       
       // get the data out from the data base
-      $sqlStringCat1 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 1000";
-      $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 1000";
-      $sqlStringCat3 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 3 ORDER BY `links`.`sort` ASC LIMIT 1000";
+      $sqlStringCat1 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 100";
+      $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 100";
+      $sqlStringCat3 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 3 ORDER BY `links`.`sort` ASC LIMIT 100";
       
       $divClass4Columns = "<div class=\"four columns linktext\">";
       $divClass3Columns = "<div class=\"three columns linktext\">";      
@@ -60,21 +53,10 @@
       
       echo "</div><h3 class=\"section-heading\">".getCategory($userid,3,$dbConnection)."</h3><div class=\"row\">";
       printLinks(3, $divClass4Columns, $sqlStringCat3, $dbConnection);
+      echo "</div>
+    </div> <!-- /container -->";
+    printFooter("index");
     ?>                
-      </div>
-    </div> <!-- /container -->
-    
-    <div class="section noBottom">
-      <div class="container">
-        <div class="row">
-          <div class="twelve columns"><hr /></div>
-        </div>
-        <div class="row">
-          <div class="six columns"><a class="button button-primary" href="editLinks.php">edit</a></div>
-          <div class="six columns"><a href="about.html">about</a></div>
-        </div>
-      </div>
-    </div>
   </div> <!-- /section categories -->
 
 <!-- End Document -->
