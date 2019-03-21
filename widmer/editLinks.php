@@ -74,10 +74,8 @@
             // I need fields to 
             // done: a) add a new link with "link name" / "link href" 
             // b) edit/delete existing links: edit "link name" / "link href". Delete the whole link
-            // c) Change link ordering: add +/- buttons  --> this submits instantly. Needs to swap values (is more robust than +/- 1, works with gaps as well and basically same operation)           
 
-            // b/c: TODO: this currently just prints the present state            
-            
+            // b: TODO: this currently just prints the present state                        
             $divClass3Columns = "<div class=\"three columns linktext\">";  // using the smallest size (for four links in one row)
             $sqlString = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = ".$categorySafe." ORDER BY `links`.`sort` ASC LIMIT 100"; // more than 100 links do not make sense
             

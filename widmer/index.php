@@ -38,6 +38,7 @@
       $userid = 1; // TODO: userid is fixed.
       
       // get the data out from the data base
+      // TODO: change the ORDER BY. It should depend on the count (and maybe after that on the 'sort' column, especially after resetting all counts)
       $sqlStringCat1 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 100";
       $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 100";
       $sqlStringCat3 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 3 ORDER BY `links`.`sort` ASC LIMIT 100";
