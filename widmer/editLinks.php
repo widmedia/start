@@ -76,14 +76,28 @@
           $result->close(); // free result set
         } // if  
       } // function 
-      
-      
 
+      
+      function printEntryPoint($userid, $dbConnection) {
+        // TODO: this output needs a redesign. The buttons as links are not that nice...
+        // TODO: might need an image in counter reset to make it more clear..? images/linkCnt3.png -> images/linkCnt0.png. Img is: width_114 x height_64        
+        echo "<h2 class=\"section-heading\">What would you like to edit?</h2><div class=\"row\">";          
+        for ($i = 1; $i <= 3; $i++) {
+          echo "<div class=\"four columns\"><form action=\"editLinks.php?do=2\" method=\"post\">
+          <input name=\"categoryInput\" type=\"hidden\" value=\"".$i."\">
+          <input name=\"submit\" type=\"submit\" value=\"Category ".getCategory($userid, $i, $dbConnection)."\"></form></div>";         
+        }        
+        echo "</div>\n<div class=\"row\"><div class=\"twelve columns\"><hr /></div></div>\n";
+        echo "<div class=\"row\"><div class=\"six columns\"><form action=\"editLinks.php?do=3\" method=\"post\"><input name=\"submit\" type=\"submit\" value=\"set all counters to 0\"></form>
+              </div><div class=\"six columns\"><a href=\"#\">(account management)</a></div></div>\n</div> <!-- /container -->\n";
+        printFooter("editLinks");
+      } // function 
       
       
             
       $userid = 1;   // TODO: userid is fixed...      
-      // TODO the numbering of the 'action' is not logical (2 comes before 1). Could also work with enums/list     
+      // TODO the numbering of the 'action' is not logical (2 comes before 1)
+      // TODO: the account management functionality
       // possible actions: 1=> add one link to db, 2=> present links of one category, 3=> reset all cnt to 0, 4=> edit one link, 5=> delete one link.
       
       // Form processing
@@ -91,21 +105,24 @@
       $categoryUnsafe = substr($_POST["categoryInput"], 0, 1); // this should either be an integer (when action is set) or non-existing
       $doSafe = 0;
       $categorySafe = 0;
-      if (filter_var($doUnsafe, FILTER_VALIDATE_INT)) { $doSafe = $doUnsafe; }
-      if (filter_var($categoryUnsafe, FILTER_VALIDATE_INT)) { $categorySafe = $categoryUnsafe; }
-        
       $dispErrorMsg = 0;
       $heading = " "; // default value, in case some error happens
-      
-      if ($doSafe > 0) {                
-        if ($categorySafe > 0) {          
+
+      if (filter_var($doUnsafe, FILTER_VALIDATE_INT)) { 
+        $doSafe = $doUnsafe; 
+        if (filter_var($categoryUnsafe, FILTER_VALIDATE_INT)) { 
+          $categorySafe = $categoryUnsafe;
           $heading = getCategory($userid, $categorySafe, $dbConnection);                    
         } elseif (($doSafe == 2) or ($doSafe == 1)) { // I'm expecting a category only for dos 1 and 2
           $dispErrorMsg = 5; 
         } // have an integer on category
-        
-        // TODO: if-else-switch monster construct is kind of, well, a monster...
-       
+      } else { // entry point of this site   
+        printEntryPoint($userid, $dbConnection);
+        die(); // exit the php part
+      }
+      
+      if ($doSafe > 0) {                
+        // TODO: if-else-switch monster construct is kind of, well, a monster... and still growing
         switch ($doSafe) {
         case 2: // category selection thing        
             // I need fields to 
@@ -172,27 +189,9 @@
           echo "<div class=\"three columns linktext\">&nbsp</div>\n</div>";                   
           exit(); // finish the php part
         } // dispErrorMsg > 0        
-      } else { // form processing: do not have a valid integer. When entering the page, there is no $do set... Most probably it's not a fault but just the entry point
-        echo "<h2 class=\"section-heading\">What would you like to edit?</h2><div class=\"row\">";  
-        // TODO: this output needs a redesign. The buttons as links are not that nice...
-        for ($i = 1; $i <= 3; $i++) {
-          echo "<div class=\"four columns\"><form action=\"editLinks.php?do=2\" method=\"post\">
-          <input name=\"categoryInput\" type=\"hidden\" value=\"".$i."\">
-          <input name=\"submit\" type=\"submit\" value=\"Category ".getCategory($userid, $i, $dbConnection)."\"></form></div>";         
-        }        
-        echo "</div>\n"; // row
-        echo "<div class=\"row\"><div class=\"twelve columns\"><hr /></div></div>\n";
-        // TODO: might need an image in counter reset to make it more clear..?
-        // images/linkCnt3.png -> images/linkCnt0.png. Img is: width_114 x height_64
-        // TODO: the account management functionality
-        echo "<div class=\"row\"><div class=\"six columns\">
-                <form action=\"editLinks.php?do=3\" method=\"post\"><input name=\"submit\" type=\"submit\" value=\"set all counters to 0\"></form>
-              </div>
-              <div class=\"six columns\"><a href=\"#\">(account management)</a></div></div>\n";        
+        echo "</div> <!-- /container -->\n";
+        printFooter("editLinks");
       } // action = integer          
-    
-    echo "</div> <!-- /container -->\n";
-    printFooter("editLinks");
     ?>                
   </div> <!-- /section categories -->
 <!-- End Document -->
