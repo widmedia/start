@@ -25,9 +25,6 @@
 
 </head>
 <body>
-
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="section categories noBottom">
     <div class="container">
      <?php
@@ -37,29 +34,18 @@
       require_once("functions.php");
       $userid = 1; // TODO: userid is fixed.
       
-      // get the data out from the data base
-      // TODO: change the ORDER BY. It should depend on the count (and maybe after that on the 'sort' column, especially after resetting all counts)
-      $sqlStringCat1 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 1 ORDER BY `links`.`sort` ASC LIMIT 100";
-      $sqlStringCat2 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 2 ORDER BY `links`.`sort` ASC LIMIT 100";
-      $sqlStringCat3 = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = 3 ORDER BY `links`.`sort` ASC LIMIT 100";
+      echo "<h3 class=\"section-heading\">".getCategory($userid, 1, $dbConnection)."</h3><div class=\"row\">";
+      printLinks($userid, 1, $dbConnection);
       
-      $divClass4Columns = "<div class=\"four columns linktext\">";
-      $divClass3Columns = "<div class=\"three columns linktext\">";      
+      echo "</div><h3 class=\"section-heading\">".getCategory($userid, 2, $dbConnection)."</h3><div class=\"row\">";
+      printLinks($userid, 2, $dbConnection);
       
-      echo "<h3 class=\"section-heading\">".getCategory($userid,1,$dbConnection)."</h3><div class=\"row\">";
-      printLinks(3, $divClass4Columns, $sqlStringCat1, $dbConnection);
-      
-      echo "</div><h3 class=\"section-heading\">".getCategory($userid,2,$dbConnection)."</h3><div class=\"row\">";
-      printLinks(4, $divClass3Columns, $sqlStringCat2, $dbConnection);
-      
-      echo "</div><h3 class=\"section-heading\">".getCategory($userid,3,$dbConnection)."</h3><div class=\"row\">";
-      printLinks(3, $divClass4Columns, $sqlStringCat3, $dbConnection);
+      echo "</div><h3 class=\"section-heading\">".getCategory($userid, 3, $dbConnection)."</h3><div class=\"row\">";
+      printLinks($userid, 3, $dbConnection);
       echo "</div>
     </div> <!-- /container -->";
     printFooter("index");
     ?>                
   </div> <!-- /section categories -->
-
-<!-- End Document -->
 </body>
 </html>

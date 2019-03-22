@@ -3,8 +3,19 @@
   
   // function to output several links in a formatted way
   // creating a div for every link and div-rows for every $module-th entry
-  function printLinks($modulo, $divClass, $sqlString, $dbConnection) {
-    if ($result = $dbConnection->query($sqlString)) {
+  function printLinks($userid, $category, $dbConnection) {
+    // TODO: change the ORDER BY. It should depend on the count (and maybe after that on the 'sort' column, especially important after resetting all counts)
+    $sql = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = ".$category." ORDER BY `links`.`sort` ASC LIMIT 100";
+    
+    // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
+    $modulo = 3;
+    $divClass = "<div class=\"four columns linktext\">";
+    if ($category == 2) { // this category prints more dense
+      $modulo = 4;
+      $divClass = "<div class=\"three columns linktext\">";      
+    }
+    
+    if ($result = $dbConnection->query($sql)) {
       $counter = 0;
          
       while ($row = $result->fetch_assoc()) {
@@ -19,6 +30,7 @@
       $result->close(); // free result set
     } // if  
   } // function 
+ 
 
   // function returns the text of the category. If something does not work as expected, NULL is returned
   function getCategory($userid, $category, $dbConnection) {
