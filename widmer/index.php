@@ -28,23 +28,23 @@
   <div class="section categories noBottom">
     <div class="container">
      <?php
-      require_once("php/dbConnection.php"); // this will return the $dbConnection variable as "new mysqli"
-      if ($dbConnection->connect_error) { die("Connection failed: " . $dbConnection->connect_error); }
+      require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
+      if ($dbConnection->connect_error) { die('Connection failed: ' . $dbConnection->connect_error); }
 
-      require_once("functions.php");
+      require_once('functions.php');
       $userid = 1; // TODO: userid is fixed.
       
-      echo "<h3 class=\"section-heading\">".getCategory($userid, 1, $dbConnection)."</h3><div class=\"row\">";
+      echo '<h3 class="section-heading">'.getCategory($userid, 1, $dbConnection).'</h3><div class="row">';
       printLinks($userid, 1, $dbConnection);
       
-      echo "</div><h3 class=\"section-heading\">".getCategory($userid, 2, $dbConnection)."</h3><div class=\"row\">";
+      echo '</div><h3 class="section-heading">'.getCategory($userid, 2, $dbConnection).'</h3><div class="row">';
       printLinks($userid, 2, $dbConnection);
       
-      echo "</div><h3 class=\"section-heading\">".getCategory($userid, 3, $dbConnection)."</h3><div class=\"row\">";
+      echo '</div><h3 class="section-heading">'.getCategory($userid, 3, $dbConnection).'</h3><div class="row">';
       printLinks($userid, 3, $dbConnection);
-      echo "</div>
-    </div> <!-- /container -->";
-    printFooter("index");
+      echo '</div>
+    </div> <!-- /container -->';
+    printFooter('index');
     ?>                
   </div> <!-- /section categories -->
 </body>

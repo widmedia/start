@@ -5,26 +5,26 @@
   // creating a div for every link and div-rows for every $module-th entry
   function printLinks($userid, $category, $dbConnection) {
     // TODO: change the ORDER BY. It should depend on the count (and maybe after that on the 'sort' column, especially important after resetting all counts)
-    $sql = "SELECT * FROM `links` WHERE userid = ".$userid." AND category = ".$category." ORDER BY `links`.`sort` ASC LIMIT 100";
+    $sql = 'SELECT * FROM `links` WHERE userid = '.$userid.' AND category = '.$category.' ORDER BY `links`.`sort` ASC LIMIT 100';
     
     // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
     $modulo = 3;
-    $divClass = "<div class=\"four columns linktext\">";
+    $divClass = '<div class="four columns linktext">';
     if ($category == 2) { // this category prints more dense
       $modulo = 4;
-      $divClass = "<div class=\"three columns linktext\">";      
+      $divClass = '<div class="three columns linktext">';      
     }
     
     if ($result = $dbConnection->query($sql)) {
       $counter = 0;
          
       while ($row = $result->fetch_assoc()) {
-        echo $divClass."<a href=\"link.php?id=".$row["id"]."\" target=\"_blank\" class=\"button button-primary\">".
-             $row["text"]."</a><span class=\"counter\">".$row["cntTot"]."</span></div>\n";
+        echo $divClass.'<a href="link.php?id='.$row["id"].'" target="_blank" class="button button-primary">'.
+             $row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></div>';
         $counter++;
 
         if (($counter % $modulo) == 0) {
-          echo "</div><div class=\"row\">";
+          echo '</div><div class="row">';
         }
       } // while    
       $result->close(); // free result set
@@ -40,35 +40,35 @@
     // 1 	1 	    1 	      News
     // 2 	1 	    2 	      Work
     // 3 	1 	    3 	      Div
-    $sqlString = "SELECT * FROM `titels` WHERE userid = ".$userid." AND category = ".$category." LIMIT 1";
+    $sqlString = 'SELECT * FROM `titels` WHERE userid = '.$userid.' AND category = '.$category.' LIMIT 1';
     if ($result = $dbConnection->query($sqlString)) {
       $row = $result->fetch_assoc();
       $result->close(); // free result set
       
-      return ($row["text"]);      
+      return ($row['text']);      
     } // if  
   } // function
   
   // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input
   // TODO: the about page is not yet existing...
   function printFooter($currentSite) {
-    $firstLink = "href=\"editLinks.php\">&nbsp;&nbsp;&nbsp;edit&nbsp;&nbsp;&nbsp;"; // default value
-    if ($currentSite == "editLinks") {
-        $firstLink = "href=\"index.php\">&nbsp;&nbsp;&nbsp;home&nbsp;&nbsp;&nbsp;";
+    $firstLink = 'href="editLinks.php">&nbsp;&nbsp;&nbsp;edit&nbsp;&nbsp;&nbsp;'; // default value
+    if ($currentSite == 'editLinks') {
+        $firstLink = 'href="index.php">&nbsp;&nbsp;&nbsp;home&nbsp;&nbsp;&nbsp;';
     }
-    echo "      
-    <div class=\"section noBottom\">
-      <div class=\"container\">
-        <div class=\"row\">
-          <div class=\"twelve columns\"><hr /></div>
+    echo '      
+    <div class="section noBottom">
+      <div class="container">
+        <div class="row">
+          <div class="twelve columns"><hr /></div>
         </div>
-        <div class=\"row\">
-          <div class=\"six columns\"><a class=\"button differentColor\" ".$firstLink."</a></div>
-          <div class=\"six columns\"><a href=\"about.html\">about</a></div>
+        <div class="row">
+          <div class="six columns"><a class="button differentColor" '.$firstLink.'</a></div>
+          <div class="six columns"><a href="about.html">about</a></div>
         </div>
       </div>
     </div>
-    "; 
+    '; 
   } // function
   
   
