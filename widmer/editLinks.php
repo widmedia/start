@@ -55,18 +55,24 @@
         
         // Have 12 columns. Means with modulo 3, I have "class four columns" and vice versa
         $modulo = 3;
-        $divClass = '<div class="four columns linktext">';
-        if ($category == 2) { // this category prints more dense
-          $modulo = 4;
-          $divClass = '<div class="three columns linktext">';      
-        }
+        $divClass = '<div class="two columns linktext">';
+        // TODO
+        // if ($category == 2) { // this category prints more dense
+          // $modulo = 4;
+          // $divClass = '<div class="three columns linktext">';      
+        // }
         
+        // currently have 2cols for the link, 2cols for the edit/delete which are separated by a <br>.
+        // most probably have to write a class on its own to do this nicer...?
         if ($result = $dbConnection->query($sql)) {
           $counter = 0;         
           while ($row = $result->fetch_assoc()) {            
             // link itself will point to "edit one link", additionally have two symbols
-            echo $divClass.'<a href="editLinks.php?id='.$row['id'].'&do=4" class="button button-primary">'.
-                 $row['text'].'</a><span class="counter"><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" width="16" height="16">delete</a><br /><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png" width="16" height="16">edit</a></span></div>';
+            echo $divClass.'<a href="editLinks.php?id='.$row['id'].'&do=4" class="button button-primary" style="float:right">'.
+                 $row['text'].'</a></div>
+                 <div class="two columns linktext counter">
+                   <a href="editLinks.php?id='.$row['id'].'&do=5" style="float:left"><img src="images/delete.png" width="16" height="16" border="0">delete</a><br>
+                   <a href="editLinks.php?id='.$row['id'].'&do=4" style="float:left"><img src="images/edit.png"   width="16" height="16" border="0">edit</a></div>';
             $counter++;
 
             if (($counter % $modulo) == 0) {
@@ -114,7 +120,7 @@
           $categorySafe = $categoryUnsafe;
           $heading = getCategory($userid, $categorySafe, $dbConnection);                    
         } elseif (($doSafe == 2) or ($doSafe == 1)) { // I"m expecting a category only for dos 1 and 2
-          $dispErrorMsg = 5; 
+          $dispErrorMsg = 2; 
         } // have an integer on category
       } else { // entry point of this site   
         printEntryPoint($userid, $dbConnection);
@@ -133,7 +139,7 @@
 
             // b/c: TODO: this currently just prints the present state                        
             echo '<h3 class="section-heading">'.$heading.'</h3><div class="row">';
-            // printLinks($userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
+            // printLinks($userid, $categorySafe, $dbConnection); // TODO: merge the functions
             printLinksToEdit($userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
             echo '</div>';
             
@@ -167,9 +173,9 @@
                 echo '<div class="three columns linktext"><a href="'.htmlspecialchars($linkSqlSafe).'" target="_blank" class="button button-primary">'.htmlspecialchars($textSqlSafe).'</a><span class="counter">0</span></div>';
                 echo '<div class="nine columns linktext">&nbsp</div>';
                 echo '</div>';                   
-              } else { $dispErrorMsg = 4; } // insert query did work
-            } else { $dispErrorMsg = 3; } // getMax query did work
-          } else { $dispErrorMsg = 2; } // have a validUrl -> TODO: add an additional error msg here because this really depends on user input
+              } else { $dispErrorMsg = 13; } // insert query did work
+            } else { $dispErrorMsg = 12; } // getMax query did work
+          } else { $dispErrorMsg = 11; } // have a validUrl -> TODO: add an additional error msg here because this really depends on user input
           break;
         case 3: // I want to reset all the link counters to 0
           $sqlCntReset = 'UPDATE `links` SET `cntTot` = 0 WHERE `userid` = '.$userid;
@@ -178,7 +184,31 @@
             echo '<div class="six columns linktext"><a href="index.php" class="button button-primary">home</a></div>';
             echo '<div class="six columns linktext">&nbsp</div>';
             echo '</div>';                   
-          } else { $dispErrorMsg = 6; } // insert query did work
+          } else { $dispErrorMsg = 31; } // insert query did work
+          break;
+        case 4: // edit one link. TODO
+          echo '<h3 class="section-heading">Edit one link</h3><div class="row">';
+          echo '<div class="nine columns linktext">Do = 4, editing one link</div>';
+          echo '<div class="three columns linktext">&nbsp;</div></div>';                   
+          break;
+        case 5: // delete a link. Might want to display a confirmation message?
+          $idSafe = 0;
+          $idUnsafe = substr($_GET['id'], 0, 11); // this should be an integer (max 11 characters)
+          if (filter_var($idUnsafe, FILTER_VALIDATE_INT)) { 
+            $idSafe = $idUnsafe; 
+            // need an additional userid condition. May be ignored by SQL because `id` is a primary key?
+            $sqlPart = 'WHERE `userid` = '.$userid.' AND `id` = '.mysqli_real_escape_string($dbConnection, $idSafe);
+            $sqlSelect = 'SELECT * FROM `links` '.$sqlPart;
+            if($result = $dbConnection->query($sqlSelect)) { 
+              $row = $result->fetch_assoc();
+              $sqlDelete = 'DELETE FROM `links` '.$sqlPart; 
+              if ($dbConnection->query($sqlDelete)) { // should return true
+                echo '<h3 class="section-heading">Did delete one link</h3><div class="row">';
+                echo '<div class="nine columns linktext">Deleted the '.htmlspecialchars($row['text']).'-link</div>';
+                echo '<div class="three columns linktext">&nbsp;</div></div>';  
+              } else { $dispErrorMsg = 53; } // delete sql did work out
+            } else { $dispErrorMsg = 52; } // select sql did work out
+          } else { $dispErrorMsg = 51; } // integer check did work out          
           break;
         default: 
           $dispErrorMsg = 1;
@@ -186,8 +216,10 @@
         if ($dispErrorMsg > 0) {
           echo '<h3 class="section-heading">Error</h3><div class="row">';
           echo '<div class="nine columns linktext">"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?</div>';
-          echo '<div class="three columns linktext">&nbsp;</div></div>';                   
-          exit(); // finish the php part
+          echo '<div class="three columns linktext">&nbsp;</div></div>';          
+          echo '</div> <!-- /container -->';
+          printFooter('editLinks');
+          die(); // finish the php part
         } // dispErrorMsg > 0        
         echo '</div> <!-- /container -->';
         printFooter('editLinks');
