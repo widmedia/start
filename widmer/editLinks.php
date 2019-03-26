@@ -88,7 +88,7 @@
         // TODO: this output needs a redesign. The buttons as links are not that nice...
         echo '<h2 class="section-heading">What would you like to edit?</h2><div class="row">';          
         for ($i = 1; $i <= 3; $i++) {
-          echo '<div class="four columns"><form action="editLinks.php?do=2" method="post">
+          echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
           <input name="categoryInput" type="hidden" value="'.$i.'">
           <input name="submit" type="submit" value="Category '.getCategory($userid, $i, $dbConnection).'"></form></div>';         
         }                
@@ -101,10 +101,15 @@
 
       
       
-      $userid = 1;   // TODO: userid is fixed...      
-      // TODO the numbering of the "action" is not logical (2 comes before 1)
+      $userid = 1;   // TODO: userid is fixed... 
+      
       // TODO: the account management functionality
-      // possible actions: 1=> add one link to db, 2=> present links of one category, 3=> reset all cnt to 0, 4=> edit one link, 5=> delete one link.
+      // possible actions: 
+      // 1=> present links of one category
+      // 2=> add one link to db      
+      // 3=> reset all cnt to 0
+      // 4=> edit one link
+      // 5=> delete one link
       
       // Form processing
       $doUnsafe       = substr($_GET['do'], 0, 1); // limit the length of this string to 1. Leaves me with enough values but no damage potential
@@ -119,7 +124,7 @@
         if (filter_var($categoryUnsafe, FILTER_VALIDATE_INT)) { 
           $categorySafe = $categoryUnsafe;
           $heading = getCategory($userid, $categorySafe, $dbConnection);                    
-        } elseif (($doSafe == 2) or ($doSafe == 1)) { // I"m expecting a category only for dos 1 and 2
+        } elseif (($doSafe == 1) or ($doSafe == 2)) { // I"m expecting a category only for dos 1 and 2
           $dispErrorMsg = 2; 
         } // have an integer on category
       } else { // entry point of this site   
@@ -130,11 +135,11 @@
       if ($doSafe > 0) {                
         // TODO: if-else-switch monster construct is kind of, well, a monster... and still growing
         switch ($doSafe) {
-        case 2: // category selection thing        
+        case 1: // category selection thing        
             // I need fields to 
             // done: a) add a new link with 'link name' / 'link href' 
             // b) edit existing links: edit 'link name' / 'link href'. 
-            // c) delete the whole link
+            // done: c) delete the whole link
             
 
             // b/c: TODO: this currently just prints the present state                        
@@ -144,7 +149,7 @@
             echo '</div>';
             
             // this implements a) add a new link. TODO: could also serve as edit link? 
-            echo '<form action="editLinks.php?do=1" method="post">
+            echo '<form action="editLinks.php?do=2" method="post">
                     <div class="row"><div class="twelve columns"><h3 class="section-heading">New link</h3><input name="categoryInput" type="hidden" value="'.$categorySafe.'"></div></div>
                     <div class="row">
                       <div class="four columns"><input name="link" type="url"  maxlength="1023" value="https://" required></div>
@@ -153,7 +158,7 @@
                     </div>
                   </form>';          
           break;  
-        case 1: // have a valid do. 1 = add a link 
+        case 2: // have a valid do. 2 = add a link 
           if (filter_var($_POST['link'], FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) { // have a validUrl. require the http(s)://-part as well. 
             // filtering it for sqli insertion
             $textSqlSafe = mysqli_real_escape_string($dbConnection, $_POST['text']);                               
@@ -173,9 +178,9 @@
                 echo '<div class="three columns linktext"><a href="'.htmlspecialchars($linkSqlSafe).'" target="_blank" class="button button-primary">'.htmlspecialchars($textSqlSafe).'</a><span class="counter">0</span></div>';
                 echo '<div class="nine columns linktext">&nbsp</div>';
                 echo '</div>';                   
-              } else { $dispErrorMsg = 13; } // insert query did work
-            } else { $dispErrorMsg = 12; } // getMax query did work
-          } else { $dispErrorMsg = 11; } // have a validUrl -> TODO: add an additional error msg here because this really depends on user input
+              } else { $dispErrorMsg = 23; } // insert query did work
+            } else { $dispErrorMsg = 22; } // getMax query did work
+          } else { $dispErrorMsg = 21; } // have a validUrl -> TODO: add an additional error msg here because this really depends on user input
           break;
         case 3: // I want to reset all the link counters to 0
           $sqlCntReset = 'UPDATE `links` SET `cntTot` = 0 WHERE `userid` = '.$userid;
