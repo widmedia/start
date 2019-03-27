@@ -64,7 +64,7 @@
         </div>
         <div class="row">
           <div class="six columns"><a class="button differentColor" '.$firstLink.'</a></div>
-          <div class="six columns"><a href="about.html">about</a></div>
+          <div class="six columns"><a class="button differentColor" href="about.html">about</a></div>
         </div>
       </div>
     </div>

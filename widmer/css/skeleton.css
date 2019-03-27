@@ -173,7 +173,9 @@ p {
 /* Links
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 a {
-  color: #b47366; /* brown-reddish */ 
+  padding: 2px 4px 1px 1px;
+  color: #bc4468; /* reddish. #b47366; brown-reddish */ 
+  background-color: rgba(180, 180, 180, 0.5);
   text-decoration: none;}
 a:hover {
   color: #0FA0CE; 

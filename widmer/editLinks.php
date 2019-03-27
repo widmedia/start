@@ -21,15 +21,27 @@
   <!-- some site specific code (might be moved to custom.css later) -->
   <style>
     button.link {
-      background:none;
-      color:inherit;
-      border:none; 
-      padding:0;
-      font: inherit;
-      /*border is optional*/
-      border-bottom:1px solid #444; 
+      background: none;
+      color: inherit;
+      border: none; 
+      padding: 0;
+      font: inherit;      
+      border-bottom: 1px solid #444; 
       cursor: pointer;
     }
+    .editLeft {
+      margin: auto;
+      display: inline-block;
+      border: none; 
+      padding: 0;      
+    }
+    .editRight { /* need to copy some properties from button-primary to have the 2 edits align vertically */      
+      display: inline-block;
+      border: none;
+      padding-top: 20px;      
+      font-size: 1.5rem;
+      text-align: left;
+    }    
   </style>
   
   <!-- Favicon -->
@@ -55,12 +67,11 @@
         
         // Have 12 columns. Means with modulo 3, I have "class four columns" and vice versa
         $modulo = 3;
-        $divClass = '<div class="two columns linktext">';
-        // TODO
-        // if ($category == 2) { // this category prints more dense
-          // $modulo = 4;
-          // $divClass = '<div class="three columns linktext">';      
-        // }
+        $divClass = '<div class="four columns linktext">';
+        if ($category == 2) { // this category prints more dense
+          $modulo = 4;
+          $divClass = '<div class="three columns linktext">';      
+        }
         
         // currently have 2cols for the link, 2cols for the edit/delete which are separated by a <br>.
         // most probably have to write a class on its own to do this nicer...?
@@ -68,11 +79,12 @@
           $counter = 0;         
           while ($row = $result->fetch_assoc()) {            
             // link itself will point to "edit one link", additionally have two symbols
-            echo $divClass.'<a href="editLinks.php?id='.$row['id'].'&do=4" class="button button-primary" style="float:right">'.
-                 $row['text'].'</a></div>
-                 <div class="two columns linktext counter">
-                   <a href="editLinks.php?id='.$row['id'].'&do=5" style="float:left"><img src="images/delete.png" width="16" height="16" border="0">delete</a><br>
-                   <a href="editLinks.php?id='.$row['id'].'&do=4" style="float:left"><img src="images/edit.png"   width="16" height="16" border="0">edit</a></div>';
+            // TODO: change the color of the link itself
+            echo $divClass.'<span class="editLeft"><a href="editLinks.php?id='.$row['id'].'&do=4" class="button button-primary">'.$row['text'].'</a></span>
+                 <span class="editRight">
+                   <div><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png"   width="16" height="16" border="0"> edit</a></div>
+                   <div><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" width="16" height="16" border="0"> delete</a></div>
+                 </span></div>';
             $counter++;
 
             if (($counter % $modulo) == 0) {
@@ -95,7 +107,7 @@
         echo '</div><div class="row"><div class="twelve columns"><hr /></div></div>';        
         // TODO: image looks quite shitty. Go without img? echo '<div class="row"><div class="six columns"><img width="60" height="30" src="images/linkCntRst.png"></div><div class="six columns">&nbsp;</div></div>'; 
         echo '<div class="row"><div class="six columns"><form action="editLinks.php?do=3" method="post"><input name="submit" type="submit" value="set all counters to 0"></form>
-              </div><div class="six columns"><a href="#">(account management)</a></div></div></div> <!-- /container -->';
+              </div><div class="six columns"><a class="button differentColor" href="#">(account management)</a></div></div></div> <!-- /container -->';
         printFooter('editLinks');
       } // function 
 
