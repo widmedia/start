@@ -71,6 +71,15 @@
     '; 
   } // function
   
+  // returning a single row for the matching id. 
+  // NB: id will get sql-escaped, userid not.
+  function getSingleLinkRow ($id, $userid, $dbConnection) {
+    // need an additional userid condition. May be ignored by SQL because `id` is a primary key?
+    if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = '.$userid.' AND `id` = '.mysqli_real_escape_string($dbConnection, $id))) {
+      $row = $result->fetch_assoc();
+      return($row);
+    } else { return false; }
+  } // function
   
   
 ?>                

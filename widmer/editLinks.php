@@ -72,29 +72,22 @@
           $modulo = 4;
           $divClass = '<div class="three columns linktext">';      
         }
-        
-        // currently have 2cols for the link, 2cols for the edit/delete which are separated by a <br>.
-        // most probably have to write a class on its own to do this nicer...?
+                
         if ($result = $dbConnection->query($sql)) {
           $counter = 0;         
           while ($row = $result->fetch_assoc()) {            
-            // link itself will point to "edit one link", additionally have two symbols
-            // TODO: change the color of the link itself
-            echo $divClass.'<span class="editLeft"><a href="editLinks.php?id='.$row['id'].'&do=4" class="button button-primary">'.$row['text'].'</a></span>
+            // link itself is still pointing to the external page
+            echo $divClass.'<span class="editLeft"><a href="link.php?id='.$row['id'].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></span>
                  <span class="editRight">
-                   <div><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png"   width="16" height="16" border="0"> edit</a></div>
-                   <div><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" width="16" height="16" border="0"> delete</a></div>
+                   <div style="padding-bottom: 2px;"><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png"   width="16" height="16" border="0"> edit</a></div>                   
+                   <div style="padding-top:    2px;"><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" width="16" height="16" border="0"> delete</a></div>
                  </span></div>';
             $counter++;
-
-            if (($counter % $modulo) == 0) {
-              echo '</div><div class="row">';
-            }
+            if (($counter % $modulo) == 0) { echo '</div><div class="row">'; }
           } // while    
           $result->close(); // free result set
         } // if  
       } // function 
-
       
       function printEntryPoint($userid, $dbConnection) {
         // TODO: this output needs a redesign. The buttons as links are not that nice...
@@ -104,136 +97,156 @@
           <input name="categoryInput" type="hidden" value="'.$i.'">
           <input name="submit" type="submit" value="Category '.getCategory($userid, $i, $dbConnection).'"></form></div>';         
         }                
-        echo '</div><div class="row"><div class="twelve columns"><hr /></div></div>';        
-        // TODO: image looks quite shitty. Go without img? echo '<div class="row"><div class="six columns"><img width="60" height="30" src="images/linkCntRst.png"></div><div class="six columns">&nbsp;</div></div>'; 
+        echo '</div><div class="row"><div class="twelve columns"><hr /></div></div>';                
         echo '<div class="row"><div class="six columns"><form action="editLinks.php?do=3" method="post"><input name="submit" type="submit" value="set all counters to 0"></form>
               </div><div class="six columns"><a class="button differentColor" href="#">(account management)</a></div></div></div> <!-- /container -->';
         printFooter('editLinks');
       } // function 
+      
+      // prints 2 rows to either add a new link or edit an existing one
+      function printSingleLinkFields ($category, $do, $verb, $id, $link, $text) {
+        // add a new link (link and text are 'text' fields in the db, must be smaller than 4 GB in total)
+        echo '
+        <form action="editLinks.php?do='.$do.'" method="post">
+          <div class="row">
+            <div class="twelve columns">
+              <h3 class="section-heading">'.$verb.' link</h3><input name="categoryInput" type="hidden" value="'.$category.'"><input name="id" type="hidden" value="'.$id.'">
+            </div>
+          </div>
+          <div class="row">
+            <div class="four columns"><input name="link" type="url"  maxlength="1023" value="'.$link.'" required></div>
+            <div class="four columns"><input name="text" type="text" maxlength="63"  value="'.$text.'" required></div>
+            <div class="four columns"><input name="submit" type="submit" value="'.$verb.' link"></div>
+          </div>
+        </form>';   
+      } // function
+      
+      //prints the h3 title and one row
+      function printConfirmation($heading, $text, $leftSize, $rightSize) {
+        echo '
+        <h3 class="section-heading">'.$heading.'</h3>
+        <div class="row">
+          <div class="'.$leftSize.' columns linktext">'.$text.'</div>
+          <div class="'.$rightSize.' columns linktext">&nbsp</div>
+        </div>';                           
+      }
 
       
       
-      $userid = 1;   // TODO: userid is fixed... 
       
+      $userid = 1;   // TODO: userid is fixed... 
       // TODO: the account management functionality
+      
       // possible actions: 
       // 1=> present links of one category
       // 2=> add one link to db      
       // 3=> reset all cnt to 0
       // 4=> edit one link
       // 5=> delete one link
+      // 6=> edit one link
       
       // Form processing
       $doUnsafe       = substr($_GET['do'], 0, 1); // limit the length of this string to 1. Leaves me with enough values but no damage potential
-      $categoryUnsafe = substr($_POST['categoryInput'], 0, 1); // this should either be an integer (when action is set) or non-existing
+      $categoryUnsafe = substr($_POST['categoryInput'], 0, 1); // this should either be an integer (range 1 to 3) or non-existing
+      $idUnsafe       = substr($_GET['id'], 0, 11); // this should be an integer (max 11 characters)
+      $linkUnsafe     = substr($_POST['link'], 0, 1023); //
+      $textUnsafe     = substr($_POST['text'], 0, 63);      
+      
       $doSafe = 0;
       $categorySafe = 0;
+      $idSafe = 0;        
+      $linkOk = false;  // requires an additional signal because it's not an integer
+      $linkSqlSafe  = '';
+      $linkHtmlSafe = '';
+      $textSqlSafe  = '';
+      $textHtmlSafe = '';
+      
       $dispErrorMsg = 0;
-      $heading = ' '; // default value, in case some error happens
+      $heading = ''; // default value, in case some error happens. TODO: verify for sqlsafe / htmlsafe
 
+      // sanity checking. Check first if I have a valid 'do'. If so, I check others (which may not always evaluate true even for valid use cases)           
       if (filter_var($doUnsafe, FILTER_VALIDATE_INT)) { 
         $doSafe = $doUnsafe; 
         if (filter_var($categoryUnsafe, FILTER_VALIDATE_INT)) { 
           $categorySafe = $categoryUnsafe;
           $heading = getCategory($userid, $categorySafe, $dbConnection);                    
-        } elseif (($doSafe == 1) or ($doSafe == 2)) { // I"m expecting a category only for dos 1 and 2
-          $dispErrorMsg = 2; 
-        } // have an integer on category
-      } else { // entry point of this site   
+        } // have an integer on category        
+        if (filter_var($idUnsafe, FILTER_VALIDATE_INT)) { 
+          $idSafe = $idUnsafe; 
+        } // id
+        if (filter_var($linkUnsafe, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) { // have a validUrl. require the http(s)://-part as well.           
+          $linkOk = true;  
+          $linkSqlSafe = mysqli_real_escape_string($dbConnection, $linkUnsafe); // filtering it for sqli insertion
+          $linkHtmlSafe = htmlspecialchars($linkUnsafe);          
+          // assuming that having a link always goes together with having a text. Cannot verify anything for the text itself, just cut it to 63...          
+          $textSqlSafe = mysqli_real_escape_string($dbConnection, $textUnsafe);
+          $textHtmlSafe = htmlspecialchars($textUnsafe);
+        }
+      } 
+      
+      if ($doSafe == 0) { // entry point of this site   
         printEntryPoint($userid, $dbConnection);
         die(); // exit the php part
-      }
-      
-      if ($doSafe > 0) {                
+      } elseif ($doSafe > 0) {
         // TODO: if-else-switch monster construct is kind of, well, a monster... and still growing
         switch ($doSafe) {
-        case 1: // category selection thing        
-            // I need fields to 
-            // done: a) add a new link with 'link name' / 'link href' 
-            // b) edit existing links: edit 'link name' / 'link href'. 
-            // done: c) delete the whole link
-            
-
-            // b/c: TODO: this currently just prints the present state                        
-            echo '<h3 class="section-heading">'.$heading.'</h3><div class="row">';
-            // printLinks($userid, $categorySafe, $dbConnection); // TODO: merge the functions
-            printLinksToEdit($userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
-            echo '</div>';
-            
-            // this implements a) add a new link. TODO: could also serve as edit link? 
-            echo '<form action="editLinks.php?do=2" method="post">
-                    <div class="row"><div class="twelve columns"><h3 class="section-heading">New link</h3><input name="categoryInput" type="hidden" value="'.$categorySafe.'"></div></div>
-                    <div class="row">
-                      <div class="four columns"><input name="link" type="url"  maxlength="1023" value="https://" required></div>
-                      <div class="four columns"><input name="text" type="text" maxlength="63"  value="text" required></div>
-                      <div class="four columns"><input name="submit" type="submit" value="Add link"></div>
-                    </div>
-                  </form>';          
+        case 1: // present links of one category
+          echo '<h3 class="section-heading">'.$heading.'</h3><div class="row">';
+          printLinksToEdit($userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
+          echo '</div>';          
+          printSingleLinkFields($categorySafe, 2, 'Add', 0, 'https://', 'text');          
           break;  
-        case 2: // have a valid do. 2 = add a link 
-          if (filter_var($_POST['link'], FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) { // have a validUrl. require the http(s)://-part as well. 
-            // filtering it for sqli insertion
-            $textSqlSafe = mysqli_real_escape_string($dbConnection, $_POST['text']);                               
-            $linkSqlSafe = mysqli_real_escape_string($dbConnection, $_POST['link']);
-          
+        case 2: // add a link 
+          if ($linkOk) { // have a validUrl                      
             // NB: a statement like INSERT INTO `links` VALUES (.. ((SELECT MAX(sort) FROM `links` WHERE ..) + 1), ..)' is not allowed as the same table is used for insert and for data generation. 
-            // Need to split into two operations
-            $sqlGetMax = 'SELECT MAX(sort) FROM `links` WHERE `userid` = '.$userid.' AND `category` = '.$categorySafe;
-            
-            if ($result = $dbConnection->query($sqlGetMax)) {
+            // Need to split into two operations            
+            if ($result = $dbConnection->query('SELECT MAX(sort) FROM `links` WHERE `userid` = '.$userid.' AND `category` = '.$categorySafe)) {
               $row = $result->fetch_row(); // guaranteed to get only one row and one column
               $maxPlus1 = ($row[0]) + 1;              
                           
               $sqlInsert = 'INSERT INTO `links` (`id`, `userid`, `category`, `sort`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$userid.'", "'.$categorySafe.'", "'.$maxPlus1.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'", "0")';
               if ($result = $dbConnection->query($sqlInsert)) {
-                echo '<h3 class="section-heading">Link added</h3><div class="row">';
-                echo '<div class="three columns linktext"><a href="'.htmlspecialchars($linkSqlSafe).'" target="_blank" class="button button-primary">'.htmlspecialchars($textSqlSafe).'</a><span class="counter">0</span></div>';
-                echo '<div class="nine columns linktext">&nbsp</div>';
-                echo '</div>';                   
+                printConfirmation('Link added', '<a href="'.$linkHtmlSafe.'" target="_blank" class="button button-primary">'.$textHtmlSafe.'</a><span class="counter">0</span>', 'three', 'nine');
               } else { $dispErrorMsg = 23; } // insert query did work
             } else { $dispErrorMsg = 22; } // getMax query did work
           } else { $dispErrorMsg = 21; } // have a validUrl -> TODO: add an additional error msg here because this really depends on user input
           break;
-        case 3: // I want to reset all the link counters to 0
-          $sqlCntReset = 'UPDATE `links` SET `cntTot` = 0 WHERE `userid` = '.$userid;
-          if ($dbConnection->query($sqlCntReset)) { // should return true
-            echo '<h3 class="section-heading">Counters have been reset to 0</h3><div class="row">';
-            echo '<div class="six columns linktext"><a href="index.php" class="button button-primary">home</a></div>';
-            echo '<div class="six columns linktext">&nbsp</div>';
-            echo '</div>';                   
+        case 3: // I want to reset all the link counters to 0          
+          if ($dbConnection->query('UPDATE `links` SET `cntTot` = 0 WHERE `userid` = '.$userid)) { // should return true
+            printConfirmation('Counters have been reset to 0', '<a href="index.php" class="button button-primary">home</a>', 'six', 'six');            
           } else { $dispErrorMsg = 31; } // insert query did work
           break;
-        case 4: // edit one link. TODO
-          echo '<h3 class="section-heading">Edit one link</h3><div class="row">';
-          echo '<div class="nine columns linktext">Do = 4, editing one link</div>';
-          echo '<div class="three columns linktext">&nbsp;</div></div>';                   
+        case 4: // edit one link
+          if ($idSafe > 0) {
+            if ($singleRow = getSingleLinkRow($idSafe, $userid, $dbConnection)) {
+              printSingleLinkFields(0, 6, 'Edit', $idSafe, $singleRow['link'], $singleRow['text']);
+            } else { $dispErrorMsg = 62; }
+          } else { $dispErrorMsg = 61; }
           break;
-        case 5: // delete a link. Might want to display a confirmation message?
-          $idSafe = 0;
-          $idUnsafe = substr($_GET['id'], 0, 11); // this should be an integer (max 11 characters)
-          if (filter_var($idUnsafe, FILTER_VALIDATE_INT)) { 
-            $idSafe = $idUnsafe; 
-            // need an additional userid condition. May be ignored by SQL because `id` is a primary key?
-            $sqlPart = 'WHERE `userid` = '.$userid.' AND `id` = '.mysqli_real_escape_string($dbConnection, $idSafe);
-            $sqlSelect = 'SELECT * FROM `links` '.$sqlPart;
-            if($result = $dbConnection->query($sqlSelect)) { 
-              $row = $result->fetch_assoc();
-              $sqlDelete = 'DELETE FROM `links` '.$sqlPart; 
-              if ($dbConnection->query($sqlDelete)) { // should return true
-                echo '<h3 class="section-heading">Did delete one link</h3><div class="row">';
-                echo '<div class="nine columns linktext">Deleted the '.htmlspecialchars($row['text']).'-link</div>';
-                echo '<div class="three columns linktext">&nbsp;</div></div>';  
+        case 5: // delete a link. Displaying a confirmation message                 
+          if ($idSafe > 0) {             
+            if ($singleRow = getSingleLinkRow($idSafe, $userid, $dbConnection)) {
+              if ($dbConnection->query('DELETE FROM `links` WHERE `userid` = '.$userid.' AND `id` = '.$idSafe)) { // should return true
+                printConfirmation('Did delete one link', 'Deleted the '.htmlspecialchars($singleRow['text']).'-link', 'nine', 'three');                
               } else { $dispErrorMsg = 53; } // delete sql did work out
             } else { $dispErrorMsg = 52; } // select sql did work out
           } else { $dispErrorMsg = 51; } // integer check did work out          
           break;
+        case 6: // update a link
+          if ($idSafe > 0) {            
+            if ($linkOk) {                                                                         
+              $sql = 'UPDATE `links` SET `text` = '.$textSqlSafe.', `link` = '.$linkSqlSafe.' WHERE `userid` = '.$userid.' AND `id` = '.$idSafe.' LIMIT 1';
+              if ($result = $dbConnection->query($sql)) {
+                printConfirmation('Link edited', '<a href="'.$linkHtmlSafe.'" target="_blank" class="button button-primary">'.$textHtmlSafe.'</a>', 'three', 'nine');
+              } else { $dispErrorMsg = 63; } // update sql did work out            
+            } else { $dispErrorMsg = 62; } // url check did work out          
+          } else { $dispErrorMsg = 61; } // id check did work out            
+          break;  
         default: 
           $dispErrorMsg = 1;
         } // switch
         if ($dispErrorMsg > 0) {
-          echo '<h3 class="section-heading">Error</h3><div class="row">';
-          echo '<div class="nine columns linktext">"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?</div>';
-          echo '<div class="three columns linktext">&nbsp;</div></div>';          
+          printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?', 'nine', 'three');
           echo '</div> <!-- /container -->';
           printFooter('editLinks');
           die(); // finish the php part
