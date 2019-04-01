@@ -58,37 +58,6 @@
       if ($dbConnection->connect_error) { die('Connection failed: ' . $dbConnection->connect_error); }
       require_once('functions.php');
       
-      // function to output several links in a formatted way
-      // creating a div for every link and div-rows for every $module-th entry
-      // TODO: merge this again with the printLinks function
-      function printLinksToEdit($userid, $category, $dbConnection) {
-        // TODO: change the ORDER BY. It should depend on the count (and maybe after that on the "sort" column, especially important after resetting all counts)
-        $sql = 'SELECT * FROM `links` WHERE userid = '.$userid.' AND category = '.$category.' ORDER BY `links`.`sort` ASC LIMIT 100';
-        
-        // Have 12 columns. Means with modulo 3, I have "class four columns" and vice versa
-        $modulo = 3;
-        $divClass = '<div class="four columns linktext">';
-        if ($category == 2) { // this category prints more dense
-          $modulo = 4;
-          $divClass = '<div class="three columns linktext">';      
-        }
-                
-        if ($result = $dbConnection->query($sql)) {
-          $counter = 0;         
-          while ($row = $result->fetch_assoc()) {            
-            // link itself is still pointing to the external page
-            echo $divClass.'<span class="editLeft"><a href="link.php?id='.$row['id'].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></span>
-                 <span class="editRight">
-                   <div style="padding-bottom: 2px;"><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png"   width="16" height="16" border="0"> edit</a></div>                   
-                   <div style="padding-top:    2px;"><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" width="16" height="16" border="0"> delete</a></div>
-                 </span></div>';
-            $counter++;
-            if (($counter % $modulo) == 0) { echo '</div><div class="row">'; }
-          } // while    
-          $result->close(); // free result set
-        } // if  
-      } // function 
-      
       function printEntryPoint($userid, $dbConnection) {
         // TODO: this output needs a redesign. The buttons as links are not that nice...
         echo '<h2 class="section-heading">What would you like to edit?</h2><div class="row">';          
@@ -129,10 +98,10 @@
           <div class="'.$leftSize.' columns linktext">'.$text.'</div>
           <div class="'.$rightSize.' columns linktext">&nbsp</div>
         </div>';                           
-      }
-
+      }     
       
-      
+      // -------------------------------------------
+      // 'real' code starts here...
       
       $userid = 1;   // TODO: userid is fixed... 
       // TODO: the account management functionality
@@ -155,34 +124,34 @@
       $doSafe = 0;
       $categorySafe = 0;
       $idSafe = 0;        
-      $linkOk = false;  // requires an additional signal because it's not an integer
+      $linkOk = false;  // the link/text requires an additional signal because it's not an integer
       $linkSqlSafe  = '';
       $linkHtmlSafe = '';
       $textSqlSafe  = '';
       $textHtmlSafe = '';
       
       $dispErrorMsg = 0;
-      $heading = ''; // default value, in case some error happens. TODO: verify for sqlsafe / htmlsafe
+      $heading = ''; // default value, stays empty if some error happens
 
       // sanity checking. Check first if I have a valid 'do'. If so, I check others (which may not always evaluate true even for valid use cases)           
       if (filter_var($doUnsafe, FILTER_VALIDATE_INT)) { 
         $doSafe = $doUnsafe; 
         if (filter_var($categoryUnsafe, FILTER_VALIDATE_INT)) { 
           $categorySafe = $categoryUnsafe;
-          $heading = getCategory($userid, $categorySafe, $dbConnection);                    
-        } // have an integer on category        
+          $heading = htmlspecialchars(getCategory($userid, $categorySafe, $dbConnection));
+        } // have an integer on category
         if (filter_var($idUnsafe, FILTER_VALIDATE_INT)) { 
           $idSafe = $idUnsafe; 
         } // id
-        if (filter_var($linkUnsafe, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) { // have a validUrl. require the http(s)://-part as well.           
-          $linkOk = true;  
+        if (filter_var($linkUnsafe, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) { // have a validUrl. require the http(s)://-part as well.
+          $linkOk = true;
           $linkSqlSafe = mysqli_real_escape_string($dbConnection, $linkUnsafe); // filtering it for sqli insertion
-          $linkHtmlSafe = htmlspecialchars($linkUnsafe);          
-          // assuming that having a link always goes together with having a text. Cannot verify anything for the text itself, just cut it to 63...          
+          $linkHtmlSafe = htmlspecialchars($linkUnsafe);
+          // assuming that having a link always goes together with having a text. Cannot verify anything for the text itself (just cut it to 63 characters)
           $textSqlSafe = mysqli_real_escape_string($dbConnection, $textUnsafe);
           $textHtmlSafe = htmlspecialchars($textUnsafe);
-        }
-      } 
+        } // link
+      } // do variable
       
       if ($doSafe == 0) { // entry point of this site   
         printEntryPoint($userid, $dbConnection);
@@ -192,7 +161,7 @@
         switch ($doSafe) {
         case 1: // present links of one category
           echo '<h3 class="section-heading">'.$heading.'</h3><div class="row">';
-          printLinksToEdit($userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
+          printLinks(true, $userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
           echo '</div>';          
           printSingleLinkFields($categorySafe, 2, 'Add', 0, 'https://', 'text');          
           break;  
