@@ -1,3 +1,12 @@
+<?php
+  require_once('functions.php');
+  $dbConnection = initialize();
+  
+  if (!getUserid()) {
+    verifyCredentials(); // TODO: this has to go to another page...
+  }
+?>                
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,13 +36,8 @@
 <body>
   <div class="section categories noBottom">
     <div class="container">
-     <?php
-      require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
-      if ($dbConnection->connect_error) { die('Connection failed: ' . $dbConnection->connect_error); }
-
-      require_once('functions.php');
-      $userid = 1; // TODO: userid is fixed.
-      
+    <?php  
+      $userid = getUserid(); 
       echo '<h3 class="section-heading">'.getCategory($userid, 1, $dbConnection).'</h3><div class="row">';
       printLinks(false, $userid, 1, $dbConnection);
       

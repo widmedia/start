@@ -1,3 +1,52 @@
+<?php
+  require_once('functions.php');
+  $dbConnection = initialize();
+
+  
+  function printEntryPoint($userid, $dbConnection) {
+    // TODO: this output needs a redesign. The buttons as links are not that nice...
+    echo '<h2 class="section-heading">What would you like to edit?</h2><div class="row">';          
+    for ($i = 1; $i <= 3; $i++) {
+      echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
+      <input name="categoryInput" type="hidden" value="'.$i.'">
+      <input name="submit" type="submit" value="Category '.getCategory($userid, $i, $dbConnection).'"></form></div>';         
+    }                
+    echo '</div><div class="row"><div class="twelve columns"><hr /></div></div>';                
+    echo '<div class="row"><div class="six columns"><form action="editLinks.php?do=3" method="post"><input name="submit" type="submit" value="set all counters to 0"></form>
+          </div><div class="six columns"><a class="button differentColor" href="#">(account management)</a></div></div></div> <!-- /container -->';
+    printFooter('editLinks');
+  } // function 
+
+  
+  // prints 2 rows to either add a new link or edit an existing one
+  function printSingleLinkFields ($category, $do, $verb, $id, $link, $text) {
+    // add a new link (link and text are 'text' fields in the db, must be smaller than 4 GB in total)
+    echo '
+    <form action="editLinks.php?do='.$do.'" method="post">
+      <div class="row">
+        <div class="twelve columns">
+          <h3 class="section-heading">'.$verb.' link</h3><input name="categoryInput" type="hidden" value="'.$category.'"><input name="id" type="hidden" value="'.$id.'">
+        </div>
+      </div>
+      <div class="row">
+        <div class="four columns"><input name="link" type="url"  maxlength="1023" value="'.$link.'" required></div>
+        <div class="four columns"><input name="text" type="text" maxlength="63"  value="'.$text.'" required></div>
+        <div class="four columns"><input name="submit" type="submit" value="'.$verb.' link"></div>
+      </div>
+    </form>';   
+  } // function
+
+  
+  //prints the h3 title and one row
+  function printConfirmation($heading, $text, $leftSize, $rightSize) {
+    echo '
+    <h3 class="section-heading">'.$heading.'</h3>
+    <div class="row">
+      <div class="'.$leftSize.' columns linktext">'.$text.'</div>
+      <div class="'.$rightSize.' columns linktext">&nbsp</div>
+    </div>';                           
+  }         
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,57 +102,8 @@
   <!-- Primary Page Layout -->
   <div class="section categories">
     <div class="container">
-     <?php     
-      require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
-      if ($dbConnection->connect_error) { die('Connection failed: ' . $dbConnection->connect_error); }
-      require_once('functions.php');
-      
-      function printEntryPoint($userid, $dbConnection) {
-        // TODO: this output needs a redesign. The buttons as links are not that nice...
-        echo '<h2 class="section-heading">What would you like to edit?</h2><div class="row">';          
-        for ($i = 1; $i <= 3; $i++) {
-          echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
-          <input name="categoryInput" type="hidden" value="'.$i.'">
-          <input name="submit" type="submit" value="Category '.getCategory($userid, $i, $dbConnection).'"></form></div>';         
-        }                
-        echo '</div><div class="row"><div class="twelve columns"><hr /></div></div>';                
-        echo '<div class="row"><div class="six columns"><form action="editLinks.php?do=3" method="post"><input name="submit" type="submit" value="set all counters to 0"></form>
-              </div><div class="six columns"><a class="button differentColor" href="#">(account management)</a></div></div></div> <!-- /container -->';
-        printFooter('editLinks');
-      } // function 
-      
-      // prints 2 rows to either add a new link or edit an existing one
-      function printSingleLinkFields ($category, $do, $verb, $id, $link, $text) {
-        // add a new link (link and text are 'text' fields in the db, must be smaller than 4 GB in total)
-        echo '
-        <form action="editLinks.php?do='.$do.'" method="post">
-          <div class="row">
-            <div class="twelve columns">
-              <h3 class="section-heading">'.$verb.' link</h3><input name="categoryInput" type="hidden" value="'.$category.'"><input name="id" type="hidden" value="'.$id.'">
-            </div>
-          </div>
-          <div class="row">
-            <div class="four columns"><input name="link" type="url"  maxlength="1023" value="'.$link.'" required></div>
-            <div class="four columns"><input name="text" type="text" maxlength="63"  value="'.$text.'" required></div>
-            <div class="four columns"><input name="submit" type="submit" value="'.$verb.' link"></div>
-          </div>
-        </form>';   
-      } // function
-      
-      //prints the h3 title and one row
-      function printConfirmation($heading, $text, $leftSize, $rightSize) {
-        echo '
-        <h3 class="section-heading">'.$heading.'</h3>
-        <div class="row">
-          <div class="'.$leftSize.' columns linktext">'.$text.'</div>
-          <div class="'.$rightSize.' columns linktext">&nbsp</div>
-        </div>';                           
-      }     
-      
-      // -------------------------------------------
-      // 'real' code starts here...
-      
-      $userid = 1;   // TODO: userid is fixed... 
+     <?php          
+      $userid = getUserid();
       // TODO: the account management functionality
       
       // possible actions: 
@@ -115,11 +115,13 @@
       // 6=> edit one link
       
       // Form processing
-      $doUnsafe       = substr($_GET['do'], 0, 1); // limit the length of this string to 1. Leaves me with enough values but no damage potential
-      $categoryUnsafe = substr($_POST['categoryInput'], 0, 1); // this should either be an integer (range 1 to 3) or non-existing
-      $idUnsafe       = substr($_GET['id'], 0, 11); // this should be an integer (max 11 characters)
-      $linkUnsafe     = substr($_POST['link'], 0, 1023); //
-      $textUnsafe     = substr($_POST['text'], 0, 63);      
+      // TODO: use an additional filter_sanitize...
+      // about substr: limit the length of the string. This reduces damage potential
+      $doUnsafe       = filter_var(substr($_GET['do'], 0, 1), FILTER_SANITIZE_NUMBER_INT);             // this is an integer (range 1 to 6) or non-existing
+      $categoryUnsafe = filter_var(substr($_POST['categoryInput'], 0, 1), FILTER_SANITIZE_NUMBER_INT); // this is an integer (range 1 to 3) or non-existing
+      $idUnsafe       = filter_var(substr($_GET['id'], 0, 11), FILTER_SANITIZE_NUMBER_INT);            // this is an integer (max 11 characters) or non-existing
+      $linkUnsafe     = filter_var(substr($_POST['link'], 0, 1023), FILTER_SANITIZE_URL);              // this is an url (max 1023 characters) or non-existing
+      $textUnsafe     = filter_var(substr($_POST['text'], 0, 63), FILTER_SANITIZE_STRING);             // this is a generic string (max 63 characters) or non-existing
       
       $doSafe = 0;
       $categorySafe = 0;

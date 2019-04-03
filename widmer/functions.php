@@ -90,4 +90,60 @@ function getSingleLinkRow ($id, $userid, $dbConnection) {
     return($row);
   } else { return false; }
 } // function 
+
+
+// does the session start and opens connection to the data base. Returns the dbConnection variable
+function initialize () {
+  session_start(); // this code must precede any html output
+  require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
+  if ($dbConnection->connect_error) { die('Connection failed: ' . $dbConnection->connect_error); }
+  return($dbConnection);
+}
+
+
+// TODO: might want to verify username and pwd if the account is set to use pwd-protection
+// otherwise, there will be a special link to switch between users
+function verifyCredentials () {  
+  // TODO: userid is fixed. Currently only single user application...
+  $_SESSION["userid"] = 1; 
+}
+
+
+// returns the userid integer
+function getUserid () {
+  return ($_SESSION["userid"]);
+}
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ?>                

@@ -1,7 +1,7 @@
  <?php
   // this file does the redirection and increases the link counter by one
   require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
-      if ($dbConnection->connect_error) { die('Connection failed: ' . $dbConnection->connect_error); }
+  if ($dbConnection->connect_error) { die('Connection failed: ' . $dbConnection->connect_error); }
 
   // id as 'get' parameter
   $idFromGet = htmlspecialchars($_GET['id']);
