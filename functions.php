@@ -94,7 +94,7 @@ function getSingleLinkRow ($id, $userid, $dbConnection) {
 
 // does the session start and opens connection to the data base. Returns the dbConnection variable
 function initialize ($page) {
-  session_start(); // this code must precede any html output
+  session_start(); // this code must precede any HTML output
   
   if ($page != 'index') { // on every other page than index, I need the userid already set
     if (!getUserid()) {
