@@ -1,7 +1,7 @@
  <?php
   // this file does the redirection and increases the link counter by one
   require_once('functions.php');
-  $dbConnection = initialize();  // does the session start and opens connection to the data base. Returns the dbConnection variable
+  $dbConnection = initialize('link');  // does the session start and opens connection to the data base. Returns the dbConnection variable
   
   // id as 'get' parameter
   $idUnsafe = filter_var(substr($_GET['id'], 0, 11), FILTER_SANITIZE_NUMBER_INT); // this is an integer (max 11 characters)

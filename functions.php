@@ -93,19 +93,28 @@ function getSingleLinkRow ($id, $userid, $dbConnection) {
 
 
 // does the session start and opens connection to the data base. Returns the dbConnection variable
-function initialize () {
+function initialize ($page) {
   session_start(); // this code must precede any html output
+  
+  if ($page != 'index') { // on every other page than index, I need the userid already set
+    if (!getUserid()) {
+      die('login error'); // TODO: real error handling
+    }
+  }
+  
   require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
-  if ($dbConnection->connect_error) { die('Connection failed: ' . $dbConnection->connect_error); }
+  if ($dbConnection->connect_error) { 
+    die('Connection failed: ' . $dbConnection->connect_error); // TODO: real error handling
+  }
   return($dbConnection);
 }
 
 
 // TODO: might want to verify username and pwd if the account is set to use pwd-protection
 // otherwise, there will be a special link to switch between users
-function verifyCredentials () {  
+function verifyCredentials ($temporaryUserid) {  
   // TODO: userid is fixed. Currently only single user application...
-  $_SESSION["userid"] = 1; 
+  $_SESSION["userid"] = $temporaryUserid; 
 }
 
 

@@ -1,10 +1,6 @@
 <?php
   require_once('functions.php');
-  $dbConnection = initialize();
-  
-  if (!getUserid()) {
-    verifyCredentials(); // TODO: this has to go to another page...
-  }
+  $dbConnection = initialize('main');
 ?>                
 
 <!DOCTYPE html>

@@ -1,6 +1,6 @@
 <?php
   require_once('functions.php');
-  $dbConnection = initialize();
+  $dbConnection = initialize('editLinks');
 
   
   function printEntryPoint($userid, $dbConnection) {
