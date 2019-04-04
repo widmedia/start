@@ -1,8 +1,7 @@
 <?php
   require_once('functions.php');
   $dbConnection = initialize('main');
-?>                
-
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,7 +43,7 @@
       printLinks(false, $userid, 3, $dbConnection);
       echo '</div>
     </div> <!-- /container -->';
-    printFooter('index');
+    printFooter('main');
     ?>                
   </div> <!-- /section categories -->
 </body>

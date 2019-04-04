@@ -57,13 +57,13 @@ function getCategory($userid, $category, $dbConnection) {
   
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
 function printFooter($currentSite) {
-   // default values. For index.php as current site
+   // default values. For main.php as current site
   $linkLeft = 'href="editLinks.php">&nbsp;edit&nbsp;';
   $linkRight = 'href="about.php">&nbsp;about&nbsp;';
   if ($currentSite == 'editLinks') {
-      $linkLeft = 'href="index.php">&nbsp;home&nbsp;'; // linkRight stays default
+      $linkLeft = 'href="main.php">&nbsp;home&nbsp;'; // linkRight stays default
   } elseif ($currentSite == 'about') {
-      $linkLeft = 'href="index.php">&nbsp;home&nbsp;';
+      $linkLeft = 'href="main.php">&nbsp;home&nbsp;';
       $linkRight = 'href="editLinks.php">&nbsp;edit&nbsp;';
   }
   echo '      
@@ -114,45 +114,11 @@ function initialize ($page) {
 // otherwise, there will be a special link to switch between users
 function verifyCredentials ($temporaryUserid) {  
   // TODO: userid is fixed. Currently only single user application...
-  $_SESSION["userid"] = $temporaryUserid; 
+  $_SESSION['userid'] = $temporaryUserid; 
 }
 
 
 // returns the userid integer
 function getUserid () {
-  return ($_SESSION["userid"]);
+  return ($_SESSION['userid']);
 }
-?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>                
