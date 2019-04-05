@@ -115,17 +115,14 @@
       // 6=> edit one link
       
       // Form processing
-      // TODO: use an additional filter_sanitize...
-      // about substr: limit the length of the string. This reduces damage potential
-      $doUnsafe       = filter_var(substr($_GET['do'], 0, 1), FILTER_SANITIZE_NUMBER_INT);             // this is an integer (range 1 to 6) or non-existing
-      $categoryUnsafe = filter_var(substr($_POST['categoryInput'], 0, 1), FILTER_SANITIZE_NUMBER_INT); // this is an integer (range 1 to 3) or non-existing
-      $idUnsafe       = filter_var(substr($_GET['id'], 0, 11), FILTER_SANITIZE_NUMBER_INT);            // this is an integer (max 11 characters) or non-existing
-      $linkUnsafe     = filter_var(substr($_POST['link'], 0, 1023), FILTER_SANITIZE_URL);              // this is an url (max 1023 characters) or non-existing
-      $textUnsafe     = filter_var(substr($_POST['text'], 0, 63), FILTER_SANITIZE_STRING);             // this is a generic string (max 63 characters) or non-existing
+      $doSafe       = makeSafeInt($_GET['do'], 1);             // this is an integer (range 1 to 6) or non-existing
+      $categorySafe = makeSafeInt($_POST['categoryInput'], 1); // this is an integer (range 1 to 3) or non-existing
+      $idSafe       = makeSafeInt($_GET['id'], 11);            // this is an integer (max 11 characters) or non-existing
       
-      $doSafe = 0;
-      $categorySafe = 0;
-      $idSafe = 0;        
+      // non-integer values are more complicated, text may be HTML-safe or sqli-safe
+      $linkUnsafe = filter_var(substr($_POST['link'], 0, 1023), FILTER_SANITIZE_URL);  // this is an url (max 1023 characters) or non-existing
+      $textUnsafe = filter_var(substr($_POST['text'], 0, 63), FILTER_SANITIZE_STRING); // this is a generic string (max 63 characters) or non-existing
+
       $linkOk = false;  // the link/text requires an additional signal because it's not an integer
       $linkSqlSafe  = '';
       $linkHtmlSafe = '';
@@ -136,15 +133,10 @@
       $heading = ''; // default value, stays empty if some error happens
 
       // sanity checking. Check first if I have a valid 'do'. If so, I check others (which may not always evaluate true even for valid use cases)           
-      if (filter_var($doUnsafe, FILTER_VALIDATE_INT)) { 
-        $doSafe = $doUnsafe; 
-        if (filter_var($categoryUnsafe, FILTER_VALIDATE_INT)) { 
-          $categorySafe = $categoryUnsafe;
+      if ($doSafe) {         
+        if ($categorySafe) {           
           $heading = htmlspecialchars(getCategory($userid, $categorySafe, $dbConnection));
         } // have an integer on category
-        if (filter_var($idUnsafe, FILTER_VALIDATE_INT)) { 
-          $idSafe = $idUnsafe; 
-        } // id
         if (filter_var($linkUnsafe, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) { // have a validUrl. require the http(s)://-part as well.
           $linkOk = true;
           $linkSqlSafe = mysqli_real_escape_string($dbConnection, $linkUnsafe); // filtering it for sqli insertion
