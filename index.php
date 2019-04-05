@@ -2,26 +2,25 @@
   require_once('functions.php');
   $dbConnection = initialize('index');
    
-  $useridSafe = makeSafeInt($_GET['userid'], 11);
+  $useridSafe = makeSafeInt($_GET['userid'], 11);  
+  $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
   
-  if ($useridSafe) {
-    // TODO: change here. 
-    // a) password verification if one is set. 
-    // b) even without password, check whether the id does exist -> db query
+  // TODO: security measures
+  // TODO: way to delete a cookie (have it expire)
+  if ($useridCookieSafe) {    
+    verifyCredentials($useridCookieSafe);    
+    redirectRelative('main.php');    
+  } elseif ($useridSafe) {       
     verifyCredentials($useridSafe); 
 
     // TODO: add cookie only if verification was ok        
     if (makeSafeInt($_GET['setCookie'], 1)) {
-      // how to..? 
+      $expire = 60 * 60 * 24 * 7 * 4; // valid for 4 weeks
+      setcookie('userIdCookie', $useridSafe, time() + $expire);
+      // echo $_COOKIE["your cookie name"];
     }
     
-    
-    
-    // redirecting to main.php NB: some clients require absolute paths
-    $host  = $_SERVER['HTTP_HOST'];
-    $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');  
-    header('Location: https://'.$host.$uri.'/main.php');
-    exit;
+    redirectRelative('main.php');    
   } // else, present the userid selection page
 ?>
 
@@ -61,7 +60,7 @@
           <p>login with userid 1: <a href="index.php?userid=1">login</a></p>
           <p>login with userid 2: <a href="index.php?userid=2">login</a></p>
           <p>login with non-existing userid 3: <a href="index.php?userid=3">login</a></p>
-          <p>login with userid 1, set a cookie: <a href="index.php?userid=1&setCookie=1">login</a></p>
+          <p>login with userid 1, set a cookie for 4 weeks: <a href="index.php?userid=1&setCookie=1">login</a></p>
         </div>        
       </div>  
     </div> <!-- /container -->

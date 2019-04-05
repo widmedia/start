@@ -110,10 +110,11 @@ function initialize ($page) {
 }
 
 
-// TODO: might want to verify username and pwd if the account is set to use pwd-protection
-// otherwise, there will be a special link to switch between users
-function verifyCredentials ($temporaryUserid) {  
-  // TODO: userid is fixed. Currently only single user application...
+// TODO:
+// a) password verification if one is set. 
+// b) even without password, check whether the id does exist -> db query
+// without a password, there will be a special link to switch between users (some pseudo-obfu
+function verifyCredentials ($temporaryUserid) {    
   $_SESSION['userid'] = $temporaryUserid; 
 }
 
@@ -132,4 +133,14 @@ function makeSafeInt ($unsafe, $length) {
     $safe = $unsafe;
   }
   return($safe);
+}
+
+
+// does a (relative) redirect
+function redirectRelative ($page) {
+  // redirecting relative to current page NB: some clients require absolute paths
+    $host  = $_SERVER['HTTP_HOST'];
+    $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');  
+    header('Location: https://'.$host.$uri.'/'.$page);
+    exit;
 }
