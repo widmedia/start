@@ -1,6 +1,33 @@
 <?php
 // This file contains functions to be included in other blocks and rely heavily on the context around them
   
+// this function is called on every (user related) page on the very start  
+// it does the session start and opens connection to the data base. Returns the dbConnection variable
+function initialize ($page) {
+  session_start(); // this code must precede any HTML output
+  
+  if ($page != 'index') { // on every other page than index, I need the userid already set
+    if (!getUserid()) {
+      // there might be two reasons: 
+      // - user is connecting directly to main.php from where-ever (common case as you might store the main-page as bookmark). If so, just redirect to index.php
+      // - session is really destroyed (e.g. user logged out). In this case, print an error message
+      if ($page == 'main') { // redirect to index
+        redirectRelative('index.php');
+        return(false);  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
+      }
+      
+      die('login error. You might want to go to <a href="index.php">start page</a>'); // maybe to do: some more sophisticated real error handling
+    }
+  }
+  
+  require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
+  if ($dbConnection->connect_error) { 
+    die('Connection failed: ' . $dbConnection->connect_error); // TODO: real error handling
+  }
+  return($dbConnection);
+}
+  
+  
 // function to output several links in a formatted way
 // creating a div for every link and div-rows for every $module-th entry
 function printLinks($edit, $userid, $category, $dbConnection) {
@@ -88,26 +115,8 @@ function getSingleLinkRow ($id, $userid, $dbConnection) {
   if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = '.$userid.' AND `id` = '.mysqli_real_escape_string($dbConnection, $id))) {
     $row = $result->fetch_assoc();
     return($row);
-  } else { return false; }
+  } else { return(false); }
 } // function 
-
-
-// does the session start and opens connection to the data base. Returns the dbConnection variable
-function initialize ($page) {
-  session_start(); // this code must precede any HTML output
-  
-  if ($page != 'index') { // on every other page than index, I need the userid already set
-    if (!getUserid()) {
-      die('login error'); // TODO: real error handling
-    }
-  }
-  
-  require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
-  if ($dbConnection->connect_error) { 
-    die('Connection failed: ' . $dbConnection->connect_error); // TODO: real error handling
-  }
-  return($dbConnection);
-}
 
 
 // TODO:
