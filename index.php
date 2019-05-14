@@ -1,6 +1,6 @@
 <?php
   require_once('functions.php');
-  $dbConnection = initialize('index');
+  $dbConnection = initialize();
    
   $useridSafe = makeSafeInt($_GET['userid'], 11);  
   $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
@@ -61,6 +61,8 @@
           <p>login with userid 2: <a href="index.php?userid=2">login</a></p>
           <p>login with non-existing userid 3: <a href="index.php?userid=3">login</a></p>
           <p>login with userid 1, set a cookie for 4 weeks: <a href="index.php?userid=1&setCookie=1">login</a></p>
+          <p>User changes</p>
+          <p>add a new user (limit of 10 users)<a href="editUser.php?do=1">add a user</a></p>
         </div>        
       </div>  
     </div> <!-- /container -->

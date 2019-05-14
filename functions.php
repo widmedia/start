@@ -3,15 +3,17 @@
   
 // this function is called on every (user related) page on the very start  
 // it does the session start and opens connection to the data base. Returns the dbConnection variable
-function initialize ($page) {
+function initialize () {
   session_start(); // this code must precede any HTML output
   
-  if ($page != 'index') { // on every other page than index, I need the userid already set
+  $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // special treatment for index.php and main.php
+  
+  if ($currentSiteUnsafe != '/start/index.php') { // on every other page than index, I need the userid already set
     if (!getUserid()) {
       // there might be two reasons: 
       // - user is connecting directly to main.php from where-ever (common case as you might store the main-page as bookmark). If so, just redirect to index.php
       // - session is really destroyed (e.g. user logged out). In this case, print an error message
-      if ($page == 'main') { // redirect to index
+      if ($currentSiteUnsafe == '/start/main.php') { // redirect to index
         redirectRelative('index.php');
         return(false);  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
       }
@@ -26,7 +28,6 @@ function initialize ($page) {
   }
   return($dbConnection);
 }
-  
   
 // function to output several links in a formatted way
 // creating a div for every link and div-rows for every $module-th entry
@@ -63,7 +64,16 @@ function printLinks($edit, $userid, $category, $dbConnection) {
     $result->close(); // free result set
   } // if  
 } // function 
-  
+
+//prints the h3 title and one row
+function printConfirmation($heading, $text, $leftSize, $rightSize) {
+  echo '
+  <h3 class="section-heading">'.$heading.'</h3>
+  <div class="row">
+    <div class="'.$leftSize.' columns linktext">'.$text.'</div>
+    <div class="'.$rightSize.' columns linktext">&nbsp</div>
+  </div>';                           
+} 
  
 // function returns the text of the category. If something does not work as expected, NULL is returned
 function getCategory($userid, $category, $dbConnection) {
@@ -83,16 +93,19 @@ function getCategory($userid, $category, $dbConnection) {
 } // function
   
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
-function printFooter($currentSite) {
-   // default values. For main.php as current site
+function printFooter() {
+  $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
+   
+  // default values. For main.php as current site 
   $linkLeft = 'href="editLinks.php">&nbsp;edit&nbsp;';
   $linkRight = 'href="about.php">&nbsp;about&nbsp;';
-  if ($currentSite == 'editLinks') {
+  if ($currentSiteUnsafe == '/start/editLinks.php') {
       $linkLeft = 'href="main.php">&nbsp;home&nbsp;'; // linkRight stays default
-  } elseif ($currentSite == 'about') {
+  } elseif ($currentSiteUnsafe == '/start/about.php') {
       $linkLeft = 'href="main.php">&nbsp;home&nbsp;';
       $linkRight = 'href="editLinks.php">&nbsp;edit&nbsp;';
   }
+  
   echo '      
   <div class="section noBottom">
     <div class="container">
@@ -118,21 +131,18 @@ function getSingleLinkRow ($id, $userid, $dbConnection) {
   } else { return(false); }
 } // function 
 
-
 // TODO:
 // a) password verification if one is set. 
 // b) even without password, check whether the id does exist -> db query
-// without a password, there will be a special link to switch between users (some pseudo-obfu
+// without a password, there will be a special link to switch between users (some pseudo-obfuscation)
 function verifyCredentials ($temporaryUserid) {    
   $_SESSION['userid'] = $temporaryUserid; 
 }
 
-
-// returns the userid integer
+// returns the userid integer. TODO: maybe should check whether this session variable exists and return false otherwise?
 function getUserid () {
   return ($_SESSION['userid']);
 }
-
 
 // returns a 'safe' integer. Return value is 0 if the checks did not work out
 function makeSafeInt ($unsafe, $length) {
@@ -144,12 +154,11 @@ function makeSafeInt ($unsafe, $length) {
   return($safe);
 }
 
-
 // does a (relative) redirect
 function redirectRelative ($page) {
   // redirecting relative to current page NB: some clients require absolute paths
     $host  = $_SERVER['HTTP_HOST'];
     $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');  
-    header('Location: https://'.$host.$uri.'/'.$page);
+    header('Location: https://'.$host.htmlentities($uri).'/'.$page);
     exit;
 }

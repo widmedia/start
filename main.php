@@ -1,6 +1,6 @@
 <?php
   require_once('functions.php');
-  $dbConnection = initialize('main');
+  $dbConnection = initialize();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +43,7 @@
       printLinks(false, $userid, 3, $dbConnection);
       echo '</div>
     </div> <!-- /container -->';
-    printFooter('main');
+    printFooter();
     ?>                
   </div> <!-- /section categories -->
 </body>

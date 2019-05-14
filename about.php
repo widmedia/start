@@ -38,7 +38,7 @@
     </div> <!-- /container -->
     <?php
     require_once('functions.php');
-    printFooter('about'); 
+    printFooter(); 
     ?>                
   </div> <!-- /section categories -->
 </body>

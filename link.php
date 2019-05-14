@@ -1,7 +1,7 @@
  <?php
   // this file does the redirection and increases the link counter by one
   require_once('functions.php');
-  $dbConnection = initialize('link');  // does the session start and opens connection to the data base. Returns the dbConnection variable
+  $dbConnection = initialize();  // does the session start and opens connection to the data base. Returns the dbConnection variable
   
   // id as 'get' parameter
   $idUnsafe = filter_var(substr($_GET['id'], 0, 11), FILTER_SANITIZE_NUMBER_INT); // this is an integer (max 11 characters)
@@ -31,4 +31,4 @@
    
   // should never reach this code...
   die('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Errorpage</title><link rel="stylesheet" href="css/skeleton.css" type="text/css"></head>
-  <body><br>Something related to the data base went wrong (in file link.php)... well, that doesn\'t help that much, does it?<br>But you might still want to inform me (sali@widmedia.ch) or just try again later</body></html>');
+  <body><br>Something related to the data base went wrong (in file '.htmlentities($_SERVER['PHP_SELF']).')... well, that doesn\'t help that much, does it?<br>But you might still want to inform me (sali@widmedia.ch) or just try again later</body></html>');
