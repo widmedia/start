@@ -13,7 +13,7 @@
     }                
     echo '</div><div class="row"><div class="twelve columns"><hr /></div></div>';                
     echo '<div class="row"><div class="six columns"><form action="'.htmlentities($_SERVER['PHP_SELF']).'?do=3" method="post"><input name="submit" type="submit" value="set all counters to 0"></form>
-          </div><div class="six columns"><a class="button differentColor" href="editUser.php?do=2">account management</a></div></div></div> <!-- /container -->';
+          </div><div class="six columns"><form action="editUser.php?do=2" method="post"><input name="submit" type="submit" value="account management"></form></div></div></div> <!-- /container -->';
     printFooter();
   } // function 
 

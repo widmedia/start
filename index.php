@@ -7,10 +7,9 @@
   
   // TODO: security measures
   // TODO: way to delete a cookie (have it expire)
-  if ($useridCookieSafe) {    
-    verifyCredentials($useridCookieSafe);    
-    redirectRelative('main.php');    
-  } elseif ($useridSafe) {       
+  
+  // the $_GET-userid has higher priority than the cookie userid
+  if ($useridSafe) {       
     verifyCredentials($useridSafe); 
 
     // TODO: add cookie only if verification was ok        
@@ -18,8 +17,11 @@
       $expire = 60 * 60 * 24 * 7 * 4; // valid for 4 weeks
       setcookie('userIdCookie', $useridSafe, time() + $expire);
       // echo $_COOKIE["your cookie name"];
-    }
+    }    
+    redirectRelative('main.php');    
     
+  } elseif ($useridCookieSafe) {    
+    verifyCredentials($useridCookieSafe);    
     redirectRelative('main.php');    
   } // else, present the userid selection page
 ?>
