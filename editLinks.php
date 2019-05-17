@@ -7,12 +7,12 @@
     // TODO: this output needs a redesign. The buttons as links are not that nice...
     echo '<h2 class="section-heading">What would you like to edit?</h2><div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
-      echo '<div class="four columns"><form action="'.htmlentities($_SERVER['PHP_SELF']).'?do=1" method="post">
+      echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
       <input name="categoryInput" type="hidden" value="'.$i.'">
       <input name="submit" type="submit" value="Category '.getCategory($userid, $i, $dbConnection).'"></form></div>';         
     }                
     echo '</div><div class="row"><div class="twelve columns"><hr /></div></div>';                
-    echo '<div class="row"><div class="six columns"><form action="'.htmlentities($_SERVER['PHP_SELF']).'?do=3" method="post"><input name="submit" type="submit" value="set all counters to 0"></form>
+    echo '<div class="row"><div class="six columns"><form action="editLinks.php?do=3" method="post"><input name="submit" type="submit" value="set all counters to 0"></form>
           </div><div class="six columns"><form action="editUser.php?do=2" method="post"><input name="submit" type="submit" value="account management"></form></div></div></div> <!-- /container -->';
     printFooter();
   } // function 
@@ -20,9 +20,9 @@
   
   // prints 2 rows to either add a new link or edit an existing one
   function printSingleLinkFields ($category, $do, $verb, $id, $link, $text) {
-    // add a new link (link and text are 'text' fields in the db, must be smaller than 4 GB in total)
+    // add a new link (link and text are 'text' fields in the db)
     echo '
-    <form action="'.htmlentities($_SERVER['PHP_SELF']).'?do='.$do.'" method="post">
+    <form action="editLinks.php?do='.$do.'" method="post">
       <div class="row">
         <div class="twelve columns">
           <h3 class="section-heading">'.$verb.' link</h3><input name="categoryInput" type="hidden" value="'.$category.'"><input name="id" type="hidden" value="'.$id.'">

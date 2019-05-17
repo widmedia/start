@@ -97,13 +97,13 @@ function printFooter() {
   $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
    
   // default values. For main.php as current site 
-  $linkLeft = 'href="editLinks.php">&nbsp;edit&nbsp;';
-  $linkRight = 'href="about.php">&nbsp;about&nbsp;';
+  $linkLeft = 'href="editLinks.php">edit';
+  $linkRight = 'href="about.php">about';
   if ($currentSiteUnsafe == '/start/editLinks.php') {
-      $linkLeft = 'href="main.php">&nbsp;home&nbsp;'; // linkRight stays default
+      $linkLeft = 'href="main.php">home'; // linkRight stays default
   } elseif ($currentSiteUnsafe == '/start/about.php') {
-      $linkLeft = 'href="main.php">&nbsp;home&nbsp;';
-      $linkRight = 'href="editLinks.php">&nbsp;edit&nbsp;';
+      $linkLeft = 'href="main.php">home';
+      $linkRight = 'href="editLinks.php">edit';
   }
   
   echo '      
@@ -113,8 +113,9 @@ function printFooter() {
         <div class="twelve columns"><hr /></div>
       </div>
       <div class="row">
-        <div class="six columns"><a class="button differentColor" '.$linkLeft.'</a></div>
-        <div class="six columns"><a class="button differentColor" '.$linkRight.'</a></div>
+        <div class="four columns"><a class="button differentColor" '.$linkLeft.'</a></div>
+        <div class="four columns"><a class="button differentColor" '.$linkRight.'</a></div>
+        <div class="four columns"><a class="button differentColor" href="index.php?do=1">log out</a></div>
       </div>
     </div>
   </div>

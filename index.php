@@ -1,29 +1,67 @@
 <?php
   require_once('functions.php');
   $dbConnection = initialize();
-   
+  
+  // Form processing
+  $doSafe     = makeSafeInt($_GET['do'], 1);       // this is an integer (range 1 to 1)
   $useridSafe = makeSafeInt($_GET['userid'], 11);  
   $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
   
   // TODO: security measures
-  // TODO: way to delete a cookie (have it expire)
   
-  // the $_GET-userid has higher priority than the cookie userid
-  if ($useridSafe) {       
-    verifyCredentials($useridSafe); 
+  if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
+    if ($useridSafe) { // the $_GET-userid has higher priority than the cookie userid
+      verifyCredentials($useridSafe); 
 
-    // TODO: add cookie only if verification was ok        
-    if (makeSafeInt($_GET['setCookie'], 1)) {
-      $expire = 60 * 60 * 24 * 7 * 4; // valid for 4 weeks
-      setcookie('userIdCookie', $useridSafe, time() + $expire);
-      // echo $_COOKIE["your cookie name"];
-    }    
-    redirectRelative('main.php');    
+      // TODO: add cookie only if verification was ok        
+      if (makeSafeInt($_GET['setCookie'], 1)) {
+        $expire = 60 * 60 * 24 * 7 * 4; // valid for 4 weeks
+        setcookie('userIdCookie', $useridSafe, time() + $expire);      
+      }    
+      redirectRelative('main.php');    
+      
+    } elseif ($useridCookieSafe) {    
+      verifyCredentials($useridCookieSafe);    
+      redirectRelative('main.php');    
+    } // else, present the userid selection page
+  }
+  
+  // deletes both the cookie and the session 
+  function logOut () {        
+    $_SESSION['userid'] = 0; // the most important one, make sure it's really 0 (before deleting everything)
+    setcookie('userIdCookie', 0, time() - 42000);  // some big enough value in the past to make sure things like summer time changes do not affect it
     
-  } elseif ($useridCookieSafe) {    
-    verifyCredentials($useridCookieSafe);    
-    redirectRelative('main.php');    
-  } // else, present the userid selection page
+    // now the more generic stuff
+    $_SESSION = array(); // unset all of the session variables.
+    session_destroy(); // finally, destroy the session
+    
+    echo '<h3 class="section-heading">Logged out</h3>
+          <div class="row">
+            <div class="four columns">&nbsp;</div>
+            <div class="eight columns">go back to <a href="index.php">the start page</a></div>
+          </div>';
+  }  
+  
+  function printEntryPoint() {
+    // TODO: this will change...
+    // TODO: do an sql query to find the (max 10) existing userids
+    // Add some non-existing ones to check the behavior then
+    echo '<h3 class="section-heading">User selection</h3>
+          <div class="row">            
+            <div class="twelve columns" style="text-align: left;">
+              <p>login with userid 1: <a href="index.php?userid=1">login</a></p>
+              <p>login with test userid 2: <a href="index.php?userid=2">login</a></p>
+              <p>login with non-existing userid 3: <a href="index.php?userid=3">login</a></p>
+              <p>login with userid 1, set a cookie for 4 weeks: <a href="index.php?userid=1&setCookie=1">login</a></p>
+              <p><hr/></p>
+              <p>User changes</p>
+              <p>add a new user (limit of 10 users): <a href="editUser.php?do=1">add a user</a></p>
+            </div>        
+          </div>';
+  } // function 
+
+
+  
 ?>
 
 <!DOCTYPE html>
@@ -55,18 +93,17 @@
 <body>
   <div class="section categories noBottom">
     <div class="container">
-      <h3 class="section-heading">User selection</h3>
-      <div class="row">
-        <div class="four columns linktext" style="text-align: left;">user selection</div>
-        <div class="eight columns" style="text-align: left;">
-          <p>login with userid 1: <a href="index.php?userid=1">login</a></p>
-          <p>login with userid 2: <a href="index.php?userid=2">login</a></p>
-          <p>login with non-existing userid 3: <a href="index.php?userid=3">login</a></p>
-          <p>login with userid 1, set a cookie for 4 weeks: <a href="index.php?userid=1&setCookie=1">login</a></p>
-          <p>User changes</p>
-          <p>add a new user (limit of 10 users)<a href="editUser.php?do=1">add a user</a></p>
-        </div>        
-      </div>  
+    <?php           
+      // possible actions: 
+      // 0/on-existing: normal case
+      // 1=> logout
+      
+      if ($doSafe == 0) { // entry point of this site (NB: this if statement is only required if no session or cookie is set)
+        printEntryPoint();        
+      } else { // currently have only one possible 'do'-action. Logout will be done for all values > 0
+        logOut();        
+      } // action = integer          
+    ?> 
     </div> <!-- /container -->
   </div> <!-- /section categories -->
 </body>

@@ -12,6 +12,7 @@
   function printUserEdit($row) {
     // TODO: the whole <form> and submit stuff
     echo '<h3 class="section-heading">Userid: '.$row['id'].'</h3>
+          <form action="editUser.php?do=4" method="post">
           <div class="row">            
             <div class="six columns">email: <input name="email" type="email" maxlength="255" value="'.$row['email'].'" required size="20"></div>
             <div class="six columns">last login: '.$row['lastLogin'].'</div>
@@ -20,10 +21,11 @@
             <div class="twelve columns"><hr /></div>
           </div>          
           <div class="row">
-            <div class="six columns">save changes (TODO: not yet implemented)</div>
+            <div class="six columns"><input name="submit" type="submit" value="save changes"></div>
             <div class="six columns">delete this account (without any further confirmation): <br/>
             <a href="editUser.php?do=3"><img src="images/delete.png" width="16" height="16" border="0"> delete</a></div>                        
-          </div>';
+          </div>
+          </form>';
   } // function
 ?>
 <!DOCTYPE html>
@@ -75,10 +77,11 @@
       // possible actions: 
       // 1=> add a new user
       // 2=> edit an existing user: present the form
-      // 3=> delete or update existing user: db operations
+      // 3=> delete an existing user: db operations
+      // 4=> update an existing user: db operations. TODO: not yet implemented
       
       // Form processing
-      $doSafe       = makeSafeInt($_GET['do'], 1);             // this is an integer (range 1 to 3)
+      $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 1 to 3)
       
       $dispErrorMsg = 0;
       $heading = ''; // default value, stays empty if some error happens
