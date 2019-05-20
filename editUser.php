@@ -9,8 +9,7 @@
     printFooter();
   } // function
 
-  function printUserEdit($row) {
-    // TODO: the whole <form> and submit stuff
+  function printUserEdit($row) {    
     echo '<h3 class="section-heading">Userid: '.$row['id'].'</h3>
           <form action="editUser.php?do=4" method="post">
           <div class="row">            
@@ -72,7 +71,6 @@
     <div class="container">
      <?php          
       $userid = getUserid();
-      // TODO: the account management functionality
       
       // possible actions: 
       // 1=> add a new user
@@ -146,12 +144,12 @@
                 $result_delUser = $dbConnection->query('DELETE FROM `user` WHERE `id` = '.$userid);
                 
                 if ($result_delLinks and $result_delTitels and $result_delUser) {
+                  sessionAndCookieDelete();
                   echo '<h2 class="section-heading">Deleting the account did work</h2>';
                   echo '<div class="row">
                           <div class="six columns">Deleted userid: '.$userid.'</div>
                           <div class="six columns"><a class="button differentColor" href="index.php">go back to index.php</a></div>
-                       </div>';
-                  // TODO: need to destroy the session as well                  
+                       </div>';                  
                 } else { $dispErrorMsg = 34; } // deleting did work                
               } else { $dispErrorMsg = 33; } // id does exists and its neither admin nor test user
             } else { $dispErrorMsg = 32; } // select query did work

@@ -24,16 +24,16 @@ function initialize () {
   
   require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
   if ($dbConnection->connect_error) { 
-    die('Connection failed: ' . $dbConnection->connect_error); // TODO: real error handling
+    die('Connection to the data base failed. Please try again later and/or send me an email: sali@widmedia.ch');
   }
   return($dbConnection);
 }
   
 // function to output several links in a formatted way
 // creating a div for every link and div-rows for every $module-th entry
+// has a limit of 100 links per category
 function printLinks($edit, $userid, $category, $dbConnection) {
-  // TODO: change the ORDER BY. It should depend on the count (and maybe after that on the 'sort' column, especially important after resetting all counts)
-  $sql = 'SELECT * FROM `links` WHERE userid = '.$userid.' AND category = '.$category.' ORDER BY `links`.`sort` ASC LIMIT 100';
+  $sql = 'SELECT * FROM `links` WHERE userid = '.$userid.' AND category = '.$category.' ORDER BY `cntTot` DESC, `text` ASC LIMIT 100';
     
   // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
   $modulo = 3;
@@ -71,13 +71,13 @@ function printConfirmation($heading, $text, $leftSize, $rightSize) {
   <h3 class="section-heading">'.$heading.'</h3>
   <div class="row">
     <div class="'.$leftSize.' columns linktext">'.$text.'</div>
-    <div class="'.$rightSize.' columns linktext">&nbsp</div>
+    <div class="'.$rightSize.' columns linktext">&nbsp;</div>
   </div>';                           
 } 
  
 // function returns the text of the category. If something does not work as expected, NULL is returned
 function getCategory($userid, $category, $dbConnection) {
-  // Data base is organised as follows:
+  // Data base is organized as follows:
   // SELECT * FROM `titels`
   // id	userid	category	text
   // 1 	1 	    1 	      News
@@ -140,9 +140,23 @@ function verifyCredentials ($temporaryUserid) {
   $_SESSION['userid'] = $temporaryUserid; 
 }
 
-// returns the userid integer. TODO: maybe should check whether this session variable exists and return false otherwise?
+// deletes both the cookie and the session 
+function sessionAndCookieDelete () {        
+  $_SESSION['userid'] = 0; // the most important one, make sure it's really 0 (before deleting everything)
+  setcookie('userIdCookie', 0, time() - 42000);  // some big enough value in the past to make sure things like summer time changes do not affect it
+  
+  // now the more generic stuff
+  $_SESSION = array(); // unset all of the session variables.
+  session_destroy(); // finally, destroy the session    
+}  
+
+// returns the userid integer
 function getUserid () {
-  return ($_SESSION['userid']);
+  if (isset($_SESSION)) {
+    return ($_SESSION['userid']);
+  } else {
+    return 0;  // rather return 0 (means userid is not valid) than false
+  }
 }
 
 // returns a 'safe' integer. Return value is 0 if the checks did not work out
@@ -158,8 +172,8 @@ function makeSafeInt ($unsafe, $length) {
 // does a (relative) redirect
 function redirectRelative ($page) {
   // redirecting relative to current page NB: some clients require absolute paths
-    $host  = $_SERVER['HTTP_HOST'];
-    $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');  
-    header('Location: https://'.$host.htmlentities($uri).'/'.$page);
-    exit;
+  $host  = $_SERVER['HTTP_HOST'];
+  $uri   = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');  
+  header('Location: https://'.$host.htmlentities($uri).'/'.$page);
+  exit;
 }

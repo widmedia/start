@@ -28,13 +28,7 @@
   
   // deletes both the cookie and the session 
   function logOut () {        
-    $_SESSION['userid'] = 0; // the most important one, make sure it's really 0 (before deleting everything)
-    setcookie('userIdCookie', 0, time() - 42000);  // some big enough value in the past to make sure things like summer time changes do not affect it
-    
-    // now the more generic stuff
-    $_SESSION = array(); // unset all of the session variables.
-    session_destroy(); // finally, destroy the session
-    
+    sessionAndCookieDelete();    
     echo '<h3 class="section-heading">Logged out</h3>
           <div class="row">
             <div class="four columns">&nbsp;</div>

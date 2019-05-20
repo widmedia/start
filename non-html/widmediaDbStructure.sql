@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 16. Mai 2019 um 17:12
+-- Erstellungszeit: 20. Mai 2019 um 14:26
 -- Server-Version: 10.1.38-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -32,7 +32,6 @@ CREATE TABLE `links` (
   `id` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
   `category` int(11) NOT NULL,
-  `sort` int(11) NOT NULL,
   `text` text NOT NULL,
   `link` text NOT NULL,
   `cntTot` int(11) NOT NULL DEFAULT '0'

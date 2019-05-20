@@ -22,10 +22,10 @@
   function printSingleLinkFields ($category, $do, $verb, $id, $link, $text) {
     // add a new link (link and text are 'text' fields in the db)
     echo '
-    <form action="editLinks.php?do='.$do.'" method="post">
+    <form action="editLinks.php?do='.$do.'&id='.$id.'" method="post">
       <div class="row">
         <div class="twelve columns">
-          <h3 class="section-heading">'.$verb.' link</h3><input name="categoryInput" type="hidden" value="'.$category.'"><input name="id" type="hidden" value="'.$id.'">
+          <h3 class="section-heading">'.$verb.' link</h3><input name="categoryInput" type="hidden" value="'.$category.'">
         </div>
       </div>
       <div class="row">
@@ -92,8 +92,7 @@
   <div class="section categories">
     <div class="container">
      <?php          
-      $userid = getUserid();
-      // TODO: the account management functionality
+      $userid = getUserid();      
       
       // possible actions: 
       // 1=> present links of one category
@@ -102,6 +101,7 @@
       // 4=> edit one link
       // 5=> delete one link
       // 6=> do the update of one link (of action 4)
+      // 7=> TODO: change the name of a category
       
       // Form processing
       $doSafe       = makeSafeInt($_GET['do'], 1);             // this is an integer (range 1 to 6) or non-existing
@@ -150,18 +150,11 @@
           break;  
         case 2: // add a link 
           if ($linkOk) { // have a validUrl                      
-            // NB: a statement like INSERT INTO `links` VALUES (.. ((SELECT MAX(sort) FROM `links` WHERE ..) + 1), ..)' is not allowed as the same table is used for insert and for data generation. 
-            // Need to split into two operations            
-            if ($result = $dbConnection->query('SELECT MAX(sort) FROM `links` WHERE `userid` = '.$userid.' AND `category` = '.$categorySafe)) {
-              $row = $result->fetch_row(); // guaranteed to get only one row and one column
-              $maxPlus1 = ($row[0]) + 1;              
-                          
-              $sqlInsert = 'INSERT INTO `links` (`id`, `userid`, `category`, `sort`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$userid.'", "'.$categorySafe.'", "'.$maxPlus1.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'", "0")';
-              if ($result = $dbConnection->query($sqlInsert)) {
-                printConfirmation('Link added', '<a href="'.$linkHtmlSafe.'" target="_blank" class="button button-primary">'.$textHtmlSafe.'</a><span class="counter">0</span>', 'three', 'nine');
-              } else { $dispErrorMsg = 23; } // insert query did work
-            } else { $dispErrorMsg = 22; } // getMax query did work
-          } else { $dispErrorMsg = 21; } // have a validUrl -> TODO: add an additional error msg here because this really depends on user input
+            $sqlInsert = 'INSERT INTO `links` (`id`, `userid`, `category`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$userid.'", "'.$categorySafe.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'", "0")';
+            if ($result = $dbConnection->query($sqlInsert)) {
+              printConfirmation('Link added', '<a href="'.$linkHtmlSafe.'" target="_blank" class="button button-primary">'.$textHtmlSafe.'</a><span class="counter">0</span>', 'three', 'nine');
+            } else { $dispErrorMsg = 22; } // insert query did work            
+          } else { $dispErrorMsg = 21; } // have a validUrl. Some additional error info is printed when this one happens because it depends on a user input
           break;
         case 3: // I want to reset all the link counters to 0          
           if ($dbConnection->query('UPDATE `links` SET `cntTot` = 0 WHERE `userid` = '.$userid)) { // should return true
@@ -187,7 +180,7 @@
         case 6: // update a link
           if ($idSafe > 0) {            
             if ($linkOk) {                                                                         
-              $sql = 'UPDATE `links` SET `text` = '.$textSqlSafe.', `link` = '.$linkSqlSafe.' WHERE `userid` = '.$userid.' AND `id` = '.$idSafe.' LIMIT 1';
+              $sql = 'UPDATE `links` SET `text` = "'.$textSqlSafe.'", `link` = "'.$linkSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'" LIMIT 1';
               if ($result = $dbConnection->query($sql)) {
                 printConfirmation('Link edited', '<a href="'.$linkHtmlSafe.'" target="_blank" class="button button-primary">'.$textHtmlSafe.'</a>', 'three', 'nine');
               } else { $dispErrorMsg = 63; } // update sql did work out            
@@ -199,6 +192,9 @@
         } // switch
         if ($dispErrorMsg > 0) {
           printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?', 'nine', 'three');
+          if ($dispErrorMsg == 21) { // validUrl-check did not work out
+            printConfirmation('Wrong URL', 'For the URL input, you need to have something in the format "http://somewebsite.ch" or "https://somewebsite.ch"', 'nine', 'three');
+          }
           echo '</div> <!-- /container -->';
           printFooter();
           die(); // finish the php part
