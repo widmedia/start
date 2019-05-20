@@ -157,7 +157,7 @@
           } else { $dispErrorMsg = 21; } // have a validUrl. Some additional error info is printed when this one happens because it depends on a user input
           break;
         case 3: // I want to reset all the link counters to 0          
-          if ($dbConnection->query('UPDATE `links` SET `cntTot` = 0 WHERE `userid` = '.$userid)) { // should return true
+          if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
             printConfirmation('Counters have been reset to 0', '<a href="index.php" class="button button-primary">home</a>', 'six', 'six');            
           } else { $dispErrorMsg = 31; } // insert query did work
           break;
@@ -171,7 +171,7 @@
         case 5: // delete a link. Displaying a confirmation message                 
           if ($idSafe > 0) {             
             if ($singleRow = getSingleLinkRow($idSafe, $userid, $dbConnection)) {
-              if ($dbConnection->query('DELETE FROM `links` WHERE `userid` = '.$userid.' AND `id` = '.$idSafe)) { // should return true
+              if ($dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) { // should return true
                 printConfirmation('Did delete one link', 'Deleted the '.htmlspecialchars($singleRow['text']).'-link', 'nine', 'three');                
               } else { $dispErrorMsg = 53; } // delete sql did work out
             } else { $dispErrorMsg = 52; } // select sql did work out

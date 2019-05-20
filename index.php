@@ -11,47 +11,48 @@
   
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
     if ($useridSafe) { // the $_GET-userid has higher priority than the cookie userid
-      verifyCredentials($useridSafe); 
-
-      // TODO: add cookie only if verification was ok        
-      if (makeSafeInt($_GET['setCookie'], 1)) {
-        $expire = 60 * 60 * 24 * 7 * 4; // valid for 4 weeks
-        setcookie('userIdCookie', $useridSafe, time() + $expire);      
-      }    
-      redirectRelative('main.php');    
-      
+      if (verifyCredentials($useridSafe, $dbConnection)) { 
+        if (makeSafeInt($_GET['setCookie'], 1)) {
+          $expire = 60 * 60 * 24 * 7 * 4; // valid for 4 weeks
+          setcookie('userIdCookie', $useridSafe, time() + $expire);      
+        }    
+        redirectRelative('main.php');    
+      }      
     } elseif ($useridCookieSafe) {    
-      verifyCredentials($useridCookieSafe);    
-      redirectRelative('main.php');    
+      if (verifyCredentials($useridCookieSafe, $dbConnection)) {    
+        redirectRelative('main.php');    
+      }
     } // else, present the userid selection page
   }
   
   // deletes both the cookie and the session 
   function logOut () {        
     sessionAndCookieDelete();    
-    echo '<h3 class="section-heading">Logged out</h3>
-          <div class="row">
-            <div class="four columns">&nbsp;</div>
-            <div class="eight columns">go back to <a href="index.php">the start page</a></div>
-          </div>';
+    echo '
+    <h3 class="section-heading">Logged out</h3>
+    <div class="row">
+      <div class="four columns">&nbsp;</div>
+      <div class="eight columns">go back to <a href="index.php">the start page</a></div>
+    </div>';
   }  
   
   function printEntryPoint() {
     // TODO: this will change...
     // TODO: do an sql query to find the (max 10) existing userids
     // Add some non-existing ones to check the behavior then
-    echo '<h3 class="section-heading">User selection</h3>
-          <div class="row">            
-            <div class="twelve columns" style="text-align: left;">
-              <p>login with userid 1: <a href="index.php?userid=1">login</a></p>
-              <p>login with test userid 2: <a href="index.php?userid=2">login</a></p>
-              <p>login with non-existing userid 3: <a href="index.php?userid=3">login</a></p>
-              <p>login with userid 1, set a cookie for 4 weeks: <a href="index.php?userid=1&setCookie=1">login</a></p>
-              <p><hr/></p>
-              <p>User changes</p>
-              <p>add a new user (limit of 10 users): <a href="editUser.php?do=1">add a user</a></p>
-            </div>        
-          </div>';
+    echo '
+    <h3 class="section-heading">User selection</h3>
+    <div class="row">            
+      <div class="twelve columns" style="text-align: left;">
+        <p>login with userid 1: <a href="index.php?userid=1">login</a></p>
+        <p>login with test userid 2: <a href="index.php?userid=2">login</a></p>
+        <p>login with non-existing userid 3: <a href="index.php?userid=3">login</a></p>
+        <p>login with userid 1, set a cookie for 4 weeks: <a href="index.php?userid=1&setCookie=1">login</a></p>
+        <p><hr/></p>
+        <p>User changes</p>
+        <p>add a new user (limit of 10 users): <a href="editUser.php?do=1">add a user</a></p>
+      </div>        
+    </div>';
   } // function 
 
 
@@ -96,7 +97,7 @@
         printEntryPoint();        
       } else { // currently have only one possible 'do'-action. Logout will be done for all values > 0
         logOut();        
-      } // action = integer          
+      } // action == integer          
     ?> 
     </div> <!-- /container -->
   </div> <!-- /section categories -->

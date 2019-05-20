@@ -127,7 +127,7 @@
           break;  
         case 2: // edit an existing user
           if ($userid) { // have a valid userid
-            if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = '.$userid)) {              
+            if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
               $row = $result->fetch_assoc(); // guaranteed to get only one row
               printUserEdit($row);              
             } else { $dispErrorMsg = 22; } // select query did work
@@ -135,13 +135,13 @@
           break;
         case 3: // update/delete an existing user
           if ($userid) { // have a valid userid
-            if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = '.$userid)) {
+            if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
               // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
               $rowCnt = $result->num_rows;
               if (($rowCnt == 1) and ($userid > 2)) {                
-                $result_delLinks = $dbConnection->query('DELETE FROM `links` WHERE `userid` = '.$userid);
-                $result_delTitels = $dbConnection->query('DELETE FROM `titels` WHERE `userid` = '.$userid);
-                $result_delUser = $dbConnection->query('DELETE FROM `user` WHERE `id` = '.$userid);
+                $result_delLinks = $dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
+                $result_delTitels = $dbConnection->query('DELETE FROM `titels` WHERE `userid` = "'.$userid.'"');
+                $result_delUser = $dbConnection->query('DELETE FROM `user` WHERE `id` = "'.$userid.'"');
                 
                 if ($result_delLinks and $result_delTitels and $result_delUser) {
                   sessionAndCookieDelete();

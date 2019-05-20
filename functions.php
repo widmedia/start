@@ -33,7 +33,7 @@ function initialize () {
 // creating a div for every link and div-rows for every $module-th entry
 // has a limit of 100 links per category
 function printLinks($edit, $userid, $category, $dbConnection) {
-  $sql = 'SELECT * FROM `links` WHERE userid = '.$userid.' AND category = '.$category.' ORDER BY `cntTot` DESC, `text` ASC LIMIT 100';
+  $sql = 'SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100';
     
   // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
   $modulo = 3;
@@ -83,7 +83,7 @@ function getCategory($userid, $category, $dbConnection) {
   // 1 	1 	    1 	      News
   // 2 	1 	    2 	      Work
   // 3 	1 	    3 	      Div
-  $sqlString = 'SELECT * FROM `titels` WHERE userid = '.$userid.' AND category = '.$category.' LIMIT 1';
+  $sqlString = 'SELECT * FROM `titels` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1';
   if ($result = $dbConnection->query($sqlString)) {
     $row = $result->fetch_assoc();
     $result->close(); // free result set
@@ -126,7 +126,7 @@ function printFooter() {
 // NB: id will get sql-escaped, userid not.
 function getSingleLinkRow ($id, $userid, $dbConnection) {
   // need an additional userid condition. May be ignored by SQL because `id` is a primary key?
-  if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = '.$userid.' AND `id` = '.mysqli_real_escape_string($dbConnection, $id))) {
+  if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.mysqli_real_escape_string($dbConnection, $id).'"')) {
     $row = $result->fetch_assoc();
     return($row);
   } else { return(false); }
@@ -134,10 +134,18 @@ function getSingleLinkRow ($id, $userid, $dbConnection) {
 
 // TODO:
 // a) password verification if one is set. 
-// b) even without password, check whether the id does exist -> db query
-// without a password, there will be a special link to switch between users (some pseudo-obfuscation)
-function verifyCredentials ($temporaryUserid) {    
-  $_SESSION['userid'] = $temporaryUserid; 
+// b) without a password, there will be a special link to switch between users (some pseudo-obfuscation)
+function verifyCredentials ($temporaryUserid, $dbConnection) {
+  $internalUserid = makeSafeInt($temporaryUserid, 11); // might be unnecessary because it's safe already
+  if ($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE `id` = "'.$internalUserid.'"')) {
+    if ($result->num_rows == 1) { // we are sure the id exists and there is only one
+      if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$internalUserid.'"')) {
+        $_SESSION['userid'] = $internalUserid;
+        return true;
+      } // update query did work      
+    } // id does exist
+  } // select query did work
+  return false;
 }
 
 // deletes both the cookie and the session 
