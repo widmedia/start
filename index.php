@@ -100,6 +100,13 @@
       } // action == integer          
     ?> 
     </div> <!-- /container -->
+    <div class="section noBottom">
+      <div class="container">
+        <div class="row">
+          <div class="twelve columns"><hr /></div>
+        </div>      
+      </div>
+    </div>
   </div> <!-- /section categories -->
 </body>
 </html>

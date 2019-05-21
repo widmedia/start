@@ -96,16 +96,21 @@ function getCategory($userid, $category, $dbConnection) {
 function printFooter() {
   $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
    
+  $editString  = 'href="editLinks.php"><img src="images/edit_green.png" width="16" height="16" border="0"> edit';
+  $homeString  = 'href="main.php"><img src="images/home_green.png" width="16" height="16" border="0"> home';
+  $aboutString = 'href="about.php"><img src="images/info_green.png" width="16" height="16" border="0"> about'; 
   // default values. For main.php as current site 
-  $linkLeft = 'href="editLinks.php">edit';
-  $linkRight = 'href="about.php">about';
-  if ($currentSiteUnsafe == '/start/editLinks.php') {
-      $linkLeft = 'href="main.php">home'; // linkRight stays default
-  } elseif ($currentSiteUnsafe == '/start/about.php') {
-      $linkLeft = 'href="main.php">home';
-      $linkRight = 'href="editLinks.php">edit';
-  }
   
+  $linkLeft = $editString;
+  $linkMiddle = $aboutString;
+  if ($currentSiteUnsafe == '/start/editLinks.php') {
+      $linkLeft = $homeString; 
+      $linkMiddle = $aboutString; // stays default
+  } elseif ($currentSiteUnsafe == '/start/about.php') {
+      $linkLeft = $homeString;
+      $linkMiddle = $editString;
+  }
+
   echo '      
   <div class="section noBottom">
     <div class="container">
@@ -114,12 +119,11 @@ function printFooter() {
       </div>
       <div class="row">
         <div class="four columns"><a class="button differentColor" '.$linkLeft.'</a></div>
-        <div class="four columns"><a class="button differentColor" '.$linkRight.'</a></div>
-        <div class="four columns"><a class="button differentColor" href="index.php?do=1">log out</a></div>
+        <div class="four columns"><a class="button differentColor" '.$linkMiddle.'</a></div>
+        <div class="four columns"><a class="button differentColor" href="index.php?do=1"><img src="images/logout_green.png" width="16" height="16" border="0"> log out</a></div>
       </div>
     </div>
-  </div>
-  '; 
+  </div>'; 
 } // function
   
 // returning a single row for the matching id. 
