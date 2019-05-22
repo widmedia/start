@@ -4,16 +4,20 @@
 
   
   function printEntryPoint($userid, $dbConnection) {
-    // TODO: this output needs a redesign. The buttons as links are not that nice...
-    echo '<h2 class="section-heading">What would you like to edit?</h2><div class="row">';          
+    echo '
+    <h3 class="section-heading">What would you like to edit?</h3>
+    <div class="row"><div class="twelve columns">&nbsp;</div></div>
+    <div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
       echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
       <input name="categoryInput" type="hidden" value="'.$i.'">
       <input name="submit" type="submit" value="Category '.getCategory($userid, $i, $dbConnection).'"></form></div>';         
     }                
-    echo '</div><div class="row"><div class="twelve columns"><hr /></div></div>';                
-    echo '<div class="row"><div class="six columns"><form action="editLinks.php?do=3" method="post"><input name="submit" type="submit" value="set all counters to 0"></form>
-          </div><div class="six columns"><form action="editUser.php?do=2" method="post"><input name="submit" type="submit" value="account management"></form></div></div></div> <!-- /container -->';
+    echo '</div><div class="row"><div class="twelve columns">&nbsp;</div></div>';                    
+    echo '<div class="row">
+    <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/zero_green.png" class="logoImg"> set all link counters to zero</a></div>
+    <div class="six columns"><a class="button differentColor" href="editUser.php?do=2"><img src="images/db_green.png" class="logoImg"> account management</a></div>
+    </div></div> <!-- /container -->';
     printFooter();
   } // function 
 

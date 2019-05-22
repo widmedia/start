@@ -95,12 +95,13 @@ function getCategory($userid, $category, $dbConnection) {
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
 function printFooter() {
   $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
-   
-  $editString  = 'href="editLinks.php"><img src="images/edit_green.png" width="16" height="16" border="0"> edit';
-  $homeString  = 'href="main.php"><img src="images/home_green.png" width="16" height="16" border="0"> home';
-  $aboutString = 'href="about.php"><img src="images/info_green.png" width="16" height="16" border="0"> about'; 
-  // default values. For main.php as current site 
   
+  $editString  = 'href="editLinks.php"><img src="images/edit_green.png" class="logoImg"> edit';
+  $homeString  = 'href="main.php"><img src="images/home_green.png" class="logoImg"> home';
+  $aboutString = 'href="about.php"><img src="images/info_green.png" class="logoImg"> about'; 
+  $linkRight   = 'href="index.php?do=1"><img src="images/logout_green.png" class="logoImg"> log out';
+  
+  // default values. For main.php as current site   
   $linkLeft = $editString;
   $linkMiddle = $aboutString;
   if ($currentSiteUnsafe == '/start/editLinks.php') {
@@ -120,7 +121,7 @@ function printFooter() {
       <div class="row">
         <div class="four columns"><a class="button differentColor" '.$linkLeft.'</a></div>
         <div class="four columns"><a class="button differentColor" '.$linkMiddle.'</a></div>
-        <div class="four columns"><a class="button differentColor" href="index.php?do=1"><img src="images/logout_green.png" width="16" height="16" border="0"> log out</a></div>
+        <div class="four columns"><a class="button differentColor" '.$linkRight.'</a></div>
       </div>
     </div>
   </div>'; 
