@@ -47,7 +47,7 @@ function printLinks($edit, $userid, $category, $dbConnection) {
     $counter = 0;        
     while ($row = $result->fetch_assoc()) {
       if ($edit) {
-      echo $divClass.'<span class="editLeft"><a href="link.php?id='.$row['id'].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></span>
+        echo $divClass.'<span class="editLeft"><a href="link.php?id='.$row['id'].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></span>
            <span class="editRight">
              <div style="padding-bottom: 2px;"><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png"   width="16" height="16" border="0"> edit</a></div>                   
              <div style="padding-top:    2px;"><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" width="16" height="16" border="0"> delete</a></div>
