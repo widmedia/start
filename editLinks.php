@@ -99,18 +99,18 @@
       $userid = getUserid();      
       
       // possible actions: 
-      // 1=> present links of one category
-      // 2=> add one link to db      
+      // 1=> present links of one category + text field for category + add-Link option
+      // 2=> add one link to db (of action 1)
       // 3=> reset all cnt to 0
       // 4=> edit one link
       // 5=> delete one link
       // 6=> do the update of one link (of action 4)
-      // 7=> TODO: change the name of a category
+      // 7=> do the update of a category (of action 1)
       
       // Form processing
       $doSafe       = makeSafeInt($_GET['do'], 1);             // this is an integer (range 1 to 6) or non-existing
       $categorySafe = makeSafeInt($_POST['categoryInput'], 1); // this is an integer (range 1 to 3) or non-existing
-      $idSafe       = makeSafeInt($_GET['id'], 11);            // this is an integer (max 11 characters) or non-existing
+      $idSafe       = makeSafeInt($_GET['id'], 11);            // this is an integer (max 11 characters) or non-existing      
       
       // non-integer values are more complicated, text may be HTML-safe or sqli-safe
       $linkUnsafe = filter_var(substr($_POST['link'], 0, 1023), FILTER_SANITIZE_URL);  // this is an url (max 1023 characters) or non-existing
@@ -146,8 +146,10 @@
       } elseif ($doSafe > 0) {
         // TODO: if-else-switch monster construct is kind of, well, a monster... and still growing
         switch ($doSafe) {
-        case 1: // present links of one category
-          echo '<h3 class="section-heading">'.$heading.'</h3><div class="row">';
+        case 1: // present links of one category, have category name as text field           
+          echo '<form action="editLinks.php?do=7" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
+          <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="change category name"></form>
+          <div class="row">';
           printLinks(true, $userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
           echo '</div>';          
           printSingleLinkFields($categorySafe, 2, 'Add', 0, 'https://', 'text');          
@@ -190,7 +192,17 @@
               } else { $dispErrorMsg = 63; } // update sql did work out            
             } else { $dispErrorMsg = 62; } // url check did work out          
           } else { $dispErrorMsg = 61; } // id check did work out            
-          break;  
+          break;
+        case 7: // update a category name
+          $textSqlSafe = mysqli_real_escape_string($dbConnection, $textUnsafe);
+          $sql = 'UPDATE `categories` SET `text` = "'.$textSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe .'" LIMIT 1';
+          if ($categorySafe > 0) {            
+            if ($result = $dbConnection->query($sql)) {
+              $textHtmlSafe = htmlspecialchars($textUnsafe);          
+              printConfirmation('Category name edited', '<a class="button differentColor" href="main.php"><img src="images/home_green.png" class="logoImg"> back to home</a>', 'nine', 'three');
+            } else { $dispErrorMsg = 72; } // update sql did work out                        
+          } else { $dispErrorMsg = 71; } // category check did work out
+          break;          
         default: 
           $dispErrorMsg = 1;
         } // switch

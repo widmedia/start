@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 20. Mai 2019 um 14:26
+-- Erstellungszeit: 23. Mai 2019 um 16:27
 -- Server-Version: 10.1.38-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -40,19 +40,6 @@ CREATE TABLE `links` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `titels`
---
-
-CREATE TABLE `titels` (
-  `id` int(11) NOT NULL,
-  `userid` int(11) NOT NULL,
-  `category` int(11) NOT NULL,
-  `text` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Tabellenstruktur für Tabelle `user`
 --
 
@@ -73,12 +60,6 @@ ALTER TABLE `links`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indizes für die Tabelle `titels`
---
-ALTER TABLE `titels`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indizes für die Tabelle `user`
 --
 ALTER TABLE `user`
@@ -92,12 +73,6 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT für Tabelle `links`
 --
 ALTER TABLE `links`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `titels`
---
-ALTER TABLE `titels`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
