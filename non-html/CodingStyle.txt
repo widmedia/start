@@ -1,7 +1,16 @@
-rather use:
-echo '</div>\n<div class="row"><div class="twelve columns"><hr /></div></div>\n';        
-than:
-echo "</div>\n<div class='row'><div class='twelve columns'><hr /></div></div>\n";        
+rather use: echo '<div class="row"><div class="twelve columns"><hr /></div></div>';        
+than:       echo "<div class='row'><div class='twelve columns'><hr /></div></div>";        
 
-php processes echo 'some string' faster than "some string" because the single quote does not replace any $variables (which is a bad thing anyway)
+php processes 'some string' faster than "some string" because the single quote notation does not replace any $variables (which is a bad thing anyway)
+
+
+following files do NOT require a logged-in user:
+- index.php
+- about.php
+
+following files do require a logged-in user:
+- main.php
+- link.php
+- editUser.php
+- editLink.php
 

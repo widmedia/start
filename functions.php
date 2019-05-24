@@ -100,7 +100,7 @@ function printFooter() {
   // default values. For main.php as current site   
   $linkLeft = $editString;
   $linkMiddle = $aboutString;
-  if ($currentSiteUnsafe == '/start/editLinks.php') {
+  if (($currentSiteUnsafe == '/start/editLinks.php') or ($currentSiteUnsafe == '/start/editUser.php')) {
       $linkLeft = $homeString; 
       $linkMiddle = $aboutString; // stays default
   } elseif ($currentSiteUnsafe == '/start/about.php') {
