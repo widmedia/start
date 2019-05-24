@@ -29,12 +29,35 @@
     <div class="container">
       <h3 class="section-heading">About</h3>
       <div class="row">
-        <div class="four columns linktext"><a href="#" class="button button-primary">TODO: some image</a></div>
-        <div class="eight columns linktext" style="text-align: left;">
+        <div class="four columns"><a href="#" class="button button-primary">TODO: some image</a></div>
+        <div class="eight columns" style="text-align: left;">
           <p>widmedia.ch/start is developed by Daniel Widmer. Please find the complete code at <a href="https://github.com/widmedia/start">github</a> (open source)</p>
           <p>Contact (German, English): <a href="mailto:sali@widmedia.ch">sali@widmedia.ch</a></p>
         </div>        
-      </div>  
+      </div>
+      <div class="row"><div class="twelve columns"><hr /></div></div>
+      <div class="row">
+        <div class="twelve columns" style="text-align: left;">
+          <h4>Data privacy</h4>
+          <p>Currently all data of all users are openly visible. TODO: this will change after login / password measures are in place.</p>
+          <p>Only data required for the functionality of this website is stored. The data base layout and structure is available for inspection on the <a href="https://github.com/widmedia/start">github project</a> (open source).</p>
+          <p>The data will not be sold or transferred otherwise to any external party.</p>
+        </div>        
+      </div>
+      <div class="row"><div class="twelve columns"><hr /></div></div>
+      <div class="row">
+        <div class="twelve columns" style="text-align: left;">
+          <h4>External sources</h4>
+          <p>No external sources are used.</p>          
+        </div>        
+      </div>
+      <div class="row"><div class="twelve columns"><hr /></div></div>
+      <div class="row">
+        <div class="twelve columns" style="text-align: left;">
+          <h4>Financing</h4>
+          <p>...well, there is none. If you like to contribute, please contact me: <a href="mailto:sali@widmedia.ch">sali@widmedia.ch</a></p>          
+        </div>        
+      </div>
     </div> <!-- /container -->
     <?php
     require_once('functions.php');

@@ -26,13 +26,8 @@
   
   // deletes both the cookie and the session 
   function logOut () {        
-    sessionAndCookieDelete();    
-    echo '
-    <h3 class="section-heading">Logged out</h3>
-    <div class="row">
-      <div class="four columns">&nbsp;</div>
-      <div class="eight columns">go back to <a href="index.php">the start page</a></div>
-    </div>';
+    sessionAndCookieDelete();
+    redirectRelative('index.php'); // maybe TODO: display some 'logout successful' overlay on the index page?
   }  
   
   function printEntryPoint($dbConnection) {
@@ -150,15 +145,9 @@
           printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?', 'nine', 'three');
         }
       } // action == integer          
-    ?> 
-    </div> <!-- /container -->
-    <div class="section noBottom">
-      <div class="container">
-        <div class="row">
-          <div class="twelve columns"><hr /></div>
-        </div>      
-      </div>
-    </div>
+      echo '</div> <!-- /container -->';  
+      printFooter(); 
+    ?>     
   </div> <!-- /section categories -->
 </body>
 </html>

@@ -92,20 +92,27 @@ function getCategory($userid, $category, $dbConnection) {
 function printFooter() {
   $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
   
-  $editString  = 'href="editLinks.php"><img src="images/edit_green.png" class="logoImg"> edit';
-  $homeString  = 'href="main.php"><img src="images/home_green.png" class="logoImg"> home';
-  $aboutString = 'href="about.php"><img src="images/info_green.png" class="logoImg"> about'; 
-  $linkRight   = 'href="index.php?do=1"><img src="images/logout_green.png" class="logoImg"> log out';
+  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/edit_green.png" class="logoImg"> edit</a>';
+  $home   = '<a class="button differentColor" href="main.php"><img src="images/home_green.png" class="logoImg"> home</a>';
+  $about  = '<a class="button differentColor" href="about.php"><img src="images/info_green.png" class="logoImg"> about</a>'; 
+  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/logout_green.png" class="logoImg"> log out</a>';
   
   // default values. For main.php as current site   
-  $linkLeft = $editString;
-  $linkMiddle = $aboutString;
+  $linkLeft   = $edit;
+  $linkMiddle = $about;
+  $linkRight  = $logout;
   if (($currentSiteUnsafe == '/start/editLinks.php') or ($currentSiteUnsafe == '/start/editUser.php')) {
-      $linkLeft = $homeString; 
-      $linkMiddle = $aboutString; // stays default
+      $linkLeft   = $home; 
+      $linkMiddle = $about;
+      $linkRight  = $logout;
   } elseif ($currentSiteUnsafe == '/start/about.php') {
-      $linkLeft = $homeString;
-      $linkMiddle = $editString;
+      $linkLeft   = $home;
+      $linkMiddle = '&nbsp;';
+      $linkRight  = $logout;
+  }  elseif ($currentSiteUnsafe == '/start/index.php') {
+      $linkLeft   = '&nbsp;';
+      $linkMiddle = $about;
+      $linkRight  = '&nbsp;';
   }
 
   echo '      
@@ -113,9 +120,9 @@ function printFooter() {
     <div class="container">
       <div class="row"><div class="twelve columns"><hr /></div></div>
       <div class="row">
-        <div class="four columns"><a class="button differentColor" '.$linkLeft.'</a></div>
-        <div class="four columns"><a class="button differentColor" '.$linkMiddle.'</a></div>
-        <div class="four columns"><a class="button differentColor" '.$linkRight.'</a></div>
+        <div class="four columns">'.$linkLeft.'</div>
+        <div class="four columns">'.$linkMiddle.'</div>
+        <div class="four columns">'.$linkRight.'</div>
       </div>
     </div>
   </div>'; 
