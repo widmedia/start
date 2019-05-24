@@ -111,9 +111,7 @@ function printFooter() {
   echo '      
   <div class="section noBottom">
     <div class="container">
-      <div class="row">
-        <div class="twelve columns"><hr /></div>
-      </div>
+      <div class="row"><div class="twelve columns"><hr /></div></div>
       <div class="row">
         <div class="four columns"><a class="button differentColor" '.$linkLeft.'</a></div>
         <div class="four columns"><a class="button differentColor" '.$linkMiddle.'</a></div>
@@ -185,4 +183,9 @@ function redirectRelative ($page) {
   $uri   = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');  
   header('Location: https://'.$host.htmlentities($uri).'/'.$page);
   exit;
+}
+
+// prints a horizontal ruler over twelve columns
+function printHr () {
+  echo '<div class="row"><div class="twelve columns"><hr /></div></div>';  
 }

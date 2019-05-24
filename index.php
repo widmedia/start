@@ -3,12 +3,11 @@
   $dbConnection = initialize();
   
   // Form processing
-  $doSafe     = makeSafeInt($_GET['do'], 1);       // this is an integer (range 1 to 1)
+  $doSafe     = makeSafeInt($_GET['do'], 1);       // this is an integer (range 1 to 2)
   $useridSafe = makeSafeInt($_GET['userid'], 11);  
   $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
   
   // TODO: security measures
-  
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
     if ($useridSafe) { // the $_GET-userid has higher priority than the cookie userid
       if (verifyCredentials($useridSafe, $dbConnection)) { 
@@ -36,27 +35,40 @@
     </div>';
   }  
   
-  function printEntryPoint() {
+  function printEntryPoint($dbConnection) {
     // TODO: this will change...
-    // TODO: do an sql query to find the (max 10) existing userids
-    // Add some non-existing ones to check the behavior then
     echo '
-    <h3 class="section-heading">User selection</h3>
-    <div class="row">            
-      <div class="twelve columns" style="text-align: left;">
-        <p>login with userid 1: <a href="index.php?userid=1">login</a></p>
-        <p>login with test userid 2: <a href="index.php?userid=2">login</a></p>
-        <p>login with non-existing userid 3: <a href="index.php?userid=3">login</a></p>
-        <p>login with userid 1, set a cookie for 4 weeks: <a href="index.php?userid=1&setCookie=1">login</a></p>
-        <p><hr/></p>
-        <p>User changes</p>
-        <p>add a new user (limit of 10 users): <a href="editUser.php?do=1">add a user</a></p>
-      </div>        
+    <h3 class="section-heading">Existing users</h3>    
+    <div class="row" style="font-weight: bold; font-size: larger;"><div class="one columns">id</div><div class="one columns">email</div><div class="three columns">last login</div><div class="three columns">single login</div><div class="four columns">login with a cookie</div></div>';
+      
+    $sqlString = 'SELECT * FROM `user` WHERE 1 ORDER BY `id` LIMIT 20';   // should be only 10 for now
+    if ($result = $dbConnection->query($sqlString)) {
+      while ($row = $result->fetch_assoc()) {
+        echo '
+        <div class="row">
+          <div class="one columns">'.$row['id'].'</div>
+          <div class="one columns">'.substr($row['email'], 0, 4).'...</div>
+          <div class="three columns">'.$row['lastLogin'].'</div>
+          <div class="three columns"><a href="index.php?userid='.$row['id'].'">single login</a></div>
+          <div class="four columns"><a href="index.php?userid='.$row['id'].'&setCookie=1">login and set a cookie</a></div>
+        </div>';
+      } // while row
+    } // sql did work
+    printHr();    
+    echo '<h3 class="section-heading">Non-existing user</h3>
+    <div class="row">
+      <div class="one columns">3</div>
+      <div class="one columns">-</div>
+      <div class="three columns">-</div>
+      <div class="three columns"><a href="index.php?userid=3">single login</a></div>
+      <div class="four columns"><a href="index.php?userid=3&setCookie=1">login and set a cookie</a></div>
     </div>';
-  } // function 
-
-
-  
+    printHr();    
+    echo '<h3 class="section-heading">New user</h3>
+    <div class="row">
+      <div class="twelve columns" style="text-align: left;"><a href="index.php?do=2">add a user</a> (limit of 10 users)</div>        
+    </div>';    
+  } // function  
 ?>
 
 <!DOCTYPE html>
@@ -90,13 +102,53 @@
     <div class="container">
     <?php           
       // possible actions: 
-      // 0/on-existing: normal case
+      // 0/non-existing: normal case
       // 1=> logout
+      // 2=> add new user
       
-      if ($doSafe == 0) { // entry point of this site (NB: this if statement is only required if no session or cookie is set)
-        printEntryPoint();        
-      } else { // currently have only one possible 'do'-action. Logout will be done for all values > 0
-        logOut();        
+      if ($doSafe == 0) { // valid use case. Entry point of this site
+        printEntryPoint($dbConnection);        
+      } elseif ($doSafe > 0) {        
+        switch ($doSafe) {
+        case 1:
+          logOut();
+          break;
+        case 2:
+          // TODO:
+          // form with some basic information: email.
+          // - some selection: with or without pw? ... stuff like that
+
+          // Adding 1 user, 3 categories, 4 links
+          // add a new user but only if number of users is less than 10 (TODO: developer limitation for now)
+          if ($result = $dbConnection->query('SELECT count(*) AS `total` FROM `user`')) {
+              $row = $result->fetch_assoc();
+              $rowCnt = $row['total'];              
+              if($rowCnt < 10) {
+                $sqlInsertUser = 'INSERT INTO `user` (`id`, `email`, `lastLogin`) VALUES (NULL, "new@widmedia.ch", CURRENT_TIMESTAMP)';
+                if ($result = $dbConnection->query($sqlInsertUser)) { 
+                  $newUserId = $dbConnection->insert_id;
+                  $dbConnection->query('INSERT INTO `categories` (`id`, `userid`, `category`, `text`) VALUES (NULL, "'.$newUserId.'", "1", "News")');
+                  $dbConnection->query('INSERT INTO `categories` (`id`, `userid`, `category`, `text`) VALUES (NULL, "'.$newUserId.'", "2", "Work")');
+                  $result = $dbConnection->query('INSERT INTO `categories` (`id`, `userid`, `category`, `text`) VALUES (NULL, "'.$newUserId.'", "3", "Div")');
+                  if ($result) { // assuming that if the last one did work, the other two did work as well
+                    $dbConnection->query('INSERT INTO `links` (`id`, `userid`, `category`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$newUserId.'", "1", "NZZ", "https://www.nzz.ch", "0")');
+                    $dbConnection->query('INSERT INTO `links` (`id`, `userid`, `category`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$newUserId.'", "2", "leo", "https://dict.leo.org", "0")');
+                    $dbConnection->query('INSERT INTO `links` (`id`, `userid`, `category`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$newUserId.'", "2", "gmail", "https://mail.google.com", "0")');
+                    $result = $dbConnection->query('INSERT INTO `links` (`id`, `userid`, `category`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$newUserId.'", "3", "WhatsApp", "https://web.whatsapp.com", "0")');
+                    if ($result) { // assuming that if the last one did work, the other three did work as well
+                      printConfirmation('Did add a new user', 'Userid: '.$newUserId.'. Login with this user: <a href="index.php?userid='.$newUserId.'">login</a>', 'six', 'six');
+                    } else { $dispErrorMsg = 25; } // links insert
+                  } else { $dispErrorMsg = 24; } // categories insert
+                } else { $dispErrorMsg = 23; } // user insert
+              } else { $dispErrorMsg = 22; } // have less than 10
+          } else { $dispErrorMsg = 21; } // query to do the counting did not work          
+          break;  
+        default: 
+          $dispErrorMsg = 1;
+        } // switch  
+        if ($dispErrorMsg > 0) {
+          printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?', 'nine', 'three');
+        }
       } // action == integer          
     ?> 
     </div> <!-- /container -->
