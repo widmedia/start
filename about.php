@@ -40,8 +40,10 @@
         <div class="twelve columns" style="text-align: left;">
           <h4>Data privacy</h4>
           <p>Currently all data of all users are openly visible. TODO: this will change after login / password measures are in place.</p>
-          <p>Only data required for the functionality of this website is stored. The data base layout and structure is available for inspection on the <a href="https://github.com/widmedia/start">github project</a> (open source).</p>
+          <p>Only data required for the functionality of this website is stored. The data base layout and structure is available for inspection on the open source <a href="https://github.com/widmedia/start">github project.</a></p>
           <p>The data will not be sold or transferred otherwise to any external party.</p>
+          <p>On the other hand, I cannot guarantee regular backups of your data, your data might be deleted or get lost in a different way. 
+          Do not rely on <a href="https://widmedia.ch/start">widmedia.ch/start</a> as your only data source and do not store any sensitive information on this site.</p>
         </div>        
       </div>
       <div class="row"><div class="twelve columns"><hr /></div></div>

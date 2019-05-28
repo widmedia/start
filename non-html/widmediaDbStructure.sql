@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 23. Mai 2019 um 16:27
+-- Erstellungszeit: 28. Mai 2019 um 14:13
 -- Server-Version: 10.1.38-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -25,6 +25,19 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  `category` int(1) NOT NULL,
+  `text` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `links`
 --
 
@@ -35,6 +48,20 @@ CREATE TABLE `links` (
   `text` text NOT NULL,
   `link` text NOT NULL,
   `cntTot` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `login`
+--
+
+CREATE TABLE `login` (
+  `id` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  `hasPW` tinyint(1) NOT NULL,
+  `pwHash` char(64) NOT NULL,
+  `magicKey` char(64) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -54,9 +81,21 @@ CREATE TABLE `user` (
 --
 
 --
+-- Indizes für die Tabelle `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indizes für die Tabelle `links`
 --
 ALTER TABLE `links`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indizes für die Tabelle `login`
+--
+ALTER TABLE `login`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -70,9 +109,21 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT für Tabelle `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT für Tabelle `links`
 --
 ALTER TABLE `links`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `login`
+--
+ALTER TABLE `login`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

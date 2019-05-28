@@ -32,6 +32,23 @@
   
   function printEntryPoint($dbConnection) {
     // TODO: this will change...
+    // TODO: database: need to change the test user links, no wp-admin page
+    
+    // TODO
+    // have a table `login` with fields: id(int11), userid(int11), hasPW(bool, actually tyniint_1), pwHash(char_64), magicKey(hex_64, actually char_64)
+    // --> new user requires items there as well, delete an existing user has to remove it once more
+    // selection between
+    // a: login as test user, try stuff (test user does not have a pw?)
+    // b: open a new account --> more or less the editUser page
+    // c: login as existing --> more or less the page below
+    
+    // need to advertise the /start functionality. With some kind of animation...
+    echo '<h2 class="section-heading">widmedia.ch/start</h2>
+    <div class="row" style="font-weight: bold; font-size: larger; text-align: left"><div class="twelve columns">a simple customizable start page, a personal link collection</div></div>
+    <div class="row"><div class="twelve columns"><p>&nbsp;</p></div></div>
+    <div class="row"><div class="twelve columns">Never mind me talking much, try it out: <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>
+    </div>';
+    printHr();    
     echo '
     <h3 class="section-heading">Existing users</h3>    
     <div class="row" style="font-weight: bold; font-size: larger;"><div class="one columns">id</div><div class="one columns">email</div><div class="three columns">last login</div><div class="three columns">single login</div><div class="four columns">login with a cookie</div></div>';
@@ -49,7 +66,7 @@
         </div>';
       } // while row
     } // sql did work
-    printHr();    
+    printHr();
     echo '<h3 class="section-heading">Non-existing user</h3>
     <div class="row">
       <div class="one columns">3</div>
@@ -72,7 +89,7 @@
 
   <!-- Basic Page Needs -->
   <meta charset="utf-8">
-  <title>Start - user selection</title>
+  <title>widmedia.ch/start</title>
   <meta name="description" content="a modifiable page containing various links, intended to be used as a personal start page">
   <meta name="author" content="Daniel Widmer">
 
