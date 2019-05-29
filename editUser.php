@@ -19,7 +19,7 @@
           <div class="row">
             <div class="six columns"><input name="submit" type="submit" value="save changes"></div>
             <div class="six columns">delete this account (without any further confirmation): <br/>
-            <a href="editUser.php?do=3"><img src="images/delete.png" width="16" height="16" border="0"> delete</a></div>                        
+            <a href="editUser.php?do=3"><img src="images/delete.png" class="logoImg"> delete</a></div>                        
           </div>
           </form>';
   } // function

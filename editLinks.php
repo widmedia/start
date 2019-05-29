@@ -2,6 +2,7 @@
   require_once('functions.php');
   $dbConnection = initialize();
 
+  // TODO: instead of displaying it's own site when some change was ok, I should rather redirect to main.php and display some overlay like 'link changed ok'...
   
   function printEntryPoint($userid, $dbConnection) {
     echo '

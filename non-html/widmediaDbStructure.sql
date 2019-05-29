@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 28. Mai 2019 um 14:13
+-- Erstellungszeit: 29. Mai 2019 um 17:06
 -- Server-Version: 10.1.38-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -59,9 +59,11 @@ CREATE TABLE `links` (
 CREATE TABLE `login` (
   `id` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
-  `hasPW` tinyint(1) NOT NULL,
-  `pwHash` char(64) NOT NULL,
-  `magicKey` char(64) NOT NULL
+  `hasPw` tinyint(1) NOT NULL,
+  `hasKey` tinyint(1) NOT NULL,
+  `pwHash` char(255) NOT NULL,
+  `magicKey` char(24) NOT NULL,
+  `randCookie` char(64) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

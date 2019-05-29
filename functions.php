@@ -15,7 +15,7 @@ function initialize () {
       // - session is really destroyed (e.g. user logged out). In this case, print an error message
       if ($currentSiteUnsafe == '/start/main.php') { // redirect to index
         redirectRelative('index.php');
-        return(false);  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
+        return false;  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
       }
       
       die('login error. You might want to go to <a href="index.php">start page</a>'); // maybe to do: some more sophisticated real error handling
@@ -26,7 +26,7 @@ function initialize () {
   if ($dbConnection->connect_error) { 
     die('Connection to the data base failed. Please try again later and/or send me an email: sali@widmedia.ch');
   }
-  return($dbConnection);
+  return $dbConnection;
 }
   
 // function to output several links in a formatted way
@@ -49,8 +49,8 @@ function printLinks($edit, $userid, $category, $dbConnection) {
       if ($edit) {
         echo $divClass.'<span class="editLeft"><a href="link.php?id='.$row['id'].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></span>
            <span class="editRight">
-             <div style="padding-bottom: 2px;"><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png"   width="16" height="16" border="0"> edit</a></div>                   
-             <div style="padding-top:    2px;"><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" width="16" height="16" border="0"> delete</a></div>
+             <div style="padding-bottom: 2px;"><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png"   class="logoImg"> edit</a></div>                   
+             <div style="padding-top:    2px;"><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" class="logoImg"> delete</a></div>
            </span></div>';          
       } else {
         echo $divClass.'<a href="link.php?id='.$row["id"].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></div>';
@@ -82,9 +82,9 @@ function getCategory($userid, $category, $dbConnection) {
     $row = $result->fetch_assoc();
     $result->close(); // free result set
     
-    return ($row['text']);      
+    return $row['text'];      
   } else { 
-    return (0); // should never reach this point
+    return 0; // should never reach this point
   } // if 
 } // function
   
@@ -134,30 +134,30 @@ function getSingleLinkRow ($id, $userid, $dbConnection) {
   // need an additional userid condition. May be ignored by SQL because `id` is a primary key?
   if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.mysqli_real_escape_string($dbConnection, $id).'"')) {
     $row = $result->fetch_assoc();
-    return($row);
-  } else { return(false); }
+    return $row;
+  } else { return false; }
 } // function 
 
-// TODO:
-// a) password verification if one is set. 
-// b) without a password, there will be a special link to switch between users (some pseudo-obfuscation)
-function verifyCredentials ($temporaryUserid, $dbConnection) {
-  $internalUserid = makeSafeInt($temporaryUserid, 11); // might be unnecessary because it's safe already
-  if ($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE `id` = "'.$internalUserid.'"')) {
-    if ($result->num_rows == 1) { // we are sure the id exists and there is only one
-      if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$internalUserid.'"')) {
-        $_SESSION['userid'] = $internalUserid;
-        return true;
-      } // update query did work      
-    } // id does exist
-  } // select query did work
-  return false;
+// returns the userid which matches to the email given. Returns 0 if something went wrong
+function mail2userid ($emailSafe, $dbConnection) {
+  $userid = 0;
+  if ($result = $dbConnection->query('SELECT `id` FROM `user` WHERE `email` = "'.mysqli_real_escape_string($dbConnection, $emailSafe).'"')) {
+    if ($result->num_rows == 1) {
+      $row = $result->fetch_row();
+      $userid = $row[0];        
+    }
+  }
+  return $userid;
 }
 
 // deletes both the cookie and the session 
-function sessionAndCookieDelete () {        
+function sessionAndCookieDelete () {
+  $expire = time() - 42000; // some big enough value in the past to make sure things like summer time changes do not affect it  
+  
   $_SESSION['userid'] = 0; // the most important one, make sure it's really 0 (before deleting everything)
-  setcookie('userIdCookie', 0, time() - 42000);  // some big enough value in the past to make sure things like summer time changes do not affect it
+  setcookie('userIdCookie', 0, $expire); 
+  $_SESSION['randCookie'] = 0;
+  setcookie('randCookie', 0, $expire);
   
   // now the more generic stuff
   $_SESSION = array(); // unset all of the session variables.
@@ -167,7 +167,7 @@ function sessionAndCookieDelete () {
 // returns the userid integer
 function getUserid () {
   if (isset($_SESSION)) {
-    return ($_SESSION['userid']);
+    return $_SESSION['userid'];
   } else {
     return 0;  // rather return 0 (means userid is not valid) than false
   }
@@ -180,7 +180,17 @@ function makeSafeInt ($unsafe, $length) {
   if (filter_var($unsafe, FILTER_VALIDATE_INT)) { 
     $safe = $unsafe;
   }
-  return($safe);
+  return $safe;
+}
+
+// returns a 'safe' key. Key is defined as 24-long hex value
+function makeSafeKey($unsafe) {
+  $safe = 0;
+  $unsafe = substr($unsafe, 0, 24); // length-limited variable  
+  if (ctype_xdigit($unsafe)) {
+    $safe = $unsafe;
+  }
+  return $safe;
 }
 
 // does a (relative) redirect
