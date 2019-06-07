@@ -183,10 +183,12 @@ function makeSafeInt ($unsafe, $length) {
   return $safe;
 }
 
-// returns a 'safe' key. Key is defined as 24-long hex value
-function makeSafeKey($unsafe) {
+// returns a 'safe' character-as-hex value.
+// - key is defined as 24-long hex value
+// - randCookie is defined as 64-long hex value
+function makeSafeHex($unsafe, $length) {
   $safe = 0;
-  $unsafe = substr($unsafe, 0, 24); // length-limited variable  
+  $unsafe = substr($unsafe, 0, $length); // length-limited variable  
   if (ctype_xdigit($unsafe)) {
     $safe = $unsafe;
   }

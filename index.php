@@ -3,12 +3,15 @@
   $dbConnection = initialize();
   
   // Form processing
-  $doSafe     = makeSafeInt($_GET['do'], 1);       // this is an integer (range 1 to 2)
-  $useridSafe = makeSafeInt($_GET['userid'], 11);  
+  $doSafe           = makeSafeInt($_GET['do'], 1);       // this is an integer (range 1 to 2)
+  $useridGetSafe    = makeSafeInt($_GET['userid'], 11);  
   $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
-  $keySafe = makeSafeKey($_GET['key']);
+  $randCookieSafe   = makeSafeHex($_COOKIE['randCookie'], 64);
+  $keyGetSafe       = makeSafeHex($_GET['key'], 24);
   
-  // TODO: security measures. Prepared but not yet applied
+  // TODO: recheck security measures
+  // TODO: setting a cookie does not yet work correctly
+  // TODO: the old part, with the links and stuff does not work
   
   // this page has several entry points
   // a: unsecured
@@ -21,20 +24,16 @@
   // b3: login form done, do=4, (email/pw as POST). setCookie is checked or not
   
   
-  // NB: the difference between user and login, why not have only one?
+  // NB: the difference between user table and login table, why not have only one?
   // - I don't want sensitive info (email) in the login db. And user info will grow, custom colors and stuff...
   
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
-    if ($useridSafe) { // the $_GET-userid has higher priority than the cookie userid
-      if (verifyCredentials($dbConnection, true, $useridSafe, 'non-existing')) { 
-        if (makeSafeInt($_GET['setCookie'], 1)) {
-          $expire = 60 * 60 * 24 * 7 * 4; // valid for 4 weeks
-          setcookie('userIdCookie', $useridSafe, time() + $expire);      
-        }    
+    if ($useridGetSafe and $keyGetSafe) { // login like index.php?userid=2&key=9233B77ADC7F47F5A7F2EC5F the $_GET-userid has higher priority than the cookie userid
+      if (verifyCredentials($dbConnection, 3, $useridGetSafe, '', '', $keyGetSafe)) { 
         redirectRelative('main.php');    
-      }      
+      }
     } elseif ($useridCookieSafe) {    
-      if (verifyCredentials($dbConnection, true, $useridCookieSafe, 'non-existing')) {    
+      if (verifyCredentials($dbConnection, 2, $useridCookieSafe, '', $randCookieSafe, '')) {    
         redirectRelative('main.php');    
       }
     } // else, present the userid selection page
@@ -45,41 +44,69 @@
     sessionAndCookieDelete();
     redirectRelative('index.php'); // maybe TODO: display some 'logout successful' overlay on the index page?
   }
+ 
+  // function to do the login. Several options are available to log in
+  function verifyCredentials ($dbConnection, $hasPwCookieKey, $userid, $passwordUnsafe, $randCookie, $key) {
+    $loginOk = false;
+    $_SESSION['userid'] = 0;
 
-  // TODO:  
-  // - remove legacy stuff
-  // - without a password, verify the key
-  function verifyCredentials ($dbConnection, $legacyMode, $userid, $passwordUnsafe) {
-    if ($legacyMode) { // TODO: will be removed
-      $internalUserid = makeSafeInt($userid, 11); // might be unnecessary because it's safe already
-      if ($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE `id` = "'.$internalUserid.'"')) {
-        if ($result->num_rows == 1) { // we are sure the id exists and there is only one
-          if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$internalUserid.'"')) {
-            $_SESSION['userid'] = $internalUserid;
-            return true;
-          } // update query did work      
-        } // id does exist
+    if ($hasPwCookieKey == 1) {      
+      if ($result = $dbConnection->query('SELECT `hasPw` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a pw is enabled in the login-db
+        $row = $result->fetch_row();
+        if ($row[0] == 1) {
+          if ($result = $dbConnection->query('SELECT `pwHash` FROM `login` WHERE `userid` = "'.$userid.'"')) {
+            if ($result->num_rows == 1) {
+              $row = $result->fetch_row();
+              if (password_verify($passwordUnsafe, $row[0])) {                 
+                $loginOk = true;
+              } // password was verified
+            } // pwHash did get one result
+          } // pwHash query ok      
+        } // hasPw == 1
       } // select query did work
-    } else {      
-      if ($result = $dbConnection->query('SELECT `pwHash` FROM `login` WHERE `userid` = "'.$userid.'"')) {
-        if ($result->num_rows == 1) {
-          $row = $result->fetch_row();
-          if (password_verify($passwordUnsafe, $row[0])) { 
-            if ($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE `id` = "'.$userid.'"')) {
-              if ($result->num_rows == 1) { // we are sure the id exists and there is only one
-                if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"')) {
-                  $_SESSION['userid'] = $userid;
-                  return true;
-                } // update query did work      
-              } // id does exist
-            } // select query did work            
-          } // password was verified
-        } // pwHash did get one result
-      } // pwHash query ok      
-    } // legacy mode
-    return false;
-  }
+    } // hasPw
     
+    if ($hasPwCookieKey == 2) {
+      if ($result = $dbConnection->query('SELECT `randCookie` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a randcookie has been set in the login-db
+        $row = $result->fetch_row();
+        if ($row[0] != 0) { // new user has a zero
+          if ($row[0] == $randCookie) {                
+            $loginOk = true;            
+          } // 64hex value is correct
+        } // there is no zero in the data base
+      } // select query did work
+    } // hasCookie
+
+    if ($hasPwCookieKey == 3) {
+      if ($result = $dbConnection->query('SELECT `hasKey` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a key is enabled in the login-db
+        $row = $result->fetch_row();
+        if ($row[0] == 1) {
+          if ($result = $dbConnection->query('SELECT `magicKey` FROM `login` WHERE `userid` = "'.$userid.'"')) {
+            if ($result->num_rows == 1) {
+              $row = $result->fetch_row();
+              if ($row[0] == $key) {                 
+                $loginOk = true;
+              } // key was verified
+            } // select key did get one result
+          } // select query ok      
+        } // hasKey == 1
+      } // select query did work
+    } // hasKey
+
+    if ($loginOk) {
+      if ($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE `id` = "'.$userid.'"')) {
+        if ($result->num_rows == 1) { // we are sure the id exists and there is only one
+          if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"')) {
+            $_SESSION['userid'] = $userid;
+            return true;
+          } // update query did work
+        } // user exists
+      } // select query did work
+    } // loginOk
+  
+  } // function
+  
+  
   // inserts standard values into `links` and `categories` tables
   function newUserLinks ($dbConnection, $newUserid) {
     $result0 = $dbConnection->query('INSERT INTO `categories` (`id`, `userid`, `category`, `text`) VALUES (NULL, "'.$newUserid.'", "1", "News")');
@@ -322,12 +349,12 @@
           if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email
             $userid = mail2userid($emailUnsafe, $dbConnection);
             if ($userid) { // now, can do the check of the hash value
-              if (verifyCredentials($dbConnection, false, $userid, $passwordUnsafe)) {                
+              if (verifyCredentials($dbConnection, 1, $userid, $passwordUnsafe, '', '')) {                
                 if ($setCookieSafe == 1) {
                   $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
                   setcookie('userIdCookie', $userid, $expire); 
                   // NB: set a cookie for some random big number. Not the password itself and not the pwHash! Cannot use the magicKey either because this one is used on $_GET
-                  // TODO: not sure if I can use this to login on several devices ...
+                  // NB: will use this number on every cookie for this user, to login on several devices. One cannot guess other users random number                  
                   $hexStr64 = bin2hex(random_bytes(32)); 
                   setcookie('randCookie', $hexStr64, $expire);
                   if (!($result = $dbConnection->query('UPDATE `login` SET `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$userid.'"'))) {   
