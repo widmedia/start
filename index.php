@@ -133,7 +133,7 @@
     </div>    
     <div class="row" id="pwRow">
       <div class="two columns">password: </div>
-      <div class="ten columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
+      <div class="ten columns"><input name="password" type="password" maxlength="63" value="" size="20"> </div>
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
