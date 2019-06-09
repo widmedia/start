@@ -7,10 +7,8 @@
   $useridGetSafe    = makeSafeInt($_GET['userid'], 11);  
   $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
   $randCookieSafe   = makeSafeHex($_COOKIE['randCookie'], 64);
-  $keyGetSafe       = makeSafeHex($_GET['key'], 24);
   
   // TODO: recheck security measures
-  // TODO: setting a cookie does not yet work correctly
   // TODO: the old part, with the links and stuff does not work
   
   // this page has several entry points
@@ -19,7 +17,7 @@
   // a2: log out function. do=1. linked from within the secure site, doing the logout
   // a3: add new user function. do=2 (process form: do=3). linked from the insecure site. TODO: adapt editUser.
   // b: secured
-  // b1: link with userid and key: userid=7&key=ABCDEF1234... (do=0)
+  // b1: link with userid (do=0)
   // b2: direct visit (do=0), cookie is set
   // b3: login form done, do=4, (email/pw as POST). setCookie is checked or not
   
@@ -28,12 +26,12 @@
   // - I don't want sensitive info (email) in the login db. And user info will grow, custom colors and stuff...
   
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
-    if ($useridGetSafe and $keyGetSafe) { // login like index.php?userid=2&key=9233B77ADC7F47F5A7F2EC5F the $_GET-userid has higher priority than the cookie userid
-      if (verifyCredentials($dbConnection, 3, $useridGetSafe, '', '', $keyGetSafe)) { 
+    if ($useridGetSafe) { // login like index.php?userid=2 the $_GET-userid has higher priority than the cookie userid
+      if (verifyCredentials($dbConnection, 3, $useridGetSafe, '', '')) { 
         redirectRelative('main.php');    
       }
     } elseif ($useridCookieSafe) {    
-      if (verifyCredentials($dbConnection, 2, $useridCookieSafe, '', $randCookieSafe, '')) {    
+      if (verifyCredentials($dbConnection, 2, $useridCookieSafe, '', $randCookieSafe)) {    
         redirectRelative('main.php');    
       }
     } // else, present the userid selection page
@@ -46,12 +44,12 @@
   }
  
   // function to do the login. Several options are available to log in
-  function verifyCredentials ($dbConnection, $hasPwCookieKey, $userid, $passwordUnsafe, $randCookie, $key) {
+  function verifyCredentials ($dbConnection, $authMethod, $userid, $passwordUnsafe, $randCookie) {
     $loginOk = false;
     $_SESSION['userid'] = 0;
     $dispErrorMsg = 0;
 
-    if ($hasPwCookieKey == 1) {      
+    if ($authMethod == 1) {      
       if ($result = $dbConnection->query('SELECT `hasPw` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a pw is enabled in the login-db
         $row = $result->fetch_row();
         if ($row[0] == 1) {
@@ -67,7 +65,7 @@
       } else { $dispErrorMsg = 10; } // select query did work
     } // hasPw
     
-    if ($hasPwCookieKey == 2) {
+    if ($authMethod == 2) {
       if ($result = $dbConnection->query('SELECT `randCookie` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a randcookie has been set in the login-db
         $row = $result->fetch_row();
         if ($row[0]) { // new user has a zero
@@ -78,21 +76,14 @@
       } else { $dispErrorMsg = 20; } // select query did work
     } // hasCookie
 
-    if ($hasPwCookieKey == 3) {
-      if ($result = $dbConnection->query('SELECT `hasKey` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a key is enabled in the login-db
+    if ($authMethod == 3) {
+      if ($result = $dbConnection->query('SELECT `hasPw` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure the pw is disabled in the login-db
         $row = $result->fetch_row();
-        if ($row[0] == 1) {
-          if ($result = $dbConnection->query('SELECT `magicKey` FROM `login` WHERE `userid` = "'.$userid.'"')) {
-            if ($result->num_rows == 1) {
-              $row = $result->fetch_row();
-              if ($row[0] == $key) {                 
-                $loginOk = true;
-              } else { $dispErrorMsg = 34; } // key was verified
-            } else { $dispErrorMsg = 33; } // select key did get one result
-          } else { $dispErrorMsg = 32; } // select query ok      
-        } else { $dispErrorMsg = 31; } // hasKey == 1
+        if ($row[0] == 0) {
+          $loginOk = true;     
+        } else { $dispErrorMsg = 31; } // hasPw == 0
       } else { $dispErrorMsg = 30; } // select query did work
-    } // hasKey
+    } // the most unsafe one
 
     if ($dispErrorMsg > 0) { // NB: this message will be displayed at the very start of a page. Not really nice but that's fine
       printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when logging in (very helpful error message, I know...). Might try again?', 'nine', 'three');
@@ -132,16 +123,15 @@
   }
   
   // sets the value in the `login` table as well as the `links` table
-  function newUserLoginAndLinks ($dbConnection, $newUserid, $hasPw, $hasKey, $pw) {       
+  function newUserLoginAndLinks ($dbConnection, $newUserid, $hasPw, $pw) {       
     // password_hash("testUserPassword", PASSWORD_DEFAULT) returns '$2y$10$3qc.gl4eDPpXDqM7hDssquu4ThnJ9rbH7wrEkdTZd0Cg0NAjAzm.2';
     if ($hasPw == 1) {
       $pwHash = password_hash($pw, PASSWORD_DEFAULT); // $pw is potentially unsafe. Shouldn't be an issue as I store the hash
     } else {
       $pwHash = '';
     }
-    $magicKey = bin2hex(random_bytes(12)); // this is a 24char, random hex. I can generate it whether the hasKey is set or not
     
-    $result = $dbConnection->query('INSERT INTO `login` (`id`, `userid`, `hasPw`, `hasKey`, `pwHash`, `magicKey`, `randCookie`) VALUES (NULL, "'.$newUserid.'", "'.$hasPw.'", "'.$hasKey.'", "'.$pwHash.'", "'.$magicKey.'", "0")');
+    $result = $dbConnection->query('INSERT INTO `login` (`id`, `userid`, `hasPw`, `pwHash`, `randCookie`) VALUES (NULL, "'.$newUserid.'", "'.$hasPw.'", "'.$pwHash.'", "0")');
     if ($result) { 
       return newUserLinks($dbConnection, $newUserid); // Adding 1 user, 3 categories, 4 links
     } else {
@@ -155,9 +145,6 @@
     <form action="index.php?do=3" method="post">
     <div class="row">
       <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> password protection for this account</div>
-    </div>
-    <div class="row">
-      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="keyCheckBox" name="hasKey" value="1" onclick="keyToggle();"> "magic key" login for easier access<br>like <span id="magicKeyExample" style="text-decoration: line-through;">https://widmedia.ch/start/index.php?userid=2&key=9233B77ADC7F47F5A7F2EC5F</span></div>
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
@@ -181,25 +168,13 @@
     echo '<h2 class="section-heading">widmedia.ch/start</h2>
     <div class="row" style="font-weight: bold; font-size: larger; text-align: left"><div class="twelve columns">a simple customizable start page, a personal link collection</div></div>
     <div class="row"><div class="twelve columns"><p>&nbsp;</p></div></div>
-    <div class="row"><div class="twelve columns">Try it out: <a href="index.php?userid=2&key=9233B77ADC7F47F5A7F2EC5F" class="button button-primary">log in as the test user</a></div>
+    <div class="row"><div class="twelve columns">Try it out: <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>
     </div>';
     printHr();    
   } // function
   
   function printEntryPoint($dbConnection) {
-    // TODO: this will change...    
-    
-    // TODO
-    // I have a table `login`: id / userid / hasPw / hasKey / pwHash / magicKey. Use it for login-related stuff
-    // --> TODO: new user requires items there as well, delete an existing user has to remove it once more
-    // selection between
-    // a: login as test user, try stuff (test user does have both a pw and a key)
-    // b: TODO: prio_1: open a new account --> more or less the editUser page
-    // c: login as existing --> more or less the page below
-    
     printTitle();
-    
-    // TODO: do I need a forgot-pw function?
     echo '
     <h3 class="section-heading">Log in</h3>
     <form action="index.php?do=4" method="post">
@@ -210,8 +185,8 @@
     </form>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row" style="font-size: smaller;">
-      <div class="six columns"><a href="index.php?do=2">open a new account</a></div>
-      <div class="six columns"><a href="index.php?do=9">forgot my password</a></div>
+      <div class="six columns"><a href="index.php?do=2" class="button button-primary"><img src="images/plus_green.png" class="logoImg"> open a new account</a></div>
+      <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/question_green.png" class="logoImg"> (TODO) forgot my password</a></div>
     </div>
     ';
     printHr();
@@ -219,30 +194,27 @@
     echo '
     <div class="row"><div class="twelve columns"><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p></div></div>
     <h3 class="section-heading">...old stuff...</h3>    
-    <div class="row" style="font-weight: bold; font-size: larger;"><div class="one columns">id</div><div class="one columns">email</div><div class="three columns">last login</div><div class="three columns">single login</div><div class="four columns">login with a cookie</div></div>';
-      
-    $sqlString = 'SELECT * FROM `user` WHERE 1 ORDER BY `id` LIMIT 20';   // should be only 10 for now
-    if ($result = $dbConnection->query($sqlString)) {
-      while ($row = $result->fetch_assoc()) {
-        echo '
-        <div class="row">
-          <div class="one columns">'.$row['id'].'</div>
-          <div class="one columns">'.substr($row['email'], 0, 4).'...</div>
-          <div class="three columns">'.$row['lastLogin'].'</div>
-          <div class="three columns"><a href="index.php?userid='.$row['id'].'">single login</a></div>
-          <div class="four columns"><a href="index.php?userid='.$row['id'].'&setCookie=1">login and set a cookie</a></div>
-        </div>';
-      } // while row
-    } // sql did work
-    printHr();
-    echo '<h3 class="section-heading">Login with non-existing user</h3>
+    <div class="row" style="font-weight: bold; font-size: larger;">
+      <div class="one columns">id</div>
+      <div class="three columns">name</div>
+      <div class="eight columns">login link</div>
+    </div>
+    <div class="row">
+      <div class="one columns">1</div>
+      <div class="three columns">widmer</div>
+      <div class="eight columns"><a href="index.php?userid=1">login without pw (does not work)</a></div>
+    </div>
+    <div class="row">
+      <div class="one columns">2</div>
+      <div class="three columns">test</div>
+      <div class="eight columns"><a href="index.php?userid=2">login without pw (works)</a></div>
+    </div>
     <div class="row">
       <div class="one columns">3</div>
-      <div class="one columns">-</div>
-      <div class="three columns">-</div>
-      <div class="three columns"><a href="index.php?userid=3">single login</a></div>
-      <div class="four columns"><a href="index.php?userid=3&setCookie=1">login and set a cookie</a></div>
-    </div>';
+      <div class="three columns">non-existing</div>
+      <div class="eight columns"><a href="index.php?userid=3">login without a pw (does not work)</a></div>
+    </div>
+    ';
   } // function  
 ?>
 
@@ -271,30 +243,14 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
   
-  <script>
-  function countChecks() {       
-    if ((document.getElementById("keyCheckBox").checked == 0) && (document.getElementById("pwCheckBox").checked == 0)) {
-      document.getElementById("newUserSubmit").disabled = true;
-    } else {
-      document.getElementById("newUserSubmit").disabled = false;
+  <script> 
+    function pwToggle() {
+      if (document.getElementById("pwCheckBox").checked == 1) {
+        document.getElementById("pwRow").style.display = "initial";
+      } else {
+        document.getElementById("pwRow").style.display = "none";      
+      }
     }
-  }  
-  function pwToggle() {
-    if (document.getElementById("pwCheckBox").checked == 1) {
-      document.getElementById("pwRow").style.display = "initial";
-    } else {
-      document.getElementById("pwRow").style.display = "none";      
-    }
-    countChecks();
-  }
-  function keyToggle() {       
-    if (document.getElementById("keyCheckBox").checked == 1) {
-      document.getElementById("magicKeyExample").style.textDecoration = "none";
-    } else {
-      document.getElementById("magicKeyExample").style.textDecoration = "line-through";      
-    }
-    countChecks();
-  }
   </script>
 
 </head>
@@ -305,9 +261,9 @@
       // possible actions: 
       // 0/non-existing: normal case
       // 1=> logout
-      // 2=> add new user: TODO: some design stuff, email send
-      // 3=> process adding new user
-      // 4=> process login form (email/pw/setCookie). TODO: not yet finished
+      // 2=> add new user
+      // 3=> process adding new user. TODO: email send
+      // 4=> process login form (email/pw/setCookie)
       
       if ($doSafe == 0) { // valid use case. Entry point of this site
         printEntryPoint($dbConnection);        
@@ -326,40 +282,38 @@
           printNewUserForm();
           break;
         case 3:
-          // step 1: user data need to make sense: email-addr valid, at least one check-box selected
+          // step 1: user data need to make sense: email-addr valid
           $hasPw = makeSafeInt($_POST['hasPw'],1);
-          $hasKey = makeSafeInt($_POST['hasKey'],1);
-          // at least one must be set, otherwise -> go back
-          if (($hasPw) == 1 or ($hasKey == 1)) { // have at least one of the check-boxes 
-            if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
-              // check whether email already exists
-              $emailSqlSafe = mysqli_real_escape_string($dbConnection, $emailUnsafe);
-              if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
-                if ($result->num_rows == 0) {
-                  if (($hasPw == 0) or (($hasPw == 1) and (strlen($passwordUnsafe) > 3))) {                    
-                    if ($result = $dbConnection->query('INSERT INTO `user` (`id`, `email`, `lastLogin`) VALUES (NULL, "'.$emailSqlSafe.'", CURRENT_TIMESTAMP)')) { 
-                      $newUserid = $dbConnection->insert_id;
-                      if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $hasKey, $passwordUnsafe)) {
-                        // TODO: message below, design and stuff
-                        printConfirmation('Did add a new user', 'Userid: '.$newUserid.'. Login with this user: <a href="index.php?userid='.$newUserid.'">login</a>', 'six', 'six');
-                        // TODO: send a confirmation mail with a link, valid for 24hours
-                      } else { $dispErrorMsg = 36; } // links, categories insert
-                    } else { $dispErrorMsg = 35; } // user insert                        
-                  } else { $dispErrorMsg = 34; echo 'you selected a password but the password is too short (at least 4 characters)'; } // if password, then length ok TODO: error message
-                } else { $dispErrorMsg = 33; echo 'An account with this email address is already existing'; } // email does not exist. TODO: error message
-              } else { $dispErrorMsg = 32; } // query worked
-            } else { $dispErrorMsg = 31; } // have a valid email 
-          } else { $dispErrorMsg = 30; } // have at least one of the check-boxes           
+         
+          if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
+            // check whether email already exists
+            $emailSqlSafe = mysqli_real_escape_string($dbConnection, $emailUnsafe);
+            if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
+              if ($result->num_rows == 0) {
+                if (($hasPw == 0) or (($hasPw == 1) and (strlen($passwordUnsafe) > 3))) {                    
+                  if ($result = $dbConnection->query('INSERT INTO `user` (`id`, `email`, `lastLogin`) VALUES (NULL, "'.$emailSqlSafe.'", CURRENT_TIMESTAMP)')) { 
+                    $newUserid = $dbConnection->insert_id;
+                    if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {
+                      // TODO: message below, design and stuff
+                      printConfirmation('Did add a new user', 'Userid: '.$newUserid.'. <a href="index.php">Go to login page</a>', 'six', 'six');
+                      // TODO: send a confirmation mail with a link, valid for 24hours
+                    } else { $dispErrorMsg = 36; } // links, categories insert
+                  } else { $dispErrorMsg = 35; } // user insert                        
+                } else { $dispErrorMsg = 34; echo 'you selected a password but the password is too short (at least 4 characters)'; } // if password, then length ok TODO: error message
+              } else { $dispErrorMsg = 33; echo 'An account with this email address is already existing'; } // email does not exist. TODO: error message
+            } else { $dispErrorMsg = 32; } // query worked
+          } else { $dispErrorMsg = 31; } // have a valid email 
+                  
           break;        
         case 4:
           if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email
             $userid = mail2userid($emailUnsafe, $dbConnection);
             if ($userid) { // now, can do the check of the hash value
-              if (verifyCredentials($dbConnection, 1, $userid, $passwordUnsafe, '', '')) {                
+              if (verifyCredentials($dbConnection, 1, $userid, $passwordUnsafe, '')) {                
                 if ($setCookieSafe == 1) {
                   $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
                   setcookie('userIdCookie', $userid, $expire); 
-                  // NB: set a cookie for some random big number. Not the password itself and not the pwHash! Cannot use the magicKey either because this one is used on $_GET
+                  // NB: set a cookie for some random big number. Not the password itself and not the pwHash!
                   // NB: will use this number on every cookie for this user, to login on several devices. One cannot guess other users random number                  
                   $hexStr64 = bin2hex(random_bytes(32)); 
                   setcookie('randCookie', $hexStr64, $expire);
