@@ -49,6 +49,7 @@
   function verifyCredentials ($dbConnection, $hasPwCookieKey, $userid, $passwordUnsafe, $randCookie, $key) {
     $loginOk = false;
     $_SESSION['userid'] = 0;
+    $dispErrorMsg = 0;
 
     if ($hasPwCookieKey == 1) {      
       if ($result = $dbConnection->query('SELECT `hasPw` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a pw is enabled in the login-db
@@ -59,22 +60,22 @@
               $row = $result->fetch_row();
               if (password_verify($passwordUnsafe, $row[0])) {                 
                 $loginOk = true;
-              } // password was verified
-            } // pwHash did get one result
-          } // pwHash query ok      
-        } // hasPw == 1
-      } // select query did work
+              } else { $dispErrorMsg = 14; } // password was verified
+            } else { $dispErrorMsg = 13; } // pwHash did get one result
+          } else { $dispErrorMsg = 12; } // pwHash query ok      
+        } else { $dispErrorMsg = 11; } // hasPw == 1
+      } else { $dispErrorMsg = 10; } // select query did work
     } // hasPw
     
     if ($hasPwCookieKey == 2) {
       if ($result = $dbConnection->query('SELECT `randCookie` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a randcookie has been set in the login-db
         $row = $result->fetch_row();
-        if ($row[0] != 0) { // new user has a zero
+        if ($row[0]) { // new user has a zero
           if ($row[0] == $randCookie) {                
             $loginOk = true;            
-          } // 64hex value is correct
-        } // there is no zero in the data base
-      } // select query did work
+          } else { $dispErrorMsg = 22; } // 64hex value is correct
+        } else { $dispErrorMsg = 21; }  // there is no zero in the data base
+      } else { $dispErrorMsg = 20; } // select query did work
     } // hasCookie
 
     if ($hasPwCookieKey == 3) {
@@ -86,12 +87,16 @@
               $row = $result->fetch_row();
               if ($row[0] == $key) {                 
                 $loginOk = true;
-              } // key was verified
-            } // select key did get one result
-          } // select query ok      
-        } // hasKey == 1
-      } // select query did work
+              } else { $dispErrorMsg = 34; } // key was verified
+            } else { $dispErrorMsg = 33; } // select key did get one result
+          } else { $dispErrorMsg = 32; } // select query ok      
+        } else { $dispErrorMsg = 31; } // hasKey == 1
+      } else { $dispErrorMsg = 30; } // select query did work
     } // hasKey
+
+    if ($dispErrorMsg > 0) { // NB: this message will be displayed at the very start of a page. Not really nice but that's fine
+      printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when logging in (very helpful error message, I know...). Might try again?', 'nine', 'three');
+    }
 
     if ($loginOk) {
       if ($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE `id` = "'.$userid.'"')) {
@@ -102,8 +107,9 @@
           } // update query did work
         } // user exists
       } // select query did work
-    } // loginOk
-  
+    }  // loginOk 
+    
+    return false; 
   } // function
   
   
