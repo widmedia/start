@@ -22,16 +22,42 @@
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">
   <link rel="stylesheet" href="css/custom.css" type="text/css">
-
+ 
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
-
+  <script> 
+    function msgShow() {
+      document.getElementById("overlay").style.display = "block";
+      fade(document.getElementById("overlay"));
+    }
+    function fade(element) {
+    var op = 1;  // initial opacity
+    var timer = setInterval(function () {
+        if (op <= 0.1){
+            clearInterval(timer);
+            element.style.display = 'none';
+        }
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op -= op * 0.1;
+      }, 300);
+    }
+  </script>
 </head>
-<body>
-  <div class="section categories noBottom">
-    <div class="container">
-    <?php  
+
+  
+    <?php
+      $msgSafe = makeSafeInt($_GET['msg'], 1);
+      if ($msgSafe > 0) {
+        echo '<body onLoad="msgShow();">'; 
+        printMessage($msgSafe); 
+      } else {
+        echo '<body>';
+      }
+      
+      echo '<div class="section categories noBottom"><div class="container">';
+
       $userid = getUserid(); 
       echo '<h3 class="section-heading">'.getCategory($userid, 1, $dbConnection).'</h3><div class="row">';
       printLinks(false, $userid, 1, $dbConnection);

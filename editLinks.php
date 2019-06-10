@@ -153,14 +153,14 @@
             if (testUserCheck($userid)) {                      
               $sqlInsert = 'INSERT INTO `links` (`id`, `userid`, `category`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$userid.'", "'.$categorySafe.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'", "0")';
               if ($result = $dbConnection->query($sqlInsert)) {
-                printConfirmation('Link added', '<a href="'.$linkHtmlSafe.'" target="_blank" class="button button-primary">'.$textHtmlSafe.'</a><span class="counter">0</span>', 'three', 'nine');
+                redirectRelative('main.php?msg=5');
               } else { $dispErrorMsg = 22; } // insert query did work            
             } else { $dispErrorMsg = 21; } // testuser check
           } else { $dispErrorMsg = 20; } // have a validUrl. Some additional error info is printed when this one happens because it depends on a user input
           break;
         case 3: // I want to reset all the link counters to 0          
           if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
-            printConfirmation('Counters have been reset to 0', '<a href="index.php" class="button button-primary">home</a>', 'six', 'six');            
+            redirectRelative('main.php?msg=4');            
           } else { $dispErrorMsg = 30; } // update query did work
           break;
         case 4: // edit one link
@@ -175,7 +175,7 @@
             if (testUserCheck($userid)) {               
               if ($singleRow = getSingleLinkRow($idSafe, $userid, $dbConnection)) {
                 if ($dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) { // should return true
-                  printConfirmation('Did delete one link', 'Deleted the '.htmlspecialchars($singleRow['text']).'-link', 'nine', 'three');                
+                  redirectRelative('main.php?msg=3');               
                 } else { $dispErrorMsg = 53; } // delete sql did work out
               } else { $dispErrorMsg = 52; } // select sql did work out
             } else { $dispErrorMsg = 51; } // testuser check
@@ -187,7 +187,7 @@
               if ($linkOk) {                                                                         
                 $sql = 'UPDATE `links` SET `text` = "'.$textSqlSafe.'", `link` = "'.$linkSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'" LIMIT 1';
                 if ($result = $dbConnection->query($sql)) {
-                  printConfirmation('Link edited', '<a href="'.$linkHtmlSafe.'" target="_blank" class="button button-primary">'.$textHtmlSafe.'</a>', 'three', 'nine');
+                  redirectRelative('main.php?msg=1');
                 } else { $dispErrorMsg = 63; } // update sql did work out            
               } else { $dispErrorMsg = 62; } // url check did work out
             } else { $dispErrorMsg = 61; } // testuser check           
@@ -199,7 +199,7 @@
             if ($categorySafe > 0) {            
               if ($result = $dbConnection->query('UPDATE `categories` SET `text` = "'.$textSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe .'" LIMIT 1')) {
                 $textHtmlSafe = htmlspecialchars($textUnsafe);          
-                printConfirmation('Category name edited', '<a class="button differentColor" href="main.php"><img src="images/home_green.png" class="logoImg"> back to home</a>', 'nine', 'three');
+                redirectRelative('main.php?msg=2');
               } else { $dispErrorMsg = 72; } // update sql did work out                        
             } else { $dispErrorMsg = 71; } // category check did work out
           } else { $dispErrorMsg = 70; } // testuser check    

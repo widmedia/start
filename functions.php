@@ -74,6 +74,37 @@ function printConfirmation($heading, $text, $leftSize, $rightSize) {
     <div class="'.$rightSize.' columns linktext">&nbsp;</div>
   </div>';                           
 } 
+
+// prints some disappearing message box
+function printMessage ($messageNumber) {
+  $message = '';
+
+  switch ($messageNumber) {
+    case 1: 
+      $message = 'link has been updated';          
+      break;  
+    case 2: 
+      $message = 'category has been updated';
+      break;
+    case 3: 
+      $message = 'link has been deleted';
+      break;
+    case 4: 
+      $message = 'counters have been reset to 0';
+      break;
+    case 5: 
+      $message = 'link has been added';
+      break;
+    default: 
+      $message = 'updated';
+    } // switch
+
+  echo '
+  <div style="width: 100%; margin:auto;">
+    <div id="overlay" class="button differentColor" style="position: relative; display: none; top: 5rem; background-color: rgba(255, 47, 25, 0.5); z-index: 2;">'.$message.'</div>
+  </div>';
+}
+
  
 // function returns the text of the category. If something does not work as expected, 0 is returned
 function getCategory($userid, $category, $dbConnection) {
