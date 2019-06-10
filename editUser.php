@@ -44,18 +44,7 @@
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
   <link rel="stylesheet" href="css/custom.css">
-  <!-- some site specific code (might be moved to custom.css later) -->
-  <style>
-    button.link {
-      background: none;
-      color: inherit;
-      border: none; 
-      padding: 0;
-      font: inherit;      
-      border-bottom: 1px solid #444; 
-      cursor: pointer;
-    }
-  </style>
+  
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
@@ -108,9 +97,10 @@
                 if ($rowCnt == 1) {                
                   $result_delLinks = $dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
                   $result_delCategories = $dbConnection->query('DELETE FROM `categories` WHERE `userid` = "'.$userid.'"');
+                  $result_delLogin = $dbConnection->query('DELETE FROM `login` WHERE `userid` = "'.$userid.'"');
                   $result_delUser = $dbConnection->query('DELETE FROM `user` WHERE `id` = "'.$userid.'"');
                   
-                  if ($result_delLinks and $result_delCategories and $result_delUser) {
+                  if ($result_delLinks and $result_delCategories and $result_delLogin and $result_delUser) {
                     sessionAndCookieDelete();
                     echo '<h2 class="section-heading">Deleting the account did work</h2>';
                     echo '<div class="row">

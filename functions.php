@@ -150,6 +150,17 @@ function mail2userid ($emailSafe, $dbConnection) {
   return $userid;
 }
 
+//
+function testUserCheck($userid) {
+  if ($userid == 2) {
+    printConfirmation('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2">open account</a><br><br>(btw: you may ignore the error message below)', 'ten', 'two');
+    return false;
+  } else {
+    return true;
+  }
+
+}
+
 // deletes both the cookie and the session 
 function sessionAndCookieDelete () {
   $expire = time() - 42000; // some big enough value in the past to make sure things like summer time changes do not affect it  
