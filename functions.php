@@ -95,6 +95,9 @@ function printMessage ($messageNumber) {
     case 5: 
       $message = 'link has been added';
       break;
+    case 6: 
+      $message = 'user account has been updated';
+      break;
     default: 
       $message = 'updated';
     } // switch
