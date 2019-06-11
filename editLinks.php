@@ -17,7 +17,7 @@
     echo '</div><div class="row"><div class="twelve columns">&nbsp;</div></div>';                    
     echo '
     <div class="row">
-      <div class="six columns"><a class="button differentColor" href="editUser.php?do=2"><img src="images/db_green.png" class="logoImg"> account management</a></div>
+      <div class="six columns"><a class="button differentColor" href="editUser.php?do=1"><img src="images/db_green.png" class="logoImg"> account management</a></div>
       <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/zero_green.png" class="logoImg"> set all link counters to zero</a></div>
     </div>
     </div> <!-- /container -->';

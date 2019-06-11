@@ -8,23 +8,18 @@
   $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
   $randCookieSafe   = makeSafeHex($_COOKIE['randCookie'], 64);
   
-  // TODO: recheck security measures
-  // TODO: the old part, with the links and stuff does not work
+  // TODO: recheck security measures  
   
   // this page has several entry points
   // a: unsecured
   // a1: first visit, direct visit (people typing widmedia.ch/start)
   // a2: log out function. do=1. linked from within the secure site, doing the logout
-  // a3: add new user function. do=2 (process form: do=3). linked from the insecure site. TODO: adapt editUser.
+  // a3: add new user function. do=2 (process form: do=3). linked from the insecure site
   // b: secured
   // b1: link with userid (do=0)
   // b2: direct visit (do=0), cookie is set
   // b3: login form done, do=4, (email/pw as POST). setCookie is checked or not
-  
-  
-  // NB: the difference between user table and login table, why not have only one?
-  // - I don't want sensitive info (email) in the login db. And user info will grow, custom colors and stuff...
-  
+    
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
     if ($useridGetSafe) { // login like index.php?userid=2 the $_GET-userid has higher priority than the cookie userid
       if (verifyCredentials($dbConnection, 3, $useridGetSafe, '', '')) { 
@@ -50,10 +45,10 @@
     $dispErrorMsg = 0;
 
     if ($authMethod == 1) {      
-      if ($result = $dbConnection->query('SELECT `hasPw` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a pw is enabled in the login-db
+      if ($result = $dbConnection->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$userid.'"')) { // make sure a pw is enabled in the login-db
         $row = $result->fetch_row();
         if ($row[0] == 1) {
-          if ($result = $dbConnection->query('SELECT `pwHash` FROM `login` WHERE `userid` = "'.$userid.'"')) {
+          if ($result = $dbConnection->query('SELECT `pwHash` FROM `user` WHERE `id` = "'.$userid.'"')) {
             if ($result->num_rows == 1) {
               $row = $result->fetch_row();
               if (password_verify($passwordUnsafe, $row[0])) {                 
@@ -66,7 +61,7 @@
     } // hasPw
     
     if ($authMethod == 2) {
-      if ($result = $dbConnection->query('SELECT `randCookie` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure a randcookie has been set in the login-db
+      if ($result = $dbConnection->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"')) { // make sure a randcookie has been set in the login-db
         $row = $result->fetch_row();
         if ($row[0]) { // new user has a zero
           if ($row[0] == $randCookie) {                
@@ -77,7 +72,7 @@
     } // hasCookie
 
     if ($authMethod == 3) {
-      if ($result = $dbConnection->query('SELECT `hasPw` FROM `login` WHERE `userid` = "'.$userid.'"')) { // make sure the pw is disabled in the login-db
+      if ($result = $dbConnection->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$userid.'"')) { // make sure the pw is disabled in the login-db
         $row = $result->fetch_row();
         if ($row[0] == 0) {
           $loginOk = true;     
@@ -122,7 +117,7 @@
     }    
   }
   
-  // sets the value in the `login` table as well as the `links` table
+  // sets the value in the `user` table as well as the `links` table
   function newUserLoginAndLinks ($dbConnection, $newUserid, $hasPw, $pw) {       
     // password_hash("testUserPassword", PASSWORD_DEFAULT) returns '$2y$10$3qc.gl4eDPpXDqM7hDssquu4ThnJ9rbH7wrEkdTZd0Cg0NAjAzm.2';
     if ($hasPw == 1) {
@@ -130,8 +125,8 @@
     } else {
       $pwHash = '';
     }
-    
-    $result = $dbConnection->query('INSERT INTO `login` (`id`, `userid`, `hasPw`, `pwHash`, `randCookie`) VALUES (NULL, "'.$newUserid.'", "'.$hasPw.'", "'.$pwHash.'", "0")');
+           
+    $result = $dbConnection->query('UPDATE `user` SET `hasPw` = "'.$hasPw.'", `pwHash` = "'.$pwHash.'", `randCookie` = "0" WHERE `id` = "'.$newUserid.'"');
     if ($result) { 
       return newUserLinks($dbConnection, $newUserid); // Adding 1 user, 3 categories, 4 links
     } else {
@@ -157,7 +152,7 @@
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
-      <div class="twelve columns"><input id="newUserSubmit" name="create" type="submit" value="create account"></div>
+      <div class="twelve columns"><input name="create" type="submit" value="create account"></div>
     </div>
     </form>
     ';   
@@ -317,7 +312,7 @@
                   // NB: will use this number on every cookie for this user, to login on several devices. One cannot guess other users random number                  
                   $hexStr64 = bin2hex(random_bytes(32)); 
                   setcookie('randCookie', $hexStr64, $expire);
-                  if (!($result = $dbConnection->query('UPDATE `login` SET `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$userid.'"'))) {   
+                  if (!($result = $dbConnection->query('UPDATE `user` SET `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$userid.'"'))) {   
                     die('setting the cookie did not work'); // TODO: not a very meaningful message
                   } // updating the random string did work ok
                 } // setCookie is selected
