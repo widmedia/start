@@ -135,6 +135,7 @@
   }  
   
   // maybe to do: this could be merged with a similar function (printUserEdit) in editUser.php
+  // TODO: add a warning when not using a pw
   function printNewUserForm() {
     echo '<h3 class="section-heading">New account</h3>
     <form action="index.php?do=3" method="post">

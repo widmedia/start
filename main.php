@@ -55,10 +55,11 @@
       } else {
         echo '<body>';
       }
-      
-      echo '<div class="section categories noBottom"><div class="container">';
-
       $userid = getUserid(); 
+      if ($userid == 2) { echo '<div style="width: 100%; margin:auto;"><div class="button differentColor" style="position: relative; display: block; top: 1rem; background-color: rgba(255, 47, 25, 0.5); z-index: 3;">This is the (somewhat limited) test account</div></div>'; }
+
+      echo '<div class="section categories noBottom"><div class="container">';
+      
       echo '<h3 class="section-heading">'.getCategory($userid, 1, $dbConnection).'</h3><div class="row">';
       printLinks(false, $userid, 1, $dbConnection);
       
