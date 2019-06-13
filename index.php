@@ -82,10 +82,7 @@
       } else { $dispErrorMsg = 2; } // numRows == 1
     } else { $dispErrorMsg = 1; } // select query did work
 
-
-    if ($dispErrorMsg > 0) { // NB: this message will be displayed at the very start of a page. Not really nice but that's fine
-      printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when logging in (very helpful error message, I know...). Might try again?', 'nine', 'three');
-    }
+    printError($dispErrorMsg); // NB: this message will be displayed at the very start of a page. Not really nice but that's fine
 
     if ($loginOk) {
       if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"')) {
@@ -315,10 +312,14 @@
                 if (($hasPw == 0) or (($hasPw == 1) and (strlen($passwordUnsafe) > 3))) {                    
                   if ($result = $dbConnection->query('INSERT INTO `user` (`id`, `email`, `lastLogin`) VALUES (NULL, "'.$emailSqlSafe.'", CURRENT_TIMESTAMP)')) { 
                     $newUserid = $dbConnection->insert_id;
-                    if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {
-                      // TODO: message below, design and stuff
-                      if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) { 
-                        printConfirmation('Did add a new user', 'Userid: '.$newUserid.'. <a href="index.php">Go to login page</a>', 'six', 'six');                     
+                    if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {                      
+                      if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) {
+                        if ($hasPw == 1) {
+                          $loginText = '<a href="index.php">Go to login page</a>';
+                        } else {
+                          $loginText = '<a href="index.php?userid='.$newUserid.'">login</a>';
+                        }
+                        printConfirm('Did add a new user', 'Userid: '.$newUserid.'. '.$loginText);                        
                       } else { $dispErrorMsg = 37; } // newUserEmail
                     } else { $dispErrorMsg = 36; } // links, categories insert
                   } else { $dispErrorMsg = 35; } // user insert                        
@@ -365,7 +366,7 @@
                   } else {
                     $loginLink = $loginLink.'?userid='.$useridGetSafe;  
                   }
-                  printConfirmation('Verified', 'Thank you. Your email address has been verified and your account is no fully functional. Please <a href="'.$loginLink.'">log in</a>.', 'nine', 'three');
+                  printConfirm('Verified', 'Thank you. Your email address has been verified and your account is now fully functional. Please <a href="'.$loginLink.'">log in</a>.');
                 } else { $dispErrorMsg = 53; } // update query
               } else { $dispErrorMsg = 52; } // 1 result
             } else { $dispErrorMsg = 51; } // select query
@@ -373,10 +374,8 @@
           break;
         default: 
           $dispErrorMsg = 1;
-        } // switch  
-        if ($dispErrorMsg > 0) {
-          printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?', 'nine', 'three');
-        }
+        } // switch
+        printError($dispErrorMsg);
       } // action == integer          
       echo '</div> <!-- /container -->';  
       printFooter(); 

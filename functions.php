@@ -65,15 +65,24 @@ function printLinks($edit, $userid, $category, $dbConnection) {
   } // if  
 } // function 
 
-//prints the h3 title and one row
-function printConfirmation($heading, $text, $leftSize, $rightSize) {
+//prints the h4 title and one row
+function printConfirm($heading, $text) {
   echo '
-  <h3 class="section-heading">'.$heading.'</h3>
   <div class="row">
-    <div class="'.$leftSize.' columns linktext">'.$text.'</div>
-    <div class="'.$rightSize.' columns linktext">&nbsp;</div>
-  </div>';                           
+    <div class="twelve columns textBox">
+      <h4>'.$heading.'</h4>
+      <p>'.$text.'</p>
+    </div>        
+  </div>  
+  ';
 } 
+
+// checks whether the number is bigger than 0 and displays some very generic failure message
+function printError($errorMsgNum) {
+  if ($errorMsgNum > 0) {
+    printConfirm('Error', '"Something" at step '.$errorMsgNum.' went wrong when processing user input data (very helpful error message, I know...). Might try again?');
+  }
+}
 
 // function returns the text of the category. If something does not work as expected, 0 is returned
 function getCategory($userid, $category, $dbConnection) {
@@ -153,7 +162,7 @@ function mail2userid ($emailSafe, $dbConnection) {
 //
 function testUserCheck($userid) {
   if ($userid == 2) {
-    printConfirmation('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2">open account</a><br><br>(btw: you may ignore the error message below)', 'ten', 'two');
+    printConfirm('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2">open account</a><br><br>(btw: you may ignore the error message below)');
     return false;
   } else {
     return true;

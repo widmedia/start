@@ -43,7 +43,8 @@
     <div class="row">
       <div class="twelve columns"><input name="create" type="submit" value="save changes"></div>
     </div>
-    <div class="row"><div class="twelve columns"><hr /></div></div>          
+    <div class="row"><div class="twelve columns"><hr /></div></div>
+    <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
       <div class="twelve columns"><a href="editUser.php?do=2" class="button differentColor"><img src="images/delete.png" class="logoImg"> delete this account (without any further confirmation)</a></div>
     </div>
@@ -107,6 +108,7 @@
           } else { $dispErrorMsg = 10; } // have a valid userid
           break;        
         case 2: // delete an existing user
+          // todo: might want to verify the pw before deleting an account? (if there is a pw set)
           if ($userid) { // have a valid userid
             if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
               // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
@@ -126,7 +128,7 @@
                          </div>';                  
                   } else { $dispErrorMsg = 24; } // deleting did work                
                 } else { $dispErrorMsg = 23; } // id does exists
-              } else { printConfirmation('Forbidden', 'Sorry but the test user account and the admin account cannot be deleted', 'nine', 'three'); }
+              } else { printConfirm('Forbidden', 'Sorry but the test user account and the admin account cannot be deleted'); }
             } else { $dispErrorMsg = 21; } // select query did work              
           } else { $dispErrorMsg = 20; } // have a valid userid
           break;
@@ -183,12 +185,7 @@
         default: 
           $dispErrorMsg = 1;
         } // switch
-        if ($dispErrorMsg > 0) {
-          printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?', 'nine', 'three');
-          echo '</div> <!-- /container -->';
-          printFooter();
-          die(); // finish the php part
-        } // dispErrorMsg > 0        
+        printError($dispErrorMsg);
         echo '</div> <!-- /container -->';
         printFooter();
       } // action = integer          

@@ -138,82 +138,78 @@
       } elseif ($doSafe > 0) {
         // TODO: if-else-switch monster construct is kind of, well, a monster... and still growing
         switch ($doSafe) {
-        case 1: // present links of one category, have category name as text field           
-          echo '<form action="editLinks.php?do=7" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
-          <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="change category name"></form>
-          <div class="row">';
-          printLinks(true, $userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
-          echo '</div>';          
-          printSingleLinkFields($categorySafe, 2, 'Add', 0, 'https://', 'text');          
-          break;  
-        case 2: // add a link 
-          if ($linkOk) { // have a validUrl
-            if (testUserCheck($userid)) {                      
-              $sqlInsert = 'INSERT INTO `links` (`id`, `userid`, `category`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$userid.'", "'.$categorySafe.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'", "0")';
-              if ($result = $dbConnection->query($sqlInsert)) {
-                redirectRelative('main.php?msg=5');
-              } else { $dispErrorMsg = 22; } // insert query did work            
-            } else { $dispErrorMsg = 21; } // testuser check
-          } else { $dispErrorMsg = 20; } // have a validUrl. Some additional error info is printed when this one happens because it depends on a user input
-          break;
-        case 3: // I want to reset all the link counters to 0          
-          if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
-            redirectRelative('main.php?msg=4');            
-          } else { $dispErrorMsg = 30; } // update query did work
-          break;
-        case 4: // edit one link
-          if ($idSafe > 0) {
-            if ($singleRow = getSingleLinkRow($idSafe, $userid, $dbConnection)) {
-              printSingleLinkFields(0, 6, 'Edit', $idSafe, $singleRow['link'], $singleRow['text']);
-            } else { $dispErrorMsg = 61; }
-          } else { $dispErrorMsg = 60; }
-          break;
-        case 5: // delete a link. Displaying a confirmation message                 
-          if ($idSafe > 0) {
-            if (testUserCheck($userid)) {               
+          case 1: // present links of one category, have category name as text field           
+            echo '<form action="editLinks.php?do=7" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
+            <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="change category name"></form>
+            <div class="row">';
+            printLinks(true, $userid, $categorySafe, $dbConnection); // this function is defined in the functions.php file
+            echo '</div>';          
+            printSingleLinkFields($categorySafe, 2, 'Add', 0, 'https://', 'text');          
+            break;  
+          case 2: // add a link 
+            if ($linkOk) { // have a validUrl
+              if (testUserCheck($userid)) {                      
+                $sqlInsert = 'INSERT INTO `links` (`id`, `userid`, `category`, `text`, `link`, `cntTot`) VALUES (NULL, "'.$userid.'", "'.$categorySafe.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'", "0")';
+                if ($result = $dbConnection->query($sqlInsert)) {
+                  redirectRelative('main.php?msg=5');
+                } else { $dispErrorMsg = 22; } // insert query did work            
+              } else { $dispErrorMsg = 21; } // testuser check
+            } else { $dispErrorMsg = 20; } // have a validUrl. Some additional error info is printed when this one happens because it depends on a user input
+            break;
+          case 3: // I want to reset all the link counters to 0          
+            if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
+              redirectRelative('main.php?msg=4');            
+            } else { $dispErrorMsg = 30; } // update query did work
+            break;
+          case 4: // edit one link
+            if ($idSafe > 0) {
               if ($singleRow = getSingleLinkRow($idSafe, $userid, $dbConnection)) {
-                if ($dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) { // should return true
-                  redirectRelative('main.php?msg=3');               
-                } else { $dispErrorMsg = 53; } // delete sql did work out
-              } else { $dispErrorMsg = 52; } // select sql did work out
-            } else { $dispErrorMsg = 51; } // testuser check
-          } else { $dispErrorMsg = 50; } // integer check did work out          
-          break;
-        case 6: // update a link
-          if ($idSafe > 0) {            
-            if (testUserCheck($userid)) {  
-              if ($linkOk) {                                                                         
-                $sql = 'UPDATE `links` SET `text` = "'.$textSqlSafe.'", `link` = "'.$linkSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'" LIMIT 1';
-                if ($result = $dbConnection->query($sql)) {
-                  redirectRelative('main.php?msg=1');
-                } else { $dispErrorMsg = 63; } // update sql did work out            
-              } else { $dispErrorMsg = 62; } // url check did work out
-            } else { $dispErrorMsg = 61; } // testuser check           
-          } else { $dispErrorMsg = 60; } // id check did work out            
-          break;
-        case 7: // update a category name
-          $textSqlSafe = mysqli_real_escape_string($dbConnection, $textUnsafe);
-          if (testUserCheck($userid)) { 
-            if ($categorySafe > 0) {            
-              if ($result = $dbConnection->query('UPDATE `categories` SET `text` = "'.$textSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe .'" LIMIT 1')) {
-                $textHtmlSafe = htmlspecialchars($textUnsafe);          
-                redirectRelative('main.php?msg=2');
-              } else { $dispErrorMsg = 72; } // update sql did work out                        
-            } else { $dispErrorMsg = 71; } // category check did work out
-          } else { $dispErrorMsg = 70; } // testuser check    
-          break;          
-        default: 
-          $dispErrorMsg = 1;
+                printSingleLinkFields(0, 6, 'Edit', $idSafe, $singleRow['link'], $singleRow['text']);
+              } else { $dispErrorMsg = 61; }
+            } else { $dispErrorMsg = 60; }
+            break;
+          case 5: // delete a link. Displaying a confirmation message                 
+            if ($idSafe > 0) {
+              if (testUserCheck($userid)) {               
+                if ($singleRow = getSingleLinkRow($idSafe, $userid, $dbConnection)) {
+                  if ($dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) { // should return true
+                    redirectRelative('main.php?msg=3');               
+                  } else { $dispErrorMsg = 53; } // delete sql did work out
+                } else { $dispErrorMsg = 52; } // select sql did work out
+              } else { $dispErrorMsg = 51; } // testuser check
+            } else { $dispErrorMsg = 50; } // integer check did work out          
+            break;
+          case 6: // update a link
+            if ($idSafe > 0) {            
+              if (testUserCheck($userid)) {  
+                if ($linkOk) {                                                                         
+                  $sql = 'UPDATE `links` SET `text` = "'.$textSqlSafe.'", `link` = "'.$linkSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'" LIMIT 1';
+                  if ($result = $dbConnection->query($sql)) {
+                    redirectRelative('main.php?msg=1');
+                  } else { $dispErrorMsg = 63; } // update sql did work out            
+                } else { $dispErrorMsg = 62; } // url check did work out
+              } else { $dispErrorMsg = 61; } // testuser check           
+            } else { $dispErrorMsg = 60; } // id check did work out            
+            break;
+          case 7: // update a category name
+            $textSqlSafe = mysqli_real_escape_string($dbConnection, $textUnsafe);
+            if (testUserCheck($userid)) { 
+              if ($categorySafe > 0) {            
+                if ($result = $dbConnection->query('UPDATE `categories` SET `text` = "'.$textSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe .'" LIMIT 1')) {
+                  $textHtmlSafe = htmlspecialchars($textUnsafe);          
+                  redirectRelative('main.php?msg=2');
+                } else { $dispErrorMsg = 72; } // update sql did work out                        
+              } else { $dispErrorMsg = 71; } // category check did work out
+            } else { $dispErrorMsg = 70; } // testuser check    
+            break;          
+          default: 
+            $dispErrorMsg = 1;
         } // switch
-        if ($dispErrorMsg > 0) {
-          printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when processing user input data (very helpful error message, I know...). Might try again?', 'nine', 'three');
-          if ($dispErrorMsg == 20) { // validUrl-check did not work out
-            printConfirmation('Wrong URL', 'For the URL input, you need to have something in the format "http://somewebsite.ch" or "https://somewebsite.ch"', 'nine', 'three');
-          }
-          echo '</div> <!-- /container -->';
-          printFooter();
-          die(); // finish the php part
-        } // dispErrorMsg > 0        
+        
+        printError($dispErrorMsg);
+        if ($dispErrorMsg == 20) { // validUrl-check did not work out. additional message here. Not very elegant. TODO?
+          printConfirm('Wrong URL', 'For the URL input, you need to have something in the format "http://somewebsite.ch" or "https://somewebsite.ch"');
+        }                  
         echo '</div> <!-- /container -->';
         printFooter();
       } // action = integer          
