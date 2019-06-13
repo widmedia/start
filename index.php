@@ -15,6 +15,7 @@
   // a1: first visit, direct visit (people typing widmedia.ch/start)
   // a2: log out function. do=1. linked from within the secure site, doing the logout
   // a3: add new user function. do=2 (process form: do=3). linked from the insecure site
+  // a4: confirm email. do=5
   // b: secured
   // b1: link with userid (do=0)
   // b2: direct visit (do=0), cookie is set
@@ -132,6 +133,47 @@
     }    
   }  
   
+  // TODO: description
+  function newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe) {
+    $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
+    $emailBody = '
+    Sali,
+    
+    Thank you for opening an account on widmedia.ch/start.
+    You need to confirm your email address within 24 hours to fully use your account. Please click on the link below to do so:
+    https://widmedia.ch/start/index.php?do=5&userid='.$newUserid.'&ver='.$hexStr64.'    
+    
+    ';
+    if ($hasPw == 1) {
+      $emailBody = $emailBody.'
+      You did select password protection for your account. Please use the form on https://widmedia.ch/start/index.php#login to log in.
+      ';
+    } else {
+      $emailBody = $emailBody.'
+      You did not select password protection. This means you (and, btw. everybody else) may login with this link:
+      https://widmedia.ch/start/index.php?userid='.$newUserid.'
+      Please store this link for future use as either a bookmark or your browser starting page.
+      ';
+    }
+    $emailBody = $emailBody.'
+    Have fun and best regards,
+    Daniel from widmedia
+    
+    -- 
+    Contact (English or German): sali@widmedia.ch
+    ';
+    
+    if ($result = $dbConnection->query('UPDATE `user` SET `verCode` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) {   
+      if (mail($emailSqlSafe, 'Your new account on widmedia.ch/start', $emailBody)) {
+        return true;
+      } // mail send
+    } // update query
+    
+    // should not reach this point
+    return false;    
+  }
+  
+  
   // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
   function printNewUserForm() {
     echo '<h3 class="section-heading">New account</h3>
@@ -169,7 +211,7 @@
   function printEntryPoint($dbConnection) {
     printTitle();
     echo '
-    <h3 class="section-heading">Log in</h3>
+    <h3 class="section-heading"><span id="login">Log in</span></h3>
     <form action="index.php?do=4" method="post">
     <div class="row"><div class="three columns">email: </div><div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div></div>
     <div class="row"><div class="three columns">password: </div><div class="nine columns"><input name="password" type="password" maxlength="63" value="" required size="20"></div></div>
@@ -275,8 +317,9 @@
                     $newUserid = $dbConnection->insert_id;
                     if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {
                       // TODO: message below, design and stuff
-                      printConfirmation('Did add a new user', 'Userid: '.$newUserid.'. <a href="index.php">Go to login page</a>', 'six', 'six');
-                      // TODO: send a confirmation mail with a link, valid for 24hours
+                      if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) { 
+                        printConfirmation('Did add a new user', 'Userid: '.$newUserid.'. <a href="index.php">Go to login page</a>', 'six', 'six');                     
+                      } else { $dispErrorMsg = 37; } // newUserEmail
                     } else { $dispErrorMsg = 36; } // links, categories insert
                   } else { $dispErrorMsg = 35; } // user insert                        
                 } else { $dispErrorMsg = 34; echo 'you selected a password but the password is too short (at least 4 characters)'; } // if password, then length ok TODO: error message
@@ -305,7 +348,29 @@
               } else { $dispErrorMsg = 42; } // verification ok
             } else { $dispErrorMsg = 41; } // email found in db
           } else { $dispErrorMsg = 40; } // valid email          
-          break;          
+          break; 
+        case 5:          
+          if ($useridGetSafe > 2) {
+            // NB: I'm not even looking at the date (mentioned a 24 hour limit in the email). That's fine. I'll just delete accounts which have not been verified after some days...
+            $verGet = makeSafeHex($_GET['ver'], 64);
+            $verSqlSafe = mysqli_real_escape_string($dbConnection, $verGet);
+            if ($result = $dbConnection->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$useridGetSafe.'" AND `verCode` = "'.$verSqlSafe.'"')) {
+              if ($result->num_rows == 1) {
+                $row = $result->fetch_row();
+                $hasPw = $row[0];
+                if ($result = $dbConnection->query('UPDATE `user` SET `verified` = "1" WHERE `id` = "'.$useridGetSafe.'"')) {   
+                  $loginLink = 'https://widmedia.ch/start/index.php';
+                  if ($hasPw == 1) {
+                    $loginLink = $loginLink.'#login';  
+                  } else {
+                    $loginLink = $loginLink.'?userid='.$useridGetSafe;  
+                  }
+                  printConfirmation('Verified', 'Thank you. Your email address has been verified and your account is no fully functional. Please <a href="'.$loginLink.'">log in</a>.', 'nine', 'three');
+                } else { $dispErrorMsg = 53; } // update query
+              } else { $dispErrorMsg = 52; } // 1 result
+            } else { $dispErrorMsg = 51; } // select query
+          } else { $dispErrorMsg = 50; } // valid userid         
+          break;
         default: 
           $dispErrorMsg = 1;
         } // switch  

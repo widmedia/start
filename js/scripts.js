@@ -9,22 +9,17 @@ function pwToggle() {
   }
 }
 
-// displays a message and does then the fade out of this
-function msgShow() {
-  document.getElementById("overlay").style.display = "block";
-  fade(document.getElementById("overlay"));
-}
-
 // fades out a message and does a display: none when it's fully faded out
-function fade(element) {
-var op = 1;  // initial opacity
-var timer = setInterval(function () {
-    if (op <= 0.1){
+function overlayMsgFade() {
+  element = document.getElementById("overlay");
+  var op = 1;  // initial opacity
+  var timer = setInterval(function () {
+    if (op <= 0.25){
         clearInterval(timer);
         element.style.display = 'none';
     }
     element.style.opacity = op;
     element.style.filter = 'alpha(opacity=' + op * 100 + ")";
     op -= op * 0.1;
-  }, 300);
+  }, 350);
 }

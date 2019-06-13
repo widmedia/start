@@ -1,6 +1,55 @@
 <?php
   require_once('functions.php');
   $dbConnection = initialize();
+  
+  // prints some disappearing message box
+  function printMessage ($messageNumber) {
+    switch ($messageNumber) {
+      case 1: 
+        $message = 'link has been updated';
+        break;
+      case 2: 
+        $message = 'category has been updated';
+        break;
+      case 3: 
+        $message = 'link has been deleted';
+        break;
+      case 4: 
+        $message = 'counters have been reset to 0';
+        break;
+      case 5: 
+        $message = 'link has been added';
+        break;
+      case 6: 
+        $message = 'user account has been updated';
+        break;
+      default: 
+        $message = 'updated';
+    } // switch
+    echo '<div style="width: 100%; margin:auto;"><div id="overlay" class="overlayMessage" style="background-color: rgba(255, 47, 25, 1.0); z-index: 2;">'.$message.'</div></div>';
+  }  
+  
+  // prints a message when logged in as a test user
+  function printMsgTestUser ($userid) {
+    if ($userid == 2) { 
+      echo '<div style="width: 100%; margin:auto;"><div class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.5); z-index: 3;">This is the (somewhat limited) test account</div></div>'; 
+    }
+  } 
+
+  // prints a message when the email of this account has not been verified
+  function printMsgAccountVerify ($dbConnection, $userid) {
+    $verified = false;
+    if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
+      $row = $result->fetch_row();
+      if ($row[0] == 1) {
+        $verified = true;
+      } // verified
+    } // select query
+    
+    if (!$verified) {
+      echo '<div style="width: 100%; margin:auto;"><div class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.5); z-index: 4;">Your email address has not yet been verifified. Please do so within 24 hours, otherwise your account will be deleted.</div></div>';
+    }
+  } // function
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,13 +78,15 @@
     <?php
       $msgSafe = makeSafeInt($_GET['msg'], 1);
       if ($msgSafe > 0) {
-        echo '<body onLoad="msgShow();">'; 
+        echo '<body onLoad="overlayMsgFade();">'; 
         printMessage($msgSafe); 
       } else {
         echo '<body>';
       }
-      $userid = getUserid(); 
-      if ($userid == 2) { echo '<div style="width: 100%; margin:auto;"><div class="button differentColor" style="position: relative; display: block; top: 1rem; background-color: rgba(255, 47, 25, 0.5); z-index: 3;">This is the (somewhat limited) test account</div></div>'; }
+      $userid = getUserid();
+      
+      printMsgTestUser($userid);      
+      printMsgAccountVerify($dbConnection, $userid);
 
       echo '<div class="section categories noBottom"><div class="container">';
       

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 11. Jun 2019 um 14:29
+-- Erstellungszeit: 13. Jun 2019 um 13:18
 -- Server-Version: 10.1.38-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -62,7 +62,10 @@ CREATE TABLE `user` (
   `lastLogin` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `hasPw` tinyint(1) NOT NULL,
   `pwHash` char(255) NOT NULL,
-  `randCookie` char(64) NOT NULL
+  `randCookie` char(64) NOT NULL,
+  `verified` tinyint(1) NOT NULL DEFAULT '0',
+  `verCode` char(64) NOT NULL,
+  `verDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
