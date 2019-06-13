@@ -9,11 +9,13 @@
   } // function
 
   function printUserEdit($row) {    
-    $hasPwText = '';
-    $displayPwRows = 'none';
+    $hasPwText       = '';
+    $displayPwRows   = 'none';
+    $pwFieldRequired = '';
     if ($row['hasPw'] == 1) { 
-      $hasPwText = 'checked'; 
-      $displayPwRows = 'initial';
+      $hasPwText       = 'checked'; 
+      $displayPwRows   = 'initial';
+      $pwFieldRequired = 'required';
     }
     echo '
     <h3 class="section-heading">Userid: '.$row['id'].'</h3>
@@ -22,18 +24,18 @@
       <div class="twelve columns">last login: '.$row['lastLogin'].'</div>
     </div>
     <div class="row">
-      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();"> password protection for this account</div>
+      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();"> password protection for this account <div id="noPwWarning" class="noPwWarning" style="display: none;">Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself</div></div>
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
       <div class="two columns">email: </div>
       <div class="ten columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20"></div>
     </div>
-    <div class="row" id="pwRow" style="display: '.$displayPwRows.';">
+    <div class="row" id="pwOldRow" style="display: '.$displayPwRows.';">
       <div class="two columns">old password: </div>
-      <div class="ten columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
+      <div class="ten columns"><input name="password" type="password" maxlength="63" value="" '.$pwFieldRequired.' size="20"></div>
     </div>
-    <div class="row" id="pwNewRow" style="display: '.$displayPwRows.';">
+    <div class="row" id="pwRow" style="display: '.$displayPwRows.';">
       <div class="two columns">new password: </div>
       <div class="ten columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20"></div>
     </div>
@@ -51,8 +53,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!-- Basic Page Needs -->
   <meta charset="utf-8">
   <title>Add, edit or delete user accounts</title>
   <meta name="description" content="page to add, edit or delete user accounts">
@@ -61,27 +61,17 @@
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- FONT -->
-  <link rel="stylesheet" href="css/font.css" type="text/css">
-
   <!-- CSS -->
+  <link rel="stylesheet" href="css/font.css" type="text/css">
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
-  <link rel="stylesheet" href="css/custom.css">
-  
+  <link rel="stylesheet" href="css/custom.css">  
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
-  <script> 
-    function pwToggle() {
-      if (document.getElementById("pwCheckBox").checked == 1) {
-        document.getElementById("pwNewRow").style.display = "initial";
-      } else {
-        document.getElementById("pwNewRow").style.display = "none"; 
-      }
-    }
-  </script>
+  
+  <script defer type="text/javascript" src="js/scripts.js"></script>  
 </head>
 <body>
   <!-- Primary Page Layout -->

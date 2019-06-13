@@ -39,60 +39,58 @@
   }
  
   // function to do the login. Several options are available to log in
-  function verifyCredentials ($dbConnection, $authMethod, $userid, $passwordUnsafe, $randCookie) {
+  function verifyCredentials ($dbConnection, $authMethod, $userid, $passwordUnsafe, $randCookieInput) {
     $loginOk = false;
     $_SESSION['userid'] = 0;
     $dispErrorMsg = 0;
-
-    if ($authMethod == 1) {      
-      if ($result = $dbConnection->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$userid.'"')) { // make sure a pw is enabled in the login-db
-        $row = $result->fetch_row();
-        if ($row[0] == 1) {
-          if ($result = $dbConnection->query('SELECT `pwHash` FROM `user` WHERE `id` = "'.$userid.'"')) {
-            if ($result->num_rows == 1) {
-              $row = $result->fetch_row();
-              if (password_verify($passwordUnsafe, $row[0])) {                 
-                $loginOk = true;
-              } else { $dispErrorMsg = 14; } // password was verified
-            } else { $dispErrorMsg = 13; } // pwHash did get one result
-          } else { $dispErrorMsg = 12; } // pwHash query ok      
-        } else { $dispErrorMsg = 11; } // hasPw == 1
-      } else { $dispErrorMsg = 10; } // select query did work
-    } // hasPw
     
-    if ($authMethod == 2) {
-      if ($result = $dbConnection->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"')) { // make sure a randcookie has been set in the login-db
-        $row = $result->fetch_row();
-        if ($row[0]) { // new user has a zero
-          if ($row[0] == $randCookie) {                
-            $loginOk = true;            
-          } else { $dispErrorMsg = 22; } // 64hex value is correct
-        } else { $dispErrorMsg = 21; }  // there is no zero in the data base
-      } else { $dispErrorMsg = 20; } // select query did work
-    } // hasCookie
+    if ($result = $dbConnection->query('SELECT `hasPw`, `pwHash`, `randCookie` FROM `user` WHERE `id` = "'.$userid.'"')) { // make sure a pw is enabled in the login-db
+      if ($result->num_rows == 1) {
+        $row = $result->fetch_assoc();
+        $hasPw = $row['hasPw'];
+        $pwHash = $row['pwHash'];
+        $randCookie = $row['randCookie'];
 
-    if ($authMethod == 3) {
-      if ($result = $dbConnection->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$userid.'"')) { // make sure the pw is disabled in the login-db
-        $row = $result->fetch_row();
-        if ($row[0] == 0) {
-          $loginOk = true;     
-        } else { $dispErrorMsg = 31; } // hasPw == 0
-      } else { $dispErrorMsg = 30; } // select query did work
-    } // the most unsafe one
+        switch ($authMethod) {
+          case 1: // with a pw
+            if ($hasPw == 1) {
+              if (password_verify($passwordUnsafe, $pwHash)) {                 
+                $loginOk = true;
+              } else { $dispErrorMsg = 11; } // password was verified
+            } else { $dispErrorMsg = 10; } // hasPw == 1
+            break;
+        
+          case 2: // with a Cookie
+            if ($randCookie) { // new user has a zero
+              if ($randCookie == $randCookieInput) {                
+                $loginOk = true;            
+              } else { $dispErrorMsg = 21; } // 64hex value is correct
+            } else { $dispErrorMsg = 20; }  // there is no zero in the data base
+            break;
+
+          case 3: // id only. the most unsafe one
+            $row = $result->fetch_row();
+            if ($hasPw == 0) {
+              $loginOk = true;     
+            } else { $dispErrorMsg = 30; } // hasPw == 0
+            break;
+          
+          default:
+            $dispErrorMsg = 3;
+        } // switch        
+      } else { $dispErrorMsg = 2; } // numRows == 1
+    } else { $dispErrorMsg = 1; } // select query did work
+
 
     if ($dispErrorMsg > 0) { // NB: this message will be displayed at the very start of a page. Not really nice but that's fine
       printConfirmation('Error', '"Something" at step '.$dispErrorMsg.' went wrong when logging in (very helpful error message, I know...). Might try again?', 'nine', 'three');
     }
 
     if ($loginOk) {
-      if ($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE `id` = "'.$userid.'"')) {
-        if ($result->num_rows == 1) { // we are sure the id exists and there is only one
-          if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"')) {
-            $_SESSION['userid'] = $userid;
-            return true;
-          } // update query did work
-        } // user exists
-      } // select query did work
+      if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"')) {
+        $_SESSION['userid'] = $userid;
+        return true;
+      } // update query did work
     }  // loginOk 
     
     return false; 
@@ -134,13 +132,12 @@
     }    
   }  
   
-  // maybe to do: this could be merged with a similar function (printUserEdit) in editUser.php
-  // TODO: add a warning when not using a pw
+  // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
   function printNewUserForm() {
     echo '<h3 class="section-heading">New account</h3>
     <form action="index.php?do=3" method="post">
     <div class="row">
-      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> password protection for this account</div>
+      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> password protection for this account <div id="noPwWarning" class="noPwWarning" style="display: none;">Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself</div></div>
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
@@ -217,8 +214,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!-- Basic Page Needs -->
   <meta charset="utf-8">
   <title>widmedia.ch/start</title>
   <meta name="description" content="a modifiable page containing various links, intended to be used as a personal start page">
@@ -226,11 +221,9 @@
 
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- FONT -->
-  <link rel="stylesheet" href="css/font.css" type="text/css">
-
+  
   <!-- CSS -->
+  <link rel="stylesheet" href="css/font.css" type="text/css">
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">
   <link rel="stylesheet" href="css/custom.css" type="text/css">
@@ -239,16 +232,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
   
-  <script> 
-    function pwToggle() {
-      if (document.getElementById("pwCheckBox").checked == 1) {
-        document.getElementById("pwRow").style.display = "initial";
-      } else {
-        document.getElementById("pwRow").style.display = "none";      
-      }
-    }
-  </script>
-
+  <script defer type="text/javascript" src="js/scripts.js"></script>
 </head>
 <body>
   <div class="section categories noBottom">

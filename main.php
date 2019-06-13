@@ -5,8 +5,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!-- Basic Page Needs -->
   <meta charset="utf-8">
   <title>Startpage</title>
   <meta name="description" content="a modifiable page containing various links, intended to be used as a personal start page">
@@ -15,10 +13,8 @@
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- FONT -->
-  <link rel="stylesheet" href="css/font.css" type="text/css">
-
   <!-- CSS -->
+  <link rel="stylesheet" href="css/font.css" type="text/css">
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">
   <link rel="stylesheet" href="css/custom.css" type="text/css">
@@ -26,26 +22,9 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
-  <script> 
-    function msgShow() {
-      document.getElementById("overlay").style.display = "block";
-      fade(document.getElementById("overlay"));
-    }
-    function fade(element) {
-    var op = 1;  // initial opacity
-    var timer = setInterval(function () {
-        if (op <= 0.1){
-            clearInterval(timer);
-            element.style.display = 'none';
-        }
-        element.style.opacity = op;
-        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-        op -= op * 0.1;
-      }, 300);
-    }
-  </script>
+  
+  <script type="text/javascript" src="js/scripts.js"></script>  
 </head>
-
   
     <?php
       $msgSafe = makeSafeInt($_GET['msg'], 1);

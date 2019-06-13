@@ -47,12 +47,30 @@
   min-height: 38px;
   padding: 0 20px;
   color: #80b466;
-  text-align: left;         
+  text-align: left;
+  font-weight: 600;  
   background-color: rgba(0, 113, 255, 0.3);
   border-radius: 8px;
   border: 1px solid #80b466;      
   box-sizing: border-box; 
-}  
+}
+.noPwWarning {
+  display: block;
+  min-height: 38px;
+  padding: 0 20px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  box-sizing: border-box; 
+  color: #ABCC14;
+  background-color: rgba(255, 47, 25, 0.3); /* red */ 
+  border: none;
+}
+  
 /* Hero
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .phones {
