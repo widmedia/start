@@ -12,14 +12,14 @@ function pwToggle() {
 // fades out a message and does a display: none when it's fully faded out
 function overlayMsgFade() {
   element = document.getElementById("overlay");
-  var op = 1;  // initial opacity
+  var op = 0.8;  // initial opacity
   var timer = setInterval(function () {
-    if (op <= 0.25){
+    if (op <= 0.3){
         clearInterval(timer);
         element.style.display = 'none';
     }
     element.style.opacity = op;
     element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-    op -= op * 0.1;
-  }, 350);
+    op -= op * 0.05;
+  }, 200);
 }

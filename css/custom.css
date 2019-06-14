@@ -71,6 +71,8 @@
   border: none;
 }
 .overlayMessage {
+  width: 100%; 
+  margin: auto; 
   top: 3rem; 
   height: 38px;
   padding: 0 20px;

@@ -32,8 +32,7 @@ function initialize () {
 // function to output several links in a formatted way
 // creating a div for every link and div-rows for every $module-th entry
 // has a limit of 100 links per category
-function printLinks($edit, $userid, $category, $dbConnection) {
-  $sql = 'SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100';
+function printLinks($dbConnection, $edit, $userid, $category) {
     
   // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
   $modulo = 3;
@@ -43,7 +42,7 @@ function printLinks($edit, $userid, $category, $dbConnection) {
     $divClass = '<div class="three columns linktext">';      
   }
    
-  if ($result = $dbConnection->query($sql)) {
+  if ($result = $dbConnection->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
     $counter = 0;        
     while ($row = $result->fetch_assoc()) {
       if ($edit) {
@@ -77,21 +76,31 @@ function printConfirm($heading, $text) {
   ';
 } 
 
+// prints some disappearing message box. used on main.php and index.php
+function printMessage ($messageNumber) {    
+  if     ($messageNumber == 1) { $message = 'link has been updated'; } // ugly but still nicer than a switch statement with all the break commands
+  elseif ($messageNumber == 2) { $message = 'category has been updated'; }
+  elseif ($messageNumber == 3) { $message = 'link has been deleted'; }
+  elseif ($messageNumber == 4) { $message = 'counters have been reset to 0'; }
+  elseif ($messageNumber == 5) { $message = 'link has been added'; }
+  elseif ($messageNumber == 6) { $message = 'user account has been updated'; }
+  elseif ($messageNumber == 7) { $message = 'logout successful, cookie has been deleted as well'; }
+  else                         { $message = 'updated'; }    
+  echo '<div id="overlay" class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.8); z-index: 2;">'.$message.'</div>';
+}  
+
 // checks whether the number is bigger than 0 and displays some very generic failure message
 function printError($errorMsgNum) {
   if ($errorMsgNum > 0) {
-    printConfirm('Error', '"Something" at step '.$errorMsgNum.' went wrong when processing user input data (very helpful error message, I know...). Might try again?');
+    printConfirm('Error', '"Something" at step '.$errorMsgNum.' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br/>If you think you did everything right, please send me an email: sali@widmedia.ch');
   }
 }
 
 // function returns the text of the category. If something does not work as expected, 0 is returned
-function getCategory($userid, $category, $dbConnection) {
-  $sqlString = 'SELECT * FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1';
-  if ($result = $dbConnection->query($sqlString)) {
+function getCategory($dbConnection, $userid, $category) {
+  if ($result = $dbConnection->query('SELECT `text` FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1')) {
     $row = $result->fetch_assoc();
-    $result->close(); // free result set
-    
-    return $row['text'];      
+    return $row['text'];
   } else { 
     return 0; // should never reach this point
   } // if 
@@ -137,29 +146,7 @@ function printFooter() {
   </div>'; 
 } // function
   
-// returning a single row for the matching id. 
-// NB: id will get sql-escaped, userid not.
-function getSingleLinkRow ($id, $userid, $dbConnection) {
-  // need an additional userid condition. May be ignored by SQL because `id` is a primary key?
-  if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.mysqli_real_escape_string($dbConnection, $id).'"')) {
-    $row = $result->fetch_assoc();
-    return $row;
-  } else { return false; }
-} // function 
-
-// returns the userid which matches to the email given. Returns 0 if something went wrong
-function mail2userid ($emailSafe, $dbConnection) {
-  $userid = 0;
-  if ($result = $dbConnection->query('SELECT `id` FROM `user` WHERE `email` = "'.mysqli_real_escape_string($dbConnection, $emailSafe).'"')) {
-    if ($result->num_rows == 1) {
-      $row = $result->fetch_row();
-      $userid = $row[0];        
-    }
-  }
-  return $userid;
-}
-
-//
+// checks whether userid is 2 (= test user)
 function testUserCheck($userid) {
   if ($userid == 2) {
     printConfirm('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2">open account</a><br><br>(btw: you may ignore the error message below)');
