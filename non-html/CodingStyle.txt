@@ -3,14 +3,8 @@ than:       echo "<div class='row'><div class='twelve columns'><hr /></div></div
 
 php processes 'some string' faster than "some string" because the single quote notation does not replace any $variables (which is a bad thing anyway)
 
-
-following files do NOT require a logged-in user:
-- index.php
-- about.php
-
-following files do require a logged-in user:
-- main.php
-- link.php
-- editUser.php
-- editLink.php
+I'm using if/elseif-chains (like: "elseif ($doSafe == 4)") rather than switch statements as the switch statement is quite ugly in php: 
+- it requires a break-command
+- it doesn't have parenthesis {} and 
+- generally requires more lines 
 

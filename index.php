@@ -108,8 +108,11 @@
     } else {
       $pwHash = '';
     }
-           
-    $result = $dbConnection->query('UPDATE `user` SET `hasPw` = "'.$hasPw.'", `pwHash` = "'.$pwHash.'", `randCookie` = "0" WHERE `id` = "'.$newUserid.'"');
+  
+    // NB: set a cookie for some random big number. Not the password itself and not the pwHash!
+    // NB: will use this number on every cookie for this user, to login on several devices. One cannot guess other users random number                  
+    $hexStr64 = bin2hex(random_bytes(32)); // some random value, used for cookie 
+    $result = $dbConnection->query('UPDATE `user` SET `hasPw` = "'.$hasPw.'", `pwHash` = "'.$pwHash.'", `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"');
     if ($result) { 
       return newUserLinks($dbConnection, $newUserid); // Adding 1 user, 3 categories, 4 links
     } else {
@@ -319,11 +322,11 @@
                 if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {                      
                   if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) {
                     if ($hasPw == 1) {
-                      $loginText = '<a href="index.php">Go to login page</a>';
+                      $loginText = '<a href="index.php">go to login page</a>';
                     } else {
                       $loginText = '<a href="index.php?userid='.$newUserid.'">login</a>';
                     }
-                    printConfirm('Did add a new user', 'Userid: '.$newUserid.'. '.$loginText);                        
+                    printConfirm('Your account has been created', 'Congratulations and thanks. Your account is now ready. Please '.$loginText);                        
                   } else { $dispErrorMsg = 37; } // newUserEmail
                 } else { $dispErrorMsg = 36; } // links, categories insert
               } else { $dispErrorMsg = 35; } // user insert                        
@@ -339,14 +342,10 @@
             if ($setCookieSafe == 1) {
               $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
               setcookie('userIdCookie', $userid, $expire); 
-              // NB: set a cookie for some random big number. Not the password itself and not the pwHash!
-              // NB: will use this number on every cookie for this user, to login on several devices. One cannot guess other users random number                  
-              $hexStr64 = bin2hex(random_bytes(32)); 
-              setcookie('randCookie', $hexStr64, $expire);
-              if (!($result = $dbConnection->query('UPDATE `user` SET `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$userid.'"'))) {   
-                printConfirm('Error', 'Storing the cookie in the data base did not work');
-                die();
-              } // updating the random string did work ok
+              if ($result = $dbConnection->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' )) { // this is just a random number which has been set at user creation
+                $row = $result->fetch_row();
+                setcookie('randCookie', $row[0], $expire);
+              } else { $dispErrorMsg = 43; } // select query
             } // setCookie is selected
             redirectRelative('main.php');
           } else { $dispErrorMsg = 42; } // verification ok
