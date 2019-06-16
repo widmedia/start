@@ -199,7 +199,7 @@
     printHr();
     echo '
     <div class="row">
-      <div class="eight columns"><img src="images/teaser.gif" width="600" height="273" style="border: 1px black solid;"></div>
+      <div class="eight columns"><img src="images/teaser.gif" width="400" height="182" style="border: 1px black solid;" class="u-max-full-width"></div>
       <div class="four columns textBox"><br /><ul>
         <li>your personal list of links</li>
         <li>sorted by occurence</li>
