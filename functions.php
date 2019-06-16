@@ -67,11 +67,9 @@ function printLinks($dbConnection, $edit, $userid, $category) {
 //prints the h4 title and one row
 function printConfirm($heading, $text) {
   echo '
-  <div class="row">
-    <div class="twelve columns textBox">
-      <h4>'.$heading.'</h4>
-      <p>'.$text.'</p>
-    </div>        
+  <div class="row twelve columns textBox">
+    <h4>'.$heading.'</h4>
+    <p>'.$text.'</p>
   </div>  
   ';
 } 
@@ -136,7 +134,7 @@ function printFooter() {
   echo '      
   <div class="section noBottom">
     <div class="container">
-      <div class="row"><div class="twelve columns"><hr /></div></div>
+      <div class="row twelve columns"><hr /></div>
       <div class="row">
         <div class="four columns">'.$linkLeft.'</div>
         <div class="four columns">'.$linkMiddle.'</div>
@@ -211,5 +209,5 @@ function redirectRelative ($page) {
 
 // prints a horizontal ruler over twelve columns
 function printHr () {
-  echo '<div class="row"><div class="twelve columns"><hr /></div></div>';  
+  echo '<div class="row twelve columns"><hr /></div>';  
 }

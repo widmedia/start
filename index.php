@@ -177,10 +177,8 @@
   function printNewUserForm() {
     echo '<h3 class="section-heading">New account</h3>
     <form action="index.php?do=3" method="post">
-    <div class="row">
-      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> password protection for this account <div id="noPwWarning" class="noPwWarning" style="display: none;">Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself</div></div>
-    </div>
-    <div class="row"><div class="twelve columns">&nbsp;</div></div>
+    <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> password protection for this account <div id="noPwWarning" class="noPwWarning" style="display: none;">Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself</div></div>
+    <div class="row twelve columns">&nbsp;</div>
     <div class="row">
       <div class="two columns">email: </div>
       <div class="ten columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
@@ -189,22 +187,30 @@
       <div class="two columns">password: </div>
       <div class="ten columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
     </div>
-    <div class="row"><div class="twelve columns">&nbsp;</div></div>
-    <div class="row">
-      <div class="twelve columns"><input name="create" type="submit" value="create account"></div>
-    </div>
+    <div class="row twelve columns">&nbsp;</div>
+    <div class="row twelve columns"><input name="create" type="submit" value="create account"></div>
     </form>
     ';   
   } // function
   
   function printTitle() {
-    // TODO: need to advertise the /start functionality. With some kind of animation...
     echo '<h2 class="section-heading">widmedia.ch/start</h2>
-    <div class="row" style="font-weight: bold; font-size: larger; text-align: left"><div class="twelve columns">a simple customizable start page, a personal link collection</div></div>
-    <div class="row"><div class="twelve columns"><p>&nbsp;</p></div></div>
-    <div class="row"><div class="twelve columns">Try it out: <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>
+    <div class="row" style="font-weight: bold; font-size: larger; text-align: left"><div class="twelve columns">a simple customizable start page, a personal link collection</div></div>';
+    printHr();
+    echo '
+    <div class="row">
+      <div class="eight columns"><img src="images/teaser.gif" width="600" height="273" style="border: 1px black solid;"></div>
+      <div class="four columns textBox"><br /><ul>
+        <li>your personal list of links</li>
+        <li>sorted by occurence</li>
+        <li>links open on new tab</li>
+        <li>edit and add your own links</li>
+        <li>easy login</li>
+      </ul></div>
     </div>';
-    printHr();    
+    printHr();
+    echo '<div class="row twelve columns">Try it <img src="images/arrow_right_green.png" class="logoImg"> <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>';
+    printHr();
   } // function
   
   function printEntryPoint($dbConnection) {
@@ -212,43 +218,23 @@
     echo '
     <h3 class="section-heading"><span id="login">Log in</span></h3>
     <form action="index.php?do=4" method="post">
-    <div class="row"><div class="three columns">email: </div><div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div></div>
-    <div class="row"><div class="three columns">password: </div><div class="nine columns"><input name="password" type="password" maxlength="63" value="" required size="20"></div></div>
-    <div class="row" style="font-size: smaller;"><div class="twelve columns"><input type="checkbox" name="setCookie" value="1" checked>save log in information for 4 weeks</div></div>    
-    <div class="row"><div class="twelve columns"><input name="login" type="submit" value="log in"></div></div>
+    <div class="row">
+      <div class="three columns">email: </div>
+      <div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">password: </div>
+      <div class="nine columns"><input name="password" type="password" maxlength="63" value="" required size="20"></div>
+    </div>
+    <div class="row twelve columns" style="font-size: smaller;"><input type="checkbox" name="setCookie" value="1" checked>save log in information for 4 weeks</div>
+    <div class="row twelve columns"><input name="login" type="submit" value="log in"></div>
     </form>
-    <div class="row"><div class="twelve columns">&nbsp;</div></div>
+    <div class="row twelve columns">&nbsp;</div>
     <div class="row" style="font-size: smaller;">
       <div class="six columns"><a href="index.php?do=2" class="button button-primary"><img src="images/plus_green.png" class="logoImg"> open a new account</a></div>
       <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/question_green.png" class="logoImg"> (TODO) forgot my password</a></div>
     </div>
-    ';
-    printHr();
-    
-    echo '
-    <div class="row"><div class="twelve columns"><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p></div></div>
-    <h3 class="section-heading">...old stuff...</h3>    
-    <div class="row" style="font-weight: bold; font-size: larger;">
-      <div class="one columns">id</div>
-      <div class="three columns">name</div>
-      <div class="eight columns">login link</div>
-    </div>
-    <div class="row">
-      <div class="one columns">1</div>
-      <div class="three columns">widmer</div>
-      <div class="eight columns"><a href="index.php?userid=1">login without pw (does not work)</a></div>
-    </div>
-    <div class="row">
-      <div class="one columns">2</div>
-      <div class="three columns">test</div>
-      <div class="eight columns"><a href="index.php?userid=2">login without pw (works)</a></div>
-    </div>
-    <div class="row">
-      <div class="one columns">3</div>
-      <div class="three columns">non-existing</div>
-      <div class="eight columns"><a href="index.php?userid=3">login without a pw (does not work)</a></div>
-    </div>
-    ';
+    <div class="row twelve columns">&nbsp;</div>';
   } // function  
 ?>
 
