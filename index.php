@@ -179,7 +179,7 @@
   
   // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
   function printNewUserForm() {
-    echo '<h3 class="section-heading">New account</h3>
+    echo '<h3 class="section-heading"><span id="newUser">New account</span></h3>
     <form action="index.php?do=3" method="post">
     <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> password protection for this account <div id="noPwWarning" class="noPwWarning" style="display: none;">Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself</div></div>
     <div class="row twelve columns">&nbsp;</div>
@@ -235,7 +235,7 @@
     </form>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row" style="font-size: smaller;">
-      <div class="six columns"><a href="index.php?do=2" class="button button-primary"><img src="images/plus_green.png" class="logoImg"> open a new account</a></div>
+      <div class="six columns"><a href="index.php?do=2#newUser" class="button button-primary"><img src="images/plus_green.png" class="logoImg"> open a new account</a></div>
       <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/question_green.png" class="logoImg"> (TODO) forgot my password</a></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>';    
