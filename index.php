@@ -59,7 +59,11 @@
           if ($randCookie) { // new user has a zero
             if ($randCookie == $randCookieInput) {                
               $loginOk = true;            
-            } else { $dispErrorMsg = 21; } // 64hex value is correct
+            } else { 
+              $dispErrorMsg = 21; 
+              // TODO: temporary
+              printConfirm('Cookie information mismatch','CookieVal: '.$randCookieInput.', dbVal: '.$randCookie);
+            } // 64hex value is correct
           } else { $dispErrorMsg = 20; }  // there is no zero in the data base
         } elseif ($authMethod == 3) { // id only. the most unsafe one          
           if ($hasPw == 0) {
@@ -213,7 +217,7 @@
     printHr();
   } // function
   
-  function printEntryPoint($dbConnection) {
+  function printEntryPoint() {
     printTitle();
     echo '
     <h3 class="section-heading"><span id="login">Log in</span></h3>
@@ -234,7 +238,7 @@
       <div class="six columns"><a href="index.php?do=2" class="button button-primary"><img src="images/plus_green.png" class="logoImg"> open a new account</a></div>
       <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/question_green.png" class="logoImg"> (TODO) forgot my password</a></div>
     </div>
-    <div class="row twelve columns">&nbsp;</div>';
+    <div class="row twelve columns">&nbsp;</div>';    
   } // function  
 ?>
 
@@ -259,7 +263,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
   
-  <script type="text/javascript" src="js/scripts.js"></script>
+  <script type="text/javascript" src="js/scripts.js"></script>  
 </head>
 <?php           
   // possible actions: 
@@ -281,7 +285,7 @@
   echo '<div class="section categories noBottom"><div class="container">';
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
-    printEntryPoint($dbConnection);        
+    printEntryPoint();        
   } elseif ($doSafe > 0) {
     $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
     $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
@@ -308,11 +312,12 @@
                 if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {                      
                   if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) {
                     if ($hasPw == 1) {
-                      $loginText = '<a href="index.php">go to login page</a>';
+                      $loginText = 'go to login page <a href="index.php">https://widmedia.ch/start/index.php</a>';
                     } else {
-                      $loginText = '<a href="index.php?userid='.$newUserid.'">login</a>';
-                    }
-                    printConfirm('Your account has been created', 'Congratulations and thanks. Your account is now ready. Please '.$loginText);                        
+                      $loginText = 'login <a href="index.php?userid='.$newUserid.'">https://widmedia.ch/start/index.php?userid='.$newUserid.'</a>';
+                    }                    
+                    printConfirm('Your account has been created', 'Congratulations and thanks. Your account is now ready. Please '.$loginText.'
+                    <br /><br />(This might me a good moment to store this page as your browser starting page. Unfortunately I cannot provide you a link to do so. Modern browsers will not allow it.)');
                   } else { $dispErrorMsg = 37; } // newUserEmail
                 } else { $dispErrorMsg = 36; } // links, categories insert
               } else { $dispErrorMsg = 35; } // user insert                        
