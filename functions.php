@@ -112,7 +112,7 @@ function printFooter() {
 // checks whether userid is 2 (= test user)
 function testUserCheck($userid) {
   if ($userid == 2) {
-    printConfirm('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2">open account</a><br><br>(btw: you may ignore the error message below)');
+    printConfirm('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2#newUser">open account</a><br><br>(btw: you may ignore the error message(s) below)');
     return false;
   } else {
     return true;
