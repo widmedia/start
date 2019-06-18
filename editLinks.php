@@ -5,38 +5,40 @@
   function printEntryPoint($dbConnection, $userid) {
     echo '
     <h3 class="section-heading">What would you like to edit?</h3>
-    <div class="row"><div class="twelve columns">&nbsp;</div></div>
+    <div class="row twelve columns">&nbsp;</div>
     <div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
       echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
       <input name="categoryInput" type="hidden" value="'.$i.'">
       <input name="submit" type="submit" value="Category '.getCategory($dbConnection, $userid, $i).'"></form></div>';         
     }                
-    echo '</div><div class="row"><div class="twelve columns">&nbsp;</div></div>';                    
+    echo '</div><div class="row twelve columns">&nbsp;</div>';                    
     echo '
     <div class="row">
       <div class="six columns"><a class="button differentColor" href="editUser.php?do=1"><img src="images/db_green.png" class="logoImg"> account management</a></div>
       <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/zero_green.png" class="logoImg"> set all link counters to zero</a></div>
-    </div>
-    </div> <!-- /container -->';
-    printFooter();
+    </div>';    
   } // function 
 
   
-  // prints 2 rows to either add a new link or edit an existing one
-  function printSingleLinkFields ($category, $do, $verb, $id, $link, $text) {
-    // add a new link (link and text are 'text' fields in the db)
+  // prints 1 row to either add a new link or edit an existing one
+  // TODO: do=6 and do=2 can be merged
+  function printSingleLinkFields ($doAdd, $category, $linkId, $link, $text) {
+    if ($doAdd) { // this means I edit a link
+      $submitText = 'add new link';
+      $do = 2;
+      $deleteText = '';
+    } else {
+      $submitText = 'save';
+      $do = 6;
+      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=5"><img src="images/delete.png" class="logoImg"> delete</a>';
+    }
     echo '
-    <form action="editLinks.php?do='.$do.'&id='.$id.'" method="post">
-      <div class="row">
-        <div class="twelve columns">
-          <h3 class="section-heading">'.$verb.' link</h3><input name="categoryInput" type="hidden" value="'.$category.'">
-        </div>
-      </div>
+    <form action="editLinks.php?do='.$do.'&id='.$linkId.'" method="post">      
       <div class="row">
         <div class="four columns"><input name="link" type="url"  maxlength="1023" value="'.$link.'" required></div>
         <div class="four columns"><input name="text" type="text" maxlength="63"  value="'.$text.'" required></div>
-        <div class="four columns"><input name="submit" type="submit" value="'.$verb.' link"></div>
+        <div class="four columns"><input name="categoryInput" type="hidden" value="'.$category.'"><input name="submit" type="submit" value="'.$submitText.'">'.$deleteText.'</div>
       </div>
     </form>';   
   } // function
@@ -44,13 +46,11 @@
   // returning a single row for the matching id. 
   // NB: id will get sql-escaped, userid not.
   function getSingleLinkRow ($id, $userid, $dbConnection) {
-    // need an additional userid condition. May be ignored by SQL because `id` is a primary key?
     if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.mysqli_real_escape_string($dbConnection, $id).'"')) {
       $row = $result->fetch_assoc();
       return $row;
     } else { return false; }
-  } // function 
-  
+  } // function
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -72,22 +72,6 @@
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
   <link rel="stylesheet" href="css/custom.css">
-  <!-- some site specific code (might be moved to custom.css later) -->
-  <style>
-    .editLeft {
-      margin: auto;
-      display: inline-block;
-      border: none; 
-      padding: 0;      
-    }
-    .editRight { /* need to copy some properties from button-primary to have the 2 edits align vertically */      
-      display: inline-block;
-      border: none;
-      padding-top: 20px;      
-      font-size: 1.5rem;
-      text-align: left;
-    }    
-  </style>
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
@@ -105,7 +89,7 @@
       // 1=> present links of one category + text field for category + add-Link option
       // 2=> add one link to db (of action 1)
       // 3=> reset all cnt to 0
-      // 4=> edit one link
+      // 4=> outdated
       // 5=> delete one link
       // 6=> do the update of one link (of action 4)
       // 7=> do the update of a category (of action 1)
@@ -144,17 +128,24 @@
       } // do variable
       
       if ($doSafe == 0) { // entry point of this site   
-        printEntryPoint($dbConnection, $userid);
-        die(); // exit the php part
+        printEntryPoint($dbConnection, $userid);        
       } elseif ($doSafe > 0) {
         // TODO: if-else-switch monster construct is kind of, well, a monster... and still growing
         if ($doSafe == 1) { // present links of one category, have category name as text field
+          // TODO: merge this with do=4 and do=5
           echo '<form action="editLinks.php?do=7" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
-          <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="change category name"></form>
-          <div class="row">';
-          printLinks($dbConnection, true, $userid, $categorySafe);
-          echo '</div>';          
-          printSingleLinkFields($categorySafe, 2, 'Add', 0, 'https://', 'text');          
+          <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="change category name"></form>';          
+          echo '<div class="row twelve columns"><h3 class="section-heading">Add a new link</h3></div>';          
+          printSingleLinkFields(true, $categorySafe, 0, 'https://', 'text');
+          printHr();
+          // print one form per row, an edit form for every link
+          if ($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
+            while ($row = $result->fetch_assoc()) {        
+              printSingleLinkFields(false, 0, $row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
+            } // while        
+          } // query ok    
+          
+          
         } elseif ($doSafe == 2) { // add a link 
           if ($linkOk) { // have a validUrl
             if (testUserCheck($userid)) {                      
@@ -167,12 +158,8 @@
             if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
               redirectRelative('main.php?msg=4');            
             } else { $dispErrorMsg = 30; } // update query did work
-        } elseif ($doSafe == 4) { // edit one link
-          if ($idSafe > 0) {
-            if ($singleRow = getSingleLinkRow($idSafe, $userid, $dbConnection)) {
-              printSingleLinkFields(0, 6, 'Edit', $idSafe, $singleRow['link'], $singleRow['text']);
-            } else { $dispErrorMsg = 61; }
-          } else { $dispErrorMsg = 60; }
+        } elseif ($doSafe == 4) { // outdated
+          $dispErrorMsg = 40;
         } elseif ($doSafe == 5) { // delete a link. Displaying a confirmation message                 
           if ($idSafe > 0) {
             if (testUserCheck($userid)) {               
@@ -208,10 +195,10 @@
           $dispErrorMsg = 1;
         } // switch
         
-        printError($dispErrorMsg);
-        echo '</div> <!-- /container -->';
-        printFooter();
-      } // action = integer          
+        printError($dispErrorMsg);        
+      } // action = integer
+      echo '</div> <!-- /container -->';
+      printFooter();
     ?>                
   </div> <!-- /section categories -->
 <!-- End Document -->

@@ -29,41 +29,6 @@ function initialize () {
   return $dbConnection;
 }
   
-// function to output several links in a formatted way
-// creating a div for every link and div-rows for every $module-th entry
-// has a limit of 100 links per category
-function printLinks($dbConnection, $edit, $userid, $category) {
-    
-  // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
-  $modulo = 3;
-  $divClass = '<div class="four columns linktext">';
-  if ($category == 2) { // this category prints more dense
-    $modulo = 4;
-    $divClass = '<div class="three columns linktext">';      
-  }
-   
-  if ($result = $dbConnection->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
-    $counter = 0;        
-    while ($row = $result->fetch_assoc()) {
-      if ($edit) {
-        echo $divClass.'<span class="editLeft"><a href="link.php?id='.$row['id'].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></span>
-           <span class="editRight">
-             <div style="padding-bottom: 2px;"><a href="editLinks.php?id='.$row['id'].'&do=4"><img src="images/edit.png"   class="logoImg"> edit</a></div>                   
-             <div style="padding-top:    2px;"><a href="editLinks.php?id='.$row['id'].'&do=5"><img src="images/delete.png" class="logoImg"> delete</a></div>
-           </span></div>';          
-      } else {
-        echo $divClass.'<a href="link.php?id='.$row["id"].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></div>';
-      } // edit links?
-      $counter++;
-
-      if (($counter % $modulo) == 0) {
-        echo '</div>'."\n".'<div class="row">';
-      }
-    } // while    
-    $result->close(); // free result set
-  } // if  
-} // function 
-
 //prints the h4 title and one row
 function printConfirm($heading, $text) {
   echo '

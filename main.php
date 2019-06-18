@@ -23,6 +23,33 @@
       echo '<div class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.5); z-index: 4;">Your email address has not yet been verified. Please do so within 24 hours, otherwise this account will be deleted.</div>';
     }
   } // function
+  
+  // function to output several links in a formatted way
+  // creating a div for every link and div-rows for every $module-th entry
+  // has a limit of 100 links per category
+  function printLinks($dbConnection, $userid, $category) {
+      
+    // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
+    $modulo = 3;
+    $divClass = '<div class="four columns linktext">';
+    if ($category == 2) { // this category prints more dense
+      $modulo = 4;
+      $divClass = '<div class="three columns linktext">';      
+    }
+     
+    if ($result = $dbConnection->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
+      $counter = 0;        
+      while ($row = $result->fetch_assoc()) {
+        echo $divClass.'<a href="link.php?id='.$row["id"].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></div>';        
+        $counter++;
+
+        if (($counter % $modulo) == 0) {
+          echo '</div>'."\n".'<div class="row">';
+        }
+      } // while    
+      $result->close(); // free result set
+    } // if  
+  } // function   
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,13 +90,13 @@
   echo '<div class="section categories noBottom"><div class="container">';
   
   echo '<h3 class="section-heading">'.getCategory($dbConnection, $userid, 1).'</h3><div class="row">';
-  printLinks($dbConnection, false, $userid, 1);
+  printLinks($dbConnection, $userid, 1);
   
   echo '</div><h3 class="section-heading">'.getCategory($dbConnection, $userid, 2).'</h3><div class="row">';
-  printLinks($dbConnection, false, $userid, 2);
+  printLinks($dbConnection, $userid, 2);
   
   echo '</div><h3 class="section-heading">'.getCategory($dbConnection, $userid, 3).'</h3><div class="row">';
-  printLinks($dbConnection, false, $userid, 3);
+  printLinks($dbConnection, $userid, 3);
   echo '</div>
   </div> <!-- /container -->';
   printFooter();

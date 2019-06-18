@@ -42,6 +42,19 @@
   border: none; 
   vertical-align: sub;
 }
+.editLeft {
+  margin: auto;
+  display: inline-block;
+  border: none; 
+  padding: 0;      
+}
+.editRight { /* need to copy some properties from button-primary to have the 2 edits align vertically */      
+  display: inline-block;
+  border: none;
+  padding-top: 20px;      
+  font-size: 1.5rem;
+  text-align: left;
+}    
 .textBox {
   display: inline-block;
   min-height: 38px;
