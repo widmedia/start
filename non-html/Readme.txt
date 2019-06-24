@@ -33,3 +33,11 @@ following files do require a logged-in user:
 icons are from iconsdb.com
 - green color is abcc14
 - red color is 9c2448
+
+
+color of the background image is more or less #84888d
+triade (adobe color wheel): 
+- reddish     = 255/ 47/ 25
+- blueish     =   0/113/255
+- green-light = 171/204/ 20
+- green-dark  = 148/178/  9

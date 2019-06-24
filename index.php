@@ -93,8 +93,8 @@
     $result2 = $dbConnection->query('INSERT INTO `categories` (`userid`, `category`, `text`) VALUES ("'.$newUserid.'", "3", "Div")');
     
     $result3 = $dbConnection->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`, `cntTot`) VALUES ("'.$newUserid.'", "1", "NZZ", "https://www.nzz.ch", "0")');
-    $result4 = $dbConnection->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`, `cntTot`) VALUES ("'.$newUserid.'", "2", "leo", "https://dict.leo.org", "0")');
-    $result5 = $dbConnection->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`, `cntTot`) VALUES ("'.$newUserid.'", "2", "gmail", "https://mail.google.com", "0")');
+    $result4 = $dbConnection->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`, `cntTot`) VALUES ("'.$newUserid.'", "2", "Leo", "https://dict.leo.org", "0")');
+    $result5 = $dbConnection->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`, `cntTot`) VALUES ("'.$newUserid.'", "2", "Gmail", "https://mail.google.com", "0")');
     $result6 = $dbConnection->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`, `cntTot`) VALUES ("'.$newUserid.'", "3", "WhatsApp", "https://web.whatsapp.com", "0")');
 
     if ($result0 and $result1 and $result2 and $result3 and $result4 and $result5 and $result6) { 

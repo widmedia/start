@@ -22,7 +22,12 @@
 - Spacing
 - Utilities
 - Clearing
-- Media Queries
+
+Larger than mobile @media (min-width: 400px) {}
+Larger than phablet (also point when grid becomes active) @media (min-width: 550px) {}
+Larger than tablet @media (min-width: 750px) {}
+Larger than desktop @media (min-width: 1000px) {}
+Larger than Desktop HD @media (min-width: 1200px) {}
 */
 
 
@@ -40,6 +45,17 @@
   width: 100%;
   float: left;
   box-sizing: border-box; }
+  
+/* I want 3, 4 and 6 columns all displayed as six, so meaning 2 items per row. Other values are not defined, thus resulting in a full row */ 
+.column:first-child,
+.columns:first-child {
+  margin-left: 0; }
+
+.three.columns, 
+.four.columns,
+.six.columns    { width: 48%; }
+.twelve.columns { width: 100%; margin-left: 0; }
+  
 
 /* For devices larger than 400px */
 @media (min-width: 400px) {
@@ -118,14 +134,7 @@
 /* NOTE
 html is set to 62.5% so that all the REM measurements throughout Skeleton 
 are based on 10px sizing. So basically 1.5rem = 15px :) 
-
-color of the background image is more or less #84888d
-triade (adobe color wheel): 
-- redish      = 255/ 47/ 25
-- blueish     =   0/113/255
-- green-light = 171/204/ 20
-- green-dark  = 148/178/  9 */
-
+*/
 
 html {
   font-size: 62.5%;
@@ -198,10 +207,10 @@ input[type="button"] {
   font-weight: 600;
   line-height: 38px;
   letter-spacing: .1rem;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   text-decoration: none;
   white-space: nowrap;
-  background-color: rgba(0, 113, 255, 0.3);
+  background-color: rgba(0, 113, 255, 0.35);
   border-radius: 4px;
   border: 1px solid #80b466;
   cursor: pointer;
@@ -225,7 +234,7 @@ input[type="submit"].button-primary,
 input[type="reset"].button-primary,
 input[type="button"].button-primary {
   color: #ABCC14;
-  background-color: rgba(0, 113, 255, 0.3);
+  background-color: rgba(0, 113, 255, 0.35);
   border-color: rgba(0, 113, 255, 0.8);
 }
 .button.button-primary:hover,
@@ -239,7 +248,7 @@ input[type="submit"].button-primary:focus,
 input[type="reset"].button-primary:focus,
 input[type="button"].button-primary:focus {
   color: #ABCC14;
-  background-color: rgba(255, 47, 25, 0.3);
+  background-color: rgba(255, 47, 25, 0.35);
   border-color: rgba(255, 47, 25, 0.8);
 }
 
@@ -411,29 +420,3 @@ hr {
   content: "";
   display: table;
   clear: both; }
-
-
-/* Media Queries
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
-/*
-Note: The best way to structure the use of media queries is to create the queries
-near the relevant code. For example, if you wanted to change the styles for buttons
-on small devices, paste the mobile query code up in the buttons section and style it
-there.
-*/
-
-
-/* Larger than mobile */
-@media (min-width: 400px) {}
-
-/* Larger than phablet (also point when grid becomes active) */
-@media (min-width: 550px) {}
-
-/* Larger than tablet */
-@media (min-width: 750px) {}
-
-/* Larger than desktop */
-@media (min-width: 1000px) {}
-
-/* Larger than Desktop HD */
-@media (min-width: 1200px) {}
