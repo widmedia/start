@@ -47,6 +47,7 @@ Larger than Desktop HD @media (min-width: 1200px) {}
   box-sizing: border-box; }
   
 /* I want 3, 4 and 6 columns all displayed as six, so meaning 2 items per row. Other values are not defined, thus resulting in a full row */ 
+/* working fine for the links on the main page but not for the remaining part of the site. I remove it again for the meantime...
 .column:first-child,
 .columns:first-child {
   margin-left: 0; }
@@ -55,7 +56,7 @@ Larger than Desktop HD @media (min-width: 1200px) {}
 .four.columns,
 .six.columns    { width: 48%; }
 .twelve.columns { width: 100%; margin-left: 0; }
-  
+*/
 
 /* For devices larger than 400px */
 @media (min-width: 400px) {
