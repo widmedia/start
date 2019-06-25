@@ -176,3 +176,49 @@ function redirectRelative ($page) {
 function printHr () {
   echo '<div class="row twelve columns"><hr /></div>';  
 }
+
+// prints static header information which is the same on all pages
+/*     
+<meta name="author" content="web-organizer">
+<meta name="description" content="web-organizer, online organizer, kalender, emails, adressbuch. alles gratis">
+<meta name="keywords" content="organizer,online,web,internet,kalender,email,emailadresse,gratis,schnell und einfach,adressen,adressbuch,termine,terminkalender">
+<meta name="robots" content="index, follow">
+<meta name="revisit-after" content="20 days">
+<meta name="audience" content="all">
+<meta name="distribution" content="global">
+<meta name="content-language" content="de">
+<meta name="language" content="deutsch, de">
+<meta name="pagetype" content="kalender, organizer, termine">
+<meta name="pagetopic" content="adressbuch, email">
+<meta name="page-topic" content="gratis, kalender, organizer">
+<meta name="publisher" content="web-organizer.ch, daniel widmer">
+<meta name="copyright" content="web-organizer, kalender, termine, adressverwaltung">
+<meta name="generator" content="web-organizer, simpler organizer, emails, gratis">
+<meta name="DC.Title" content="web-organizer, online organizer, kalender, emails, adressbuch. alles gratis">
+<meta name="DC.Description" content="gratis online organizer, kalender, emails und adressverwaltung inklusive">
+<meta name="DC.Creator" content="gratis">
+<meta name="DC.Publisher" content="web-organizer.ch, dani widmer">
+<meta name="DC.Contributor" content="gratis web-organizer, kalender">
+<meta name="DC.Type" content="gratis web-organizer">
+<meta name="DC.Identifier" content="http://www.web-organizer.ch">
+<meta name="DC.Language" content="de">
+<meta name="DC.Rights" content="http://www.web-organizer.ch">	
+*/
+function printStatic () {
+  echo '
+  <meta name="description" content="a modifiable page containing various links, intended to be used as a personal start page">
+  <meta name="author" content="Daniel Widmer">
+
+  <!-- Mobile Specific Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/font.css" type="text/css">
+  <link rel="stylesheet" href="css/normalize.css" type="text/css">
+  <link rel="stylesheet" href="css/skeleton.css" type="text/css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
+  ';  
+}

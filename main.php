@@ -56,24 +56,10 @@
 <head>
   <meta charset="utf-8">
   <title>Startpage</title>
-  <meta name="description" content="a modifiable page containing various links, your personal start page">
-  <meta name="author" content="Daniel Widmer">
-
-  <!-- Mobile Specific Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/font.css" type="text/css">
-  <link rel="stylesheet" href="css/normalize.css" type="text/css">
-  <link rel="stylesheet" href="css/skeleton.css" type="text/css">
- 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
+  <?php 
+  printStatic();
+  echo '<script type="text/javascript" src="js/scripts.js"></script></head>';
   
-  <script type="text/javascript" src="js/scripts.js"></script>  
-</head>  
-<?php
   $msgSafe = makeSafeInt($_GET['msg'], 1);
   if ($msgSafe > 0) {
     echo '<body onLoad="overlayMsgFade();">'; 
