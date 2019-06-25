@@ -178,36 +178,47 @@ function printHr () {
 }
 
 // prints static header information which is the same on all pages
-/*     
-<meta name="author" content="web-organizer">
-<meta name="description" content="web-organizer, online organizer, kalender, emails, adressbuch. alles gratis">
-<meta name="keywords" content="organizer,online,web,internet,kalender,email,emailadresse,gratis,schnell und einfach,adressen,adressbuch,termine,terminkalender">
-<meta name="robots" content="index, follow">
-<meta name="revisit-after" content="20 days">
-<meta name="audience" content="all">
-<meta name="distribution" content="global">
-<meta name="content-language" content="de">
-<meta name="language" content="deutsch, de">
-<meta name="pagetype" content="kalender, organizer, termine">
-<meta name="pagetopic" content="adressbuch, email">
-<meta name="page-topic" content="gratis, kalender, organizer">
-<meta name="publisher" content="web-organizer.ch, daniel widmer">
-<meta name="copyright" content="web-organizer, kalender, termine, adressverwaltung">
-<meta name="generator" content="web-organizer, simpler organizer, emails, gratis">
-<meta name="DC.Title" content="web-organizer, online organizer, kalender, emails, adressbuch. alles gratis">
-<meta name="DC.Description" content="gratis online organizer, kalender, emails und adressverwaltung inklusive">
-<meta name="DC.Creator" content="gratis">
-<meta name="DC.Publisher" content="web-organizer.ch, dani widmer">
-<meta name="DC.Contributor" content="gratis web-organizer, kalender">
-<meta name="DC.Type" content="gratis web-organizer">
-<meta name="DC.Identifier" content="http://www.web-organizer.ch">
-<meta name="DC.Language" content="de">
-<meta name="DC.Rights" content="http://www.web-organizer.ch">	
-*/
 function printStatic () {
+  // description tag and title are different for every site
+  $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
+  
+  // NB: link.php is special as only in the error case a html site is generated
+  if ($currentSiteUnsafe == '/start/about.php') {
+    $title   = 'About';
+    $description = 'a modifiable page containing various links, intended to be used as a personal start page';
+  } elseif ($currentSiteUnsafe == '/start/editLinks.php') {
+    $title   = 'Edit my links';
+    $description = 'page to add, edit or delete links';
+  } elseif ($currentSiteUnsafe == '/start/editUser.php') {
+    $title   = 'Edit or delete user account';
+    $description = 'page to edit or delete the user account';
+  } elseif ($currentSiteUnsafe == '/start/index.php') {  
+    $title   = 'Startpage';
+    $description = 'a modifiable page containing various links, intended to be used as a personal start page';
+  } elseif ($currentSiteUnsafe == '/start/main.php') {  
+    $title   = 'Startpage';
+    $description = 'a modifiable page containing various links, intended to be used as a personal start page';
+  } else {
+    $title   = 'Error page';
+    $description = 'page not found';    
+  }
+
+ 
   echo '
-  <meta name="description" content="a modifiable page containing various links, intended to be used as a personal start page">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>'.$title.'</title>
   <meta name="author" content="Daniel Widmer">
+  <meta name="description" content="'.$description.'">    
+  <meta name="keywords" content="startpage, links, linklist, free, easy, configurable, widmedia, widmedia.ch, start, list, personal">
+  <meta name="robots" content="index, follow">
+  <meta name="revisit-after" content="20 days">
+  <meta name="audience" content="all">
+  <meta name="distribution" content="global">
+  <meta name="content-language" content="en">
+  <meta name="language" content="english, en">
 
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -220,5 +231,23 @@ function printStatic () {
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
-  ';  
+  ';
+  // some sites include a js page as well before the header part is finished 
+  /*
+  <meta name="pagetype" content="kalender, organizer, termine">
+  <meta name="pagetopic" content="adressbuch, email">
+  <meta name="page-topic" content="gratis, kalender, organizer">
+  <meta name="publisher" content="web-organizer.ch, daniel widmer">
+  <meta name="copyright" content="web-organizer, kalender, termine, adressverwaltung">
+  <meta name="generator" content="web-organizer, simpler organizer, emails, gratis">
+  <meta name="DC.Title" content="web-organizer, online organizer, kalender, emails, adressbuch. alles gratis">
+  <meta name="DC.Description" content="gratis online organizer, kalender, emails und adressverwaltung inklusive">
+  <meta name="DC.Creator" content="gratis">
+  <meta name="DC.Publisher" content="web-organizer.ch, dani widmer">
+  <meta name="DC.Contributor" content="gratis web-organizer, kalender">
+  <meta name="DC.Type" content="gratis web-organizer">
+  <meta name="DC.Identifier" content="http://www.web-organizer.ch">
+  <meta name="DC.Language" content="de">
+  <meta name="DC.Rights" content="http://www.web-organizer.ch">	
+  */  
 }

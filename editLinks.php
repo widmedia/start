@@ -45,35 +45,15 @@
     <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="change category name"></form><div>';
   }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
 
-  <!-- Basic Page Needs -->
-  <meta charset="utf-8">
-  <title>Edit my links</title>
-  <meta name="description" content="page to add or edit links">
-  <meta name="author" content="Daniel Widmer">
 
-  <!-- Mobile Specific Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/font.css" type="text/css">
-  <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/skeleton.css">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
-
-</head>
-<body>
-  <!-- Primary Page Layout -->
+  printStatic();
+  echo '
+  </head>
+  <body>  
   <div class="section categories">
-    <div class="container">
-     <?php          
+    <div class="container">';
+     
       $userid = getUserid();      
       
       // possible actions: 

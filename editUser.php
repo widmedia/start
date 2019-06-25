@@ -44,34 +44,14 @@
     </div>
     </form>';
   } // function
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Add, edit or delete user accounts</title>
-  <meta name="description" content="page to add, edit or delete user accounts">
-  <meta name="author" content="Daniel Widmer">
 
-  <!-- Mobile Specific Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/font.css" type="text/css">
-  <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/skeleton.css">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
-  
-  <script defer type="text/javascript" src="js/scripts.js"></script>  
-</head>
-<body>
-  <!-- Primary Page Layout -->
+  printStatic();
+  echo '<script defer type="text/javascript" src="js/scripts.js"></script>  
+  </head>
+  <body>
   <div class="section categories">
-    <div class="container">
-     <?php          
+    <div class="container">';     
       $userid = getUserid();
       
       // possible actions: 

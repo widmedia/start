@@ -50,13 +50,8 @@
       $result->close(); // free result set
     } // if  
   } // function   
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Startpage</title>
-  <?php 
+
+
   printStatic();
   echo '<script type="text/javascript" src="js/scripts.js"></script></head>';
   

@@ -240,14 +240,8 @@
     </div>
     <div class="row twelve columns">&nbsp;</div>';    
   } // function  
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>widmedia.ch/start</title>
-  <?php 
+
   printStatic();
   echo '<script type="text/javascript" src="js/scripts.js"></script></head>';
 
