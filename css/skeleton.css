@@ -9,7 +9,7 @@
 
 
 /* Table of contents
-––––––––––––––––––––––––––––––––––––––––––––––––––
+
 - Grid
 - Base Styles
 - Typography
@@ -22,6 +22,7 @@
 - Spacing
 - Utilities
 - Clearing
+- Custom styles
 
 Larger than mobile @media (min-width: 400px) {}
 Larger than phablet (also point when grid becomes active) @media (min-width: 550px) {}
@@ -46,17 +47,13 @@ Larger than Desktop HD @media (min-width: 1200px) {}
   float: left;
   box-sizing: border-box; }
   
-/* I want 3, 4 and 6 columns all displayed as six, so meaning 2 items per row. Other values are not defined, thus resulting in a full row */ 
-/* working fine for the links on the main page but not for the remaining part of the site. I remove it again for the meantime...
-.column:first-child,
-.columns:first-child {
-  margin-left: 0; }
-
-.three.columns, 
-.four.columns,
-.six.columns    { width: 48%; }
-.twelve.columns { width: 100%; margin-left: 0; }
-*/
+/* 
+On the main page and only on small devices (mobile):
+I want 3 and 4 columns displayed as six, so meaning 2 items per row.
+On bigger devices (above 550px) those settings are overwritten with the 12-columns grid
+*/ 
+.halbeReihe:first-child { margin-left: 0; }
+.halbeReihe { width: 48%; }
 
 /* For devices larger than 400px */
 @media (min-width: 400px) {
@@ -126,12 +123,10 @@ Larger than Desktop HD @media (min-width: 1200px) {}
 
   .offset-by-one-half.column,
   .offset-by-one-half.columns     { margin-left: 52%; }
-
 }
 
 
-/* Base Styles
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Base Styles */
 /* NOTE
 html is set to 62.5% so that all the REM measurements throughout Skeleton 
 are based on 10px sizing. So basically 1.5rem = 15px :) 
@@ -153,8 +148,7 @@ body {
   color: rgba(171, 204, 20, 0.7); 
 } 
 
-/* Typography
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Typography */
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 2rem;
@@ -180,8 +174,7 @@ p {
   margin-top: 0; }
 
 
-/* Links
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Links */
 a {
   padding: 2px 4px 1px 1px;
   color: #8d3a53; /* reddish */ 
@@ -192,8 +185,7 @@ a:hover {
   text-decoration: none;}
 
 
-/* Buttons
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Buttons */
 .button,
 button,
 input[type="submit"],
@@ -254,8 +246,7 @@ input[type="button"].button-primary:focus {
 }
 
 
-/* Forms
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Forms */
 input[type="email"],
 input[type="number"],
 input[type="search"],
@@ -316,8 +307,7 @@ label > .label-body {
   font-weight: normal; }
 
 
-/* Lists
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Lists */
 ul {
   list-style: circle inside; }
 ol {
@@ -335,24 +325,7 @@ li {
   margin-bottom: 1rem; }
 
 
-/* Code
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
-code {
-  padding: .2rem .5rem;
-  margin: 0 .2rem;
-  font-size: 90%;
-  white-space: nowrap;
-  background: #F1F1F1;
-  border: 1px solid #E1E1E1;
-  border-radius: 4px; }
-pre > code {
-  display: block;
-  padding: 1rem 1.5rem;
-  white-space: pre; }
-
-
-/* Tables
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Tables */
 th,
 td {
   padding: 12px 15px;
@@ -366,8 +339,7 @@ td:last-child {
   padding-right: 0; }
 
 
-/* Spacing
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Spacing */
 button,
 .button {
   margin-bottom: 1rem; }
@@ -388,8 +360,7 @@ form {
   margin-bottom: 2.5rem; }
 
 
-/* Utilities
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Utilities */
 .u-full-width {
   width: 100%;
   box-sizing: border-box; }
@@ -402,8 +373,7 @@ form {
   float: left; }
 
 
-/* Misc
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Misc */
 hr {
   margin-top: 3rem;
   margin-bottom: 3.5rem;
@@ -411,8 +381,7 @@ hr {
   border-top: 1px solid #E1E1E1; }
 
 
-/* Clearing
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Clearing */
 
 /* Self Clearing Goodness */
 .container:after,
@@ -421,3 +390,133 @@ hr {
   content: "";
   display: table;
   clear: both; }
+  
+  
+/* Custom stuff */
+.button {
+  border-radius: 100px;
+}
+
+.section {
+  padding: 5rem 0 1rem;
+  text-align: center;
+}
+.noBottom {
+  padding: 8rem 0 0rem;
+  margin-bottom: 0rem;
+}
+.section-heading,
+.section-description {
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+.linktext {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-weight: 300; 
+  font-size: 2.4rem; 
+  line-height: 1.35;  
+  letter-spacing: -.08rem;
+}
+.counter {
+  font-size: 1.5rem;
+  vertical-align: 1rem;  
+}
+.differentColor { /* use the 'hover' color set of the button */
+  text-transform: uppercase; 
+  color: #ABCC14;
+  background-color: rgba(255, 47, 25, 0.3); /* red */ 
+  border: none;
+}
+.logoImg {
+  width: 16px;
+  height: 16px; 
+  border: none; 
+  vertical-align: sub;
+}
+.textBox {
+  display: inline-block;
+  min-height: 38px;
+  padding: 0 20px;
+  color: #80b466;
+  text-align: left;
+  font-weight: 600;  
+  background-color: rgba(0, 113, 255, 0.3);
+  border-radius: 8px;
+  border: 1px solid #80b466;      
+  box-sizing: border-box; 
+}
+.noPwWarning {
+  display: block;
+  min-height: 38px;
+  padding: 0 20px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  box-sizing: border-box; 
+  color: #ABCC14;
+  background-color: rgba(255, 47, 25, 0.3); /* red */ 
+  border: none;
+}
+.overlayMessage {
+  width: 100%; 
+  margin: auto; 
+  top: 3rem; 
+  height: 38px;
+  padding: 0 20px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 4px;
+  box-sizing: border-box;   
+  color: #ABCC14;
+  border: none;  
+  position: relative; 
+  display: block; 
+} 
+
+/* Categories */
+.categories {
+  color: #ABCC14;
+}
+.categories .section-description { 
+  margin-bottom: 0rem;
+}
+
+/* Bigger than 550 */
+@media (min-width: 550px) {
+  .section {
+    padding: 4rem 0 1rem;
+  }
+}
+
+/* Bigger than 750 */
+@media (min-width: 750px) {
+  .section {
+    padding: 4rem 0 1rem;
+  }
+  .section-description {
+    max-width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .categories {
+    padding: 15rem 0 8rem;
+  }
+}
+
+/* Bigger than 1000 */
+@media (min-width: 1000px) {
+  .section {
+    padding: 6rem 0 1rem;  
+  }
+}  

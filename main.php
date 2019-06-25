@@ -31,10 +31,10 @@
       
     // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
     $modulo = 3;
-    $divClass = '<div class="four columns linktext">';
+    $divClass = '<div class="halbeReihe four columns linktext">';
     if ($category == 2) { // this category prints more dense
       $modulo = 4;
-      $divClass = '<div class="three columns linktext">';      
+      $divClass = '<div class="halbeReihe three columns linktext">';      
     }
      
     if ($result = $dbConnection->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
@@ -66,7 +66,6 @@
   <link rel="stylesheet" href="css/font.css" type="text/css">
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">
-  <link rel="stylesheet" href="css/custom.css" type="text/css">
  
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
