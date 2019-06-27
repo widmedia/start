@@ -29,6 +29,7 @@ following files do require a logged-in user:
 - link.php
 - editUser.php
 - editLink.php
+- admin/admin.php (logged-in user must have userid 1)
 
 icons are from iconsdb.com
 - green color is abcc14
