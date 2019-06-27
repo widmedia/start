@@ -73,7 +73,7 @@
           } else { $dispErrorMsg = 11; } // select query did work
         } else { $dispErrorMsg = 10; } // have a valid userid
       } elseif ($doSafe == 2) { // delete an existing user
-        // todo: might want to verify the pw before deleting an account? (if there is a pw set)
+        // TODO: might want to verify the pw before deleting an account? (if there is a pw set)
         if ($userid > 0) { // have a valid userid
           if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
             // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
