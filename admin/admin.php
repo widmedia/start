@@ -51,13 +51,13 @@
   // sends an email to the user
   function reminderMail($dbConnection, $editUserId, $reason) { 
     if ($reason == 1) {
-      $emailBody = "Hello,\n\nYour account on widmedia.ch/start has been inactive for quite some time (no login for at least one month).\n- If you like to keep your account, please login within the next 24 hours (login information have been sent at account opening).\n";
+      $emailBody = "Hello,\n\nYour account on widmedia.ch/start has been inactive for quite some time (no login for at least one month).\n\n- If you like to keep your account, please login within the next 24 hours (login information have been sent at account opening).\n";
       $confirm = 'inactivity';
     } elseif ($reason == 2) {
-      $emailBody = "Hello,\n\nYour email address on widmedia.ch/start has not yet been verified.\n- If you like to keep your account, please verify the email within the next 24 hours (email verification information has been sent at account opening).\n";
+      $emailBody = "Hello,\n\nYour email address on widmedia.ch/start has not yet been verified.\n\n- If you like to keep your account, please verify the email within the next 24 hours (email verification information has been sent at account opening).\n";
       $confirm = 'verification';
     }
-    $emailBody = $emailBody . "- If you don't need the account anymore, you don't need to do anything, it will be deleted and you will not receive any more messages.\n\nHave fun and best regards,\nDaniel from widmedia\n\n--\nContact (English or German): sali@widmedia.ch";
+    $emailBody = $emailBody . "- If you don't need the account anymore, you don't need to do anything, it will be deleted and you will not receive any more messages.\n\nHave fun and best regards,\nDaniel from widmedia\n\n--\nContact (English or German): sali@widmedia.ch\n";
     
     if ($result = $dbConnection->query('SELECT `email` FROM `user` WHERE `id` = "'.$editUserId.'"')) {
       $row = $result->fetch_assoc();       
