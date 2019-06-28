@@ -47,6 +47,29 @@
     echo '</table></div>';    
   }
   
+  
+  // sends an email to the user
+  function reminderMail($dbConnection, $editUserId, $reason) { 
+    if ($reason == 1) {
+      $emailBody = "Hello,\n\nYour account on widmedia.ch/start has been inactive for quite some time (no login for at least one month).\n- If you like to keep your account, please login within the next 24 hours (login information have been sent at account opening).\n";
+      $confirm = 'inactivity';
+    } elseif ($reason == 2) {
+      $emailBody = "Hello,\n\nYour email address on widmedia.ch/start has not yet been verified\n.- If you like to keep your account, please verify the email within the next 24 hours (email verification information have been sent at account opening).\n";
+      $confirm = 'verification';
+    }
+    $emailBody = $emailBody . "- If you don\'t need the account anymore, you don't need to do anything, it will be deleted and you will not receive any more messages.\n\nHave fun and best regards,\nDaniel from widmedia\n\n--\nContact (English or German): sali@widmedia.ch";
+    
+    if ($result = $dbConnection->query('SELECT `email` FROM `user` WHERE `id` = "'.$editUserId.'"')) {
+      $row = $result->fetch_assoc();       
+      if (mail($row['email'], 'widmedia.ch/start: your account will be deleted soon', $emailBody)) {
+        
+        printConfirm('Email to '.htmlentities($row['email']).' sent', 'The '.$confirm.' email has been sent successfully.');
+        return true;
+      } // mail send
+    }    
+    // should not reach this point
+    return false;    
+  }
 
   echo '
 <!DOCTYPE html>
@@ -105,16 +128,22 @@
         
         echo '
         <div class="row">
-          <div class="six columns"><a href="admin.php?do=2&editUserId='.$editUserId.'" class="button differentColor">send email reminder</a></div>
-          <div class="six columns"><a href="admin.php?do=3&editUserId='.$editUserId.'" class="button differentColor">delete this user</a></div>
+          <div class="four columns"><a href="admin.php?do=2&editUserId='.$editUserId.'" class="button differentColor">send inactivity email</a></div>
+          <div class="four columns"><a href="admin.php?do=3&editUserId='.$editUserId.'" class="button differentColor">send address verification email</a></div>
+          <div class="four columns"><a href="admin.php?do=4&editUserId='.$editUserId.'" class="button differentColor">delete this user</a></div>
         </div>';
       } else { $dispErrorMsg = 11; } // select queries did work
     } else { $dispErrorMsg = 10; } // have a valid userid
   } elseif ($doSafe == 2) { // send an email
-    $dispErrorMsg = 20;
-  } elseif ($doSafe == 3) { // delete the user
-    // use a function from the editUser site
-    $dispErrorMsg = 30;
+    if (! reminderMail($dbConnection, $editUserId, 1)) { $dispErrorMsg = 20; }
+  } elseif ($doSafe == 3) { // send an email
+    if (! reminderMail($dbConnection, $editUserId, 2)) { $dispErrorMsg = 30; }  
+  } elseif ($doSafe == 4) { // delete the user
+    if (deleteUser($dbConnection, $editUserId)) {
+      printConfirm('Deleted the account', 'Deleted userid: '.$editUserId.' <br/><br/>');
+    } else {
+      $dispErrorMsg = 40;
+    }
   } 
   printError($dispErrorMsg);
   

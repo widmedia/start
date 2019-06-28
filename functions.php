@@ -133,6 +133,29 @@ function sessionAndCookieDelete () {
   session_destroy(); // finally, destroy the session    
 }  
 
+// does the db operations to remove a certain user. Does some checks as well
+function deleteUser($dbConnection, $userid) {
+  if ($userid > 0) { // have a valid userid
+    if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
+      // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
+      $rowCnt = $result->num_rows;
+      if ($userid > 2) { // admin has userid 1, test user has userid 2
+        if ($rowCnt == 1) {                
+          $result_delLinks = $dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
+          $result_delCategories = $dbConnection->query('DELETE FROM `categories` WHERE `userid` = "'.$userid.'"');                  
+          $result_delUser = $dbConnection->query('DELETE FROM `user` WHERE `id` = "'.$userid.'"');
+          
+          if ($result_delLinks and $result_delCategories and $result_delUser) {
+            return true;
+          }
+        }
+      } else { printConfirm('Forbidden', 'Sorry but the test user account and the admin account cannot be deleted'); }
+    }
+  }
+  return false; // should not reach this point
+}
+
+
 // returns the userid integer
 function getUserid () {
   if (isset($_SESSION)) {

@@ -74,27 +74,13 @@
         } else { $dispErrorMsg = 10; } // have a valid userid
       } elseif ($doSafe == 2) { // delete an existing user
         // TODO: might want to verify the pw before deleting an account? (if there is a pw set)
-        if ($userid > 0) { // have a valid userid
-          if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
-            // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
-            $rowCnt = $result->num_rows;
-            if ($userid > 2) { // admin has userid 1, test user has userid 2
-              if ($rowCnt == 1) {                
-                $result_delLinks = $dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
-                $result_delCategories = $dbConnection->query('DELETE FROM `categories` WHERE `userid` = "'.$userid.'"');                  
-                $result_delUser = $dbConnection->query('DELETE FROM `user` WHERE `id` = "'.$userid.'"');
-                
-                if ($result_delLinks and $result_delCategories and $result_delUser) {
-                  sessionAndCookieDelete();
-                  printConfirm('Deleted the account', 'Deleted userid: '.$userid.' <br/><br/><a class="button differentColor" href="index.php">go back to index.php</a>');                  
-                } else { $dispErrorMsg = 24; } // deleting did work                
-              } else { $dispErrorMsg = 23; } // id does exists
-            } else { printConfirm('Forbidden', 'Sorry but the test user account and the admin account cannot be deleted'); }
-          } else { $dispErrorMsg = 21; } // select query did work              
-        } else { $dispErrorMsg = 20; } // have a valid userid
+        if (deleteUser($dbConnection, $userid)) {
+          sessionAndCookieDelete();
+          printConfirm('Deleted the account', 'Deleted userid: '.$userid.' <br/><br/><a class="button differentColor" href="index.php">go back to index.php</a>');
+        } else { $dispErrorMsg = 20; } // deleteUser function did return false
       } elseif ($doSafe == 3) { // update an existing user: db operations
         if ($userid > 0) { // have a valid userid
-          if (testUserCheck($userid)) { 
+          if (testUserCheck($userid)) {
             if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
               $row = $result->fetch_assoc(); // guaranteed to get only one row
               $pwCheck = false;

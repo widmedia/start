@@ -10,7 +10,7 @@
   // this page has several entry points
   // a: unsecured
   // a1: first visit, direct visit (people typing widmedia.ch/start)
-  // a2: log out function. do=1. linked from within the secure site, doing the logout (could be moved to some other page?)
+  // a2: log out function. do=1. linked from within the secure site, doing the logout
   // a3: add new user function. do=2 (process form: do=3). linked from the insecure site
   // a4: confirm email. do=5
   // b: secured
@@ -139,32 +139,13 @@
   // sends an email to the new user with a special link and updates the database with that email confirmation link
   function newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe) {
     $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
-    $emailBody = '
-    Hello,
-    
-    Thank you for opening an account on widmedia.ch/start.
-    You need to confirm your email address within 24 hours to fully use your account. Please click on the link below to do so:
-    https://widmedia.ch/start/index.php?do=5&userid='.$newUserid.'&ver='.$hexStr64.'    
-    
-    ';
+    $emailBody = "Hello,\n\nThank you for opening an account on widmedia.ch/start.\nYou need to confirm your email address within 24 hours to fully use your account. Please click on the link below to do so:\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
     if ($hasPw == 1) {
-      $emailBody = $emailBody.'
-      You did select password protection for your account. Please use the form on https://widmedia.ch/start/index.php#login to log in.
-      ';
+      $emailBody = $emailBody."You did select password protection for your account. Please use the form on https://widmedia.ch/start/index.php#login to log in.\n";
     } else {
-      $emailBody = $emailBody.'
-      You did not select password protection. This means you (and, btw. everybody else) may login with this link:
-      https://widmedia.ch/start/index.php?userid='.$newUserid.'
-      Please store this link for future use as a bookmark or maybe your browser starting page.
-      ';
+      $emailBody = $emailBody."You did not select password protection. This means you (and, btw. everybody else) may login with this link:\nhttps://widmedia.ch/start/index.php?userid=".$newUserid."\nPlease store this link for future use as a bookmark or maybe your browser starting page.\n";
     }
-    $emailBody = $emailBody.'
-    Have fun and best regards,
-    Daniel from widmedia
-    
-    -- 
-    Contact (English or German): sali@widmedia.ch
-    ';
+    $emailBody = $emailBody."Have fun and best regards,\nDaniel from widmedia\n\n--\nContact (English or German): sali@widmedia.ch\n";
     
     if ($result = $dbConnection->query('UPDATE `user` SET `verCode` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) {   
       if (mail($emailSqlSafe, 'Your new account on widmedia.ch/start', $emailBody)) {
