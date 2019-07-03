@@ -191,6 +191,7 @@
         <li>links open on new tab</li>
         <li>edit and add your own links</li>
         <li>easy login</li>
+        <li>try it first: <a href="index.php?userid=2">test user</a></li>
       </ul></div>
     </div>';
     printHr();

@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /start/php/
+Disallow: /start/admin/
