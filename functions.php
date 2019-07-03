@@ -18,7 +18,11 @@ function initialize () {
         return false;  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
       }
       
-      die('login error. You might want to go to <a href="index.php">start page</a>'); // maybe to do: some more sophisticated real error handling
+      printStatic();
+      echo '</head><body>';
+      printConfirm('Login error', 'You might want to go to <a href="index.php">the start page</a>');
+      echo '</body></html>';
+      die();
     }
   }
   
