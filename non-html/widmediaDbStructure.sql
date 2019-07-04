@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 13. Jun 2019 um 13:18
--- Server-Version: 10.1.38-MariaDB
+-- Erstellungszeit: 04. Jul 2019 um 13:44
+-- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -68,6 +68,19 @@ CREATE TABLE `user` (
   `verDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `userStat`
+--
+
+CREATE TABLE `userStat` (
+  `id` int(11) NOT NULL,
+  `year` int(4) NOT NULL,
+  `month` int(2) NOT NULL,
+  `numUser` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Indizes der exportierten Tabellen
 --
@@ -91,6 +104,12 @@ ALTER TABLE `user`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `userStat`
+--
+ALTER TABLE `userStat`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT für exportierte Tabellen
 --
 
@@ -110,6 +129,12 @@ ALTER TABLE `links`
 -- AUTO_INCREMENT für Tabelle `user`
 --
 ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `userStat`
+--
+ALTER TABLE `userStat`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 

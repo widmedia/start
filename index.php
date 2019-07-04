@@ -51,23 +51,21 @@
 
         if ($authMethod == 1) { // with a pw
           if ($hasPw == 1) {
-            if (password_verify($passwordUnsafe, $pwHash)) {                 
+            if (password_verify($passwordUnsafe, $pwHash)) {
               $loginOk = true;
             } else { $dispErrorMsg = 11; } // password was verified
           } else { $dispErrorMsg = 10; } // hasPw == 1
         } elseif ($authMethod == 2) { // with a Cookie
           if ($randCookie) { // new user has a zero
-            if ($randCookie == $randCookieInput) {                
-              $loginOk = true;            
-            } else { 
-              $dispErrorMsg = 21; 
-              // TODO: temporary
-              printConfirm('Cookie information mismatch','CookieVal: '.$randCookieInput.', dbVal: '.$randCookie);
+            if ($randCookie == $randCookieInput) {
+              $loginOk = true;
+            } else {
+              $dispErrorMsg = 21;
             } // 64hex value is correct
           } else { $dispErrorMsg = 20; }  // there is no zero in the data base
-        } elseif ($authMethod == 3) { // id only. the most unsafe one          
+        } elseif ($authMethod == 3) { // id only. the most unsafe one
           if ($hasPw == 0) {
-            $loginOk = true;     
+            $loginOk = true;
           } else { $dispErrorMsg = 30; } // hasPw == 0
         } // authMethod
       } else { $dispErrorMsg = 2; } // numRows == 1
@@ -80,9 +78,9 @@
         $_SESSION['userid'] = $userid;
         return true;
       } // update query did work
-    }  // loginOk 
+    }  // loginOk
     
-    return false; 
+    return false;
   } // function
   
   
@@ -186,12 +184,12 @@
     <div class="row">
       <div class="eight columns">
         <div class="slideshow-container">
-          <div class="mySlides fade"><img src="images/teaser_01.png" style="width:100%; vertical-align:middle;"><div class="captionText">Your list of links</div></div>
-          <div class="mySlides fade"><img src="images/teaser_02.png" style="width:100%; vertical-align:middle;"><div class="captionText">Click it</div></div>
-          <div class="mySlides fade"><img src="images/teaser_03.png" style="width:100%; vertical-align:middle;"><div class="captionText">The page opens in a new tab</div></div>
-          <div class="mySlides fade"><img src="images/teaser_04.png" style="width:100%; vertical-align:middle;"><div class="captionText">Edit your links, add a new one</div></div>
-          <div class="mySlides fade"><img src="images/teaser_05.png" style="width:100%; vertical-align:middle;"><div class="captionText">There it is, your new link</div></div>
-          <div class="mySlides fade"><img src="images/teaser_06.png" style="width:100%; vertical-align:middle;"><div class="captionText">...and open that one</div></div>
+          <div class="mySlides fade"><img src="images/teaser_01.png" alt="your startpage with all the links" style="width:100%; vertical-align:middle;"><div class="captionText">Your list of links</div></div>
+          <div class="mySlides fade"><img src="images/teaser_02.png" alt="click your external link" style="width:100%; vertical-align:middle;"><div class="captionText">Click it</div></div>
+          <div class="mySlides fade"><img src="images/teaser_03.png" alt="the link opens in a new tab" style="width:100%; vertical-align:middle;"><div class="captionText">The page opens in a new tab</div></div>
+          <div class="mySlides fade"><img src="images/teaser_04.png" alt="edit your links, add a new one" style="width:100%; vertical-align:middle;"><div class="captionText">Edit your links, add a new one</div></div>
+          <div class="mySlides fade"><img src="images/teaser_05.png" alt="there it is, your new link" style="width:100%; vertical-align:middle;"><div class="captionText">There it is, your new link</div></div>
+          <div class="mySlides fade"><img src="images/teaser_06.png" alt="your new start page" style="width:100%; vertical-align:middle;"><div class="captionText">...and open that one</div></div>
         </div>
         <br>
         <div style="text-align:center">
@@ -229,7 +227,7 @@
       </ul></div>
     </div>';
     printHr();
-    echo '<div class="row twelve columns">Try it <img src="images/arrow_right_green.png" class="logoImg"> <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>';
+    echo '<div class="row twelve columns">Try it <img src="images/arrow_right_green.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>';
     printHr();
   } // function
   
@@ -251,8 +249,8 @@
     </form>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="six columns"><a href="index.php?do=2#newUser" class="button button-primary"><img src="images/plus_green.png" class="logoImg"> open a new account</a></div>
-      <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/question_green.png" class="logoImg"> (TODO) forgot my password</a></div>
+      <div class="six columns"><a href="index.php?do=2#newUser" class="button button-primary"><img src="images/plus_green.png" alt="open your own account" class="logoImg"> open a new account</a></div>
+      <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/question_green.png" alt="get an email with your new password" class="logoImg"> (TODO) forgot my password</a></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>';    
   } // function  

@@ -70,6 +70,45 @@
     // should not reach this point
     return false;    
   }
+  
+  // reads the user db, checks how many users have been active in this month and updates the statistics database (userStat)
+  // userStat structure
+  // - id (int 11)
+  // - year (format 2019) int4
+  // - month (format 07) int 2
+  // - numUser (int 11)
+  function doUserStatistics($dbConnection) {
+    // find current year and month
+    $currentTime = time();
+    $year = date('Y', $currentTime);
+    $month = date('m', $currentTime);
+    
+    if ($result = $dbConnection->query('SELECT `numUser` FROM `userStat` WHERE `year` = "'.$year.'" AND `month` = "'.$month.'" LIMIT 1')) {
+      if ($result->num_rows == 1) { // stats for this month have already been done
+        $row = $result->fetch_assoc();
+        printConfirm('stats for '.$year.'-'.$month.' are already existing', $row['numUser'].' have been active this month');
+      } else { // need to do the statistics
+        $activeUsers = 0;
+        $inactiveUsers = 0;
+        if($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE 1 ORDER BY `lastLogin` ASC')) {
+          while ($row = $result->fetch_assoc()) {            
+            $sinceLast_h = ($currentTime - strtotime($row['lastLogin'])) / 3600; // difference, in hours
+            if ($sinceLast_h < 24*31) { 
+              $activeUsers++;
+            } else {
+              $inactiveUsers++;
+            }
+          } // while
+          printConfirm('stats for '.$year.'-'.$month, $activeUsers.' have been active this month, '.$inactiveUsers.' users are inactive.');
+          $result = $dbConnection->query('INSERT INTO `userStat` (`year`, `month`, `numUser`) VALUES ("'.$year.'", "'.$month.'", "'.$activeUsers.'")');
+        } // query
+      } // have one result
+    } // query
+      
+    
+    
+    
+  }
 
   echo '
 <!DOCTYPE html>
@@ -89,7 +128,7 @@
   <link rel="stylesheet" href="../css/skeleton.css" type="text/css">
 
   <!-- Favicon -->  
-  <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon.png">
   </head>
   <body>';
 
@@ -98,13 +137,16 @@
   if ($userid != 1) { // admin has the userid 1...
     die('sorry, only the admin may visit this site</body></html>');    
   }
-       
-  echo '<div class="section categories noBottom"><div class="container">';
   
+  echo '<div class="section categories noBottom"><div class="container">'; 
   echo '<h3 class="section-heading">Accounts</h3>';
   echo '<div class="row twelve columns" style="background-color: rgba(0, 113, 255, 0.3);">';
   printUserTable($dbConnection);
-  echo '</div>'; // row
+  echo '</div>';
+  
+  echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">';
+  doUserStatistics($dbConnection);
+  echo '</div>';
   
   $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 1 to 3)
   $editUserId = makeSafeInt($_GET['editUserId'], 11); // this is an integer

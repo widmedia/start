@@ -238,12 +238,9 @@ function printStatic () {
   <meta charset="utf-8">
   <title>'.$title.'</title>
   <meta name="author" content="Daniel Widmer">
-  <meta name="description" content="'.$description.'">    
-  <meta name="keywords" content="startpage, links, linklist, free, easy, configurable, widmedia, widmedia.ch, start, list, personal">
-  <meta name="robots" content="index, follow">
-  <meta name="revisit-after" content="20 days">
-  <meta name="audience" content="all">
-  <meta name="distribution" content="global">
+  <meta name="description" content="'.$description.'">
+  <link rel="canonical" href="https://widmedia.ch/start" />    
+  <meta name="robots" content="index, follow">    
   <meta name="content-language" content="en">
   <meta name="language" content="english, en">
 
@@ -255,26 +252,8 @@ function printStatic () {
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon-96x96.png">
+  <!-- Favicon -->  
+  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png">
   ';
-  // some sites include a js page as well before the header part is finished 
-  /*
-  <meta name="pagetype" content="kalender, organizer, termine">
-  <meta name="pagetopic" content="adressbuch, email">
-  <meta name="page-topic" content="gratis, kalender, organizer">
-  <meta name="publisher" content="web-organizer.ch, daniel widmer">
-  <meta name="copyright" content="web-organizer, kalender, termine, adressverwaltung">
-  <meta name="generator" content="web-organizer, simpler organizer, emails, gratis">
-  <meta name="DC.Title" content="web-organizer, online organizer, kalender, emails, adressbuch. alles gratis">
-  <meta name="DC.Description" content="gratis online organizer, kalender, emails und adressverwaltung inklusive">
-  <meta name="DC.Creator" content="gratis">
-  <meta name="DC.Publisher" content="web-organizer.ch, dani widmer">
-  <meta name="DC.Contributor" content="gratis web-organizer, kalender">
-  <meta name="DC.Type" content="gratis web-organizer">
-  <meta name="DC.Identifier" content="http://www.web-organizer.ch">
-  <meta name="DC.Language" content="de">
-  <meta name="DC.Rights" content="http://www.web-organizer.ch">	
-  */  
+  // some sites include a js page as well before the header part is finished  
 }
