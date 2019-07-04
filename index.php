@@ -155,6 +155,37 @@
     return false;    
   }
   
+  // prints some graph with the user statistics 
+  function printUserStat($dbConnection) {
+    $currentTime = time();
+    $year = date('Y', $currentTime); // TODO: provide option to select another year
+    
+    $result = $dbConnection->query('SELECT `month`, `numUser` FROM `userStat` WHERE `year` = "'.$year.'" ORDER BY `month`');
+    
+    $userStatPerMonth = array(0,0,0,0,0,0,0,0,0,0,0,0); // twelve zeros
+    $maxVal = 0;
+    while ($row = $result->fetch_assoc()) {
+      $userStatPerMonth[($row['month']-1)] = $row['numUser']; // array index is from 0 to 11
+      if ($row['numUser'] > $maxVal) { 
+        $maxVal = $row['numUser'];
+      } 
+    } // while
+    
+    // print a table with the twelve months, maxVal corresponds to 100 px height    
+    echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">&nbsp;</div>';
+    printHr();
+    echo '<h3 class="section-heading">User statistics '.$year.'</h3><div class="row twelve columns">
+    <table width="100%"><tr style="vertical-align: bottom;">';
+    for ($i = 0; $i < 12; $i++) { 
+      $height = round($userStatPerMonth[$i] / $maxVal * 100)+1;
+      echo '<td><span style="display: inline-block; padding: 0 10px; min-height: '.$height.'px; color: #80b466; background-color: rgba(0, 113, 255, 0.35); border-radius: 3px; border: 1px solid #80b466;">'.$userStatPerMonth[$i].'</span></td>'; 
+    }
+    echo '</tr>
+    <tr style="font-weight: 600;"><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>
+    </table></div>
+    <div class="row twelve columns" style="font-size: smaller;">number of active users (last login is less than 1 month old)</div>';
+  }
+    
   
   // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
   function printNewUserForm() {
@@ -231,8 +262,7 @@
     printHr();
   } // function
   
-  function printEntryPoint() {
-    printTitle();
+  function printEntryPoint() {    
     echo '
     <h3 class="section-heading"><span id="login">Log in</span></h3>
     <form action="index.php?do=4" method="post">
@@ -278,7 +308,9 @@
   echo '<div class="section categories noBottom"><div class="container">';
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
-    printEntryPoint();        
+    printTitle();
+    printEntryPoint();
+    printUserStat($dbConnection);    
   } elseif ($doSafe > 0) {
     $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
     $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
