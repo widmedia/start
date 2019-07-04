@@ -178,7 +178,7 @@
     <table width="100%"><tr style="vertical-align: bottom;">';
     for ($i = 0; $i < 12; $i++) { 
       $height = round($userStatPerMonth[$i] / $maxVal * 100)+1;
-      echo '<td><span style="display: inline-block; padding: 0 10px; min-height: '.$height.'px; color: #80b466; background-color: rgba(0, 113, 255, 0.35); border-radius: 3px; border: 1px solid #80b466;">'.$userStatPerMonth[$i].'</span></td>'; 
+      echo '<td><span class="userStatBar" style="min-height: '.$height.'px;">'.$userStatPerMonth[$i].'</span></td>'; 
     }
     echo '</tr>
     <tr style="font-weight: 600;"><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>
@@ -285,9 +285,19 @@
     <div class="row twelve columns">&nbsp;</div>';    
   } // function  
 
-
   printStatic();
-  echo '<script type="text/javascript" src="js/scripts.js"></script></head>';
+  echo '<script type="text/javascript" src="js/scripts.js"></script>
+  <style>
+    .userStatBar {
+      display: inline-block; 
+      padding: 0 8px;  
+      color: #80b466; 
+      background-color: rgba(0, 113, 255, 0.35); 
+      border-radius: 3px; 
+      border: 1px solid #80b466;
+    }
+  </style> 
+  </head>';
 
   // possible actions: 
   // 0/non-existing: normal case
