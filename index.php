@@ -184,7 +184,41 @@
     printHr();
     echo '
     <div class="row">
-      <div class="eight columns"><img src="images/teaser.gif" width="400" height="182" style="border: 1px black solid;" class="u-max-full-width"></div>
+      <div class="eight columns">
+        <div class="slideshow-container">
+          <div class="mySlides fade"><img src="images/teaser_01.png" style="width:100%; vertical-align:middle;"><div class="captionText">Your list of links</div></div>
+          <div class="mySlides fade"><img src="images/teaser_02.png" style="width:100%; vertical-align:middle;"><div class="captionText">Click it</div></div>
+          <div class="mySlides fade"><img src="images/teaser_03.png" style="width:100%; vertical-align:middle;"><div class="captionText">The page opens in a new tab</div></div>
+          <div class="mySlides fade"><img src="images/teaser_04.png" style="width:100%; vertical-align:middle;"><div class="captionText">Edit your links, add a new one</div></div>
+          <div class="mySlides fade"><img src="images/teaser_05.png" style="width:100%; vertical-align:middle;"><div class="captionText">There it is, your new link</div></div>
+          <div class="mySlides fade"><img src="images/teaser_06.png" style="width:100%; vertical-align:middle;"><div class="captionText">...and open that one</div></div>
+        </div>
+        <br>
+        <div style="text-align:center">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <script type="text/javascript">
+          var slideIndex = 0;
+          showSlides();
+
+          function showSlides() {
+            var i;
+            var slides = document.getElementsByClassName("mySlides");
+            var dots = document.getElementsByClassName("dot");
+            for (i = 0; i < slides.length; i++) {
+              slides[i].style.display = "none";  
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            for (i = 0; i < dots.length; i++) {
+              dots[i].className = dots[i].className.replace(" active", "");
+            }
+            slides[slideIndex-1].style.display = "block";  
+            dots[slideIndex-1].className += " active";
+            setTimeout(showSlides, 4000); 
+          }
+        </script>
+        </div>
       <div class="four columns textBox"><br /><ul>
         <li>your personal list of links</li>
         <li>sorted by occurence</li>
@@ -216,7 +250,7 @@
     <div class="row twelve columns"><input name="login" type="submit" value="log in"></div>
     </form>
     <div class="row twelve columns">&nbsp;</div>
-    <div class="row" style="font-size: smaller;">
+    <div class="row">
       <div class="six columns"><a href="index.php?do=2#newUser" class="button button-primary"><img src="images/plus_green.png" class="logoImg"> open a new account</a></div>
       <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/question_green.png" class="logoImg"> (TODO) forgot my password</a></div>
     </div>
