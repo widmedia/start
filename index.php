@@ -192,15 +192,17 @@
     <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> password protection for this account <div id="noPwWarning" class="noPwWarning" style="display: none;">Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself</div></div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="two columns">email: </div>
-      <div class="ten columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
+      <div class="three columns">your email: </div>
+      <div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
     </div>    
     <div class="row" id="pwRow">
-      <div class="two columns">password: </div>
-      <div class="ten columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
+      <div class="three columns">your password: </div>
+      <div class="nine columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns"><input name="create" type="submit" value="create account"></div>
+    <div class="row twelve columns">&nbsp;</div>
+    <div class="row twelve columns">&nbsp;</div>
     </form>
     ';   
   } // function
@@ -252,11 +254,13 @@
         <li>links open on new tab</li>
         <li>edit and add your own links</li>
         <li>easy login</li>
-        <li>try it first: <a href="index.php?userid=2">test user</a></li>
+        <li>try it first: <a href="index.php?userid=2">test user</a> ... or <a href="index.php?do=2#newUser">get your own account</a></li>        
       </ul></div>
     </div>';
     printHr();
-    echo '<div class="row twelve columns">Try it <img src="images/arrow_right_green.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>';
+    echo '<div class="row twelve columns">Go for it <img src="images/arrow_right_green.png" alt="pointing to the open account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button button-primary"><img src="images/plus_green.png" alt="open your own account" class="logoImg"> open a new account</a></div>';
+    printHr();
+    echo '<div class="row twelve columns">Try it first <img src="images/arrow_right_green.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>';
     printHr();
   } // function
   
