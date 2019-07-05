@@ -163,6 +163,7 @@
     $result = $dbConnection->query('SELECT `month`, `numUser` FROM `userStat` WHERE `year` = "'.$year.'" ORDER BY `month`');
     
     $userStatPerMonth = array(0,0,0,0,0,0,0,0,0,0,0,0); // twelve zeros
+    $months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
     $maxVal = 0;
     while ($row = $result->fetch_assoc()) {
       $userStatPerMonth[($row['month']-1)] = $row['numUser']; // array index is from 0 to 11
@@ -171,19 +172,16 @@
       } 
     } // while
     
-    // print a table with the twelve months, maxVal corresponds to 100 px height    
+    // print a table with the twelve months
     echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">&nbsp;</div>';
     printHr();
-    echo '<h3 class="section-heading">User statistics '.$year.'</h3><div class="row twelve columns">
-    <table width="100%"><tr style="vertical-align: bottom;">';
-    for ($i = 0; $i < 12; $i++) { 
-      $height = round($userStatPerMonth[$i] / $maxVal * 100)+1;
-      echo '<td><span class="userStatBar" style="min-height: '.$height.'px;">'.$userStatPerMonth[$i].'</span></td>'; 
+    echo '<h3 class="section-heading">User statistics '.$year.'</h3><div class="row">';
+    for ($i = 0; $i < 12; $i++) {       
+      $height = round($userStatPerMonth[$i] / $maxVal * 100)+1; // maxVal corresponds to 100 px min-height
+      echo '<div class="one columns" style="vertical-align: bottom;"><span style="font-weight: 600;">'.$months[$i].'</span><br><span class="userStatBar" style="min-height: '.$height.'px;">'.$userStatPerMonth[$i].'</span></div>';
     }
-    echo '</tr>
-    <tr style="font-weight: 600;"><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>
-    </table></div>
-    <div class="row twelve columns" style="font-size: smaller;">number of active users (last login is less than 1 month old)</div>';
+    echo '</div>
+    <div class="row twelve columns">number of active users (last login is less than 1 month old)</div>';
   }
     
   
@@ -294,7 +292,7 @@
       color: #80b466; 
       background-color: rgba(0, 113, 255, 0.35); 
       border-radius: 3px; 
-      border: 1px solid #80b466;
+      border: 1px solid #80b466;      
     }
   </style> 
   </head>';
