@@ -5,7 +5,7 @@
   // prints a message when logged in as a test user
   function printMsgTestUser ($userid) {
     if ($userid == 2) { 
-      echo '<div class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.5); z-index: 3;">This is the (somewhat limited) test account. Get your own account? &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:rgba(0, 113, 255, 0.85)";>&gt; Open account</a></div>'; 
+      echo '<div class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.5); z-index: 3;">This is the (somewhat limited) test account. Get your own account? &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:rgba(0, 0, 0, 0.85); text-decoration:underline;">&gt; Open account</a></div>'; 
     }
   } 
 

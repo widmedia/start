@@ -58,7 +58,8 @@ function printMessage ($messageNumber) {
 
 // checks whether the number is bigger than 0 and displays some very generic failure message
 function printError($errorMsgNum) {
-  if ($errorMsgNum > 0) {
+  $userid = getUserid();
+  if ($errorMsgNum > 0 and $userid != 2) {
     printConfirm('Error', '"Something" at step '.$errorMsgNum.' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br/>If you think you did everything right, please send me an email: sali@widmedia.ch');
   }
 }

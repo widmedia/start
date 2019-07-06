@@ -215,12 +215,12 @@
     <div class="row">
       <div class="eight columns">
         <div class="slideshow-container">
-          <div class="mySlides fade"><img src="images/teaser_01.png" alt="your startpage with all the links" style="width:100%; vertical-align:middle;"><div class="captionText">Your list of links</div></div>
-          <div class="mySlides fade"><img src="images/teaser_02.png" alt="click your external link" style="width:100%; vertical-align:middle;"><div class="captionText">Click it</div></div>
-          <div class="mySlides fade"><img src="images/teaser_03.png" alt="the link opens in a new tab" style="width:100%; vertical-align:middle;"><div class="captionText">The page opens in a new tab</div></div>
-          <div class="mySlides fade"><img src="images/teaser_04.png" alt="edit your links, add a new one" style="width:100%; vertical-align:middle;"><div class="captionText">Edit your links, add a new one</div></div>
-          <div class="mySlides fade"><img src="images/teaser_05.png" alt="there it is, your new link" style="width:100%; vertical-align:middle;"><div class="captionText">There it is, your new link</div></div>
-          <div class="mySlides fade"><img src="images/teaser_06.png" alt="your new start page" style="width:100%; vertical-align:middle;"><div class="captionText">...and open that one</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_01.png" alt="your startpage with all the links" style="width:100%; vertical-align:middle;"><div class="captionText">Your list of links</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_02.png" alt="click your external link" style="width:100%; vertical-align:middle;"><div class="captionText">Click it</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_03.png" alt="the link opens in a new tab" style="width:100%; vertical-align:middle;"><div class="captionText">The page opens in a new tab</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_04.png" alt="edit your links, add a new one" style="width:100%; vertical-align:middle;"><div class="captionText">Edit your links, add a new one</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_05.png" alt="there it is, your new link" style="width:100%; vertical-align:middle;"><div class="captionText">There it is, your new link</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_06.png" alt="your new start page" style="width:100%; vertical-align:middle;"><div class="captionText">...and open that one</div></div>
         </div>
         <br>
         <div style="text-align:center">
