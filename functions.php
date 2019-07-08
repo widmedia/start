@@ -261,25 +261,19 @@ function printStatic () {
 }
 
 
-// defines all the styles with a color in it. TODO (maybe) borders are defined with the 1px solid #color shortcut in the skeleton css
+// defines all the styles with a color in it. TODO (maybe) borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
 function printInlineCss() { 
-  // available colors  
-  $greenish = 'rgba(171, 204, 20, 0.7)';  
-  $blueish = 'rgba(0, 113, 255, 0.40)';
-  $reddish = 'rgba(255, 47, 25, 0.3)';
-  $reddish2 = '#8d3a53';
-  $greyish = 'rgba(180, 180, 180, 0.5)';  
-  $whiteish = '#E1E1E1';
-  
+  $greenish = 'rgba(171, 204, 20, 1.0)';          
+    
   $font_norm = $greenish;
-  $font_link = $reddish2;
+  $font_link = '#8d3a53'; // another red
   
-  $borders_lines = $whiteish;
-  $border_buttons = $greenish;
+  $borders_lines = '#e1e1e1'; // whiteish
+  $border_buttons = $greenish; // might want a darker green here
   
-  $bg_norm = $blueish;
-  $bg_diff = $reddish;
-  $bg_link = $greyish;  
+  $bg_norm = 'rgba(0, 113, 255, 0.40)'; // blueish
+  $bg_diff = 'rgba(255, 47, 25, 0.3)'; // reddish
+  $bg_link = 'rgba(180, 180, 180, 0.5)'; // greyish
   
   echo '
   <style>
@@ -291,11 +285,11 @@ function printInlineCss() {
     input[type="reset"],
     input[type="button"] { color: '.$font_norm.'; background-color: '.$bg_norm.'; border-color: '.$font_norm.'; }    
     th,
-    td { border-color: #E1E1E1; }
-    hr { border-color: #E1E1E1; }
-    .differentColor { color: '.$font_norm.'; background-color: rgba(255, 47, 25, 0.3); }
-    .textBox { color: '.$font_norm.'; background-color: rgba(0, 113, 255, 0.40); border-color: '.$font_norm.'; }
-    .noPwWarning { color: '.$font_norm.'; background-color: rgba(255, 47, 25, 0.3); }
+    td { border-color: '.$borders_lines.'; }
+    hr { border-color: '.$borders_lines.'; }
+    .differentColor { color: '.$font_norm.'; background-color: '.$bg_diff.'; }
+    .textBox { color: '.$font_norm.'; background-color: '.$bg_norm.'; border-color: '.$font_norm.'; }
+    .noPwWarning { color: '.$font_norm.'; background-color: '.$bg_diff.'; }
     .overlayMessage { color: '.$font_norm.'; } 
   </style>'; 
 }
