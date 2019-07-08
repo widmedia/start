@@ -35,6 +35,29 @@
     echo '</table>';
   } // function
   
+  function doTextExamples() {
+    // trying to find some meaningful colors
+    // color: 
+    // - blackish:
+    // - greenish:
+    // - whiteish: #fefffd;
+    // background-color:
+    // - blueish: rgba(0, 113, 255, 0.40);
+    // - reddish: 
+    printHr();
+    echo '<div class="row twelve columns">&nbsp;</div>';
+    
+    printConfirm('Some Title', 'this is just a generic text. Loren ipsum style and blabla');
+    echo '<h3 class="section-heading">Section-heading</h3>';
+    echo '<div class="row twelve columns">here we have it, the normal text, some whatever gibberish which should be readable ok</div>';
+    echo '<div class="row twelve columns" style="font-size: smaller;">font size here is smaller, smaller text meaning not that important</div>';
+    echo '<div class="row twelve columns" style="font-weight: 600;">this is some bold text</div>';
+    echo '<div class="row twelve columns">Some buttons: <br><a class="button differentColor" href="#"><img src="../images/icon_db.png" class="logoImg"> account management</a> <a class="button differentColor" href="#"><img src="../images/icon_zero.png" class="logoImg"> set all link counters to zero</a></div>';
+    // echo '<div class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.5); z-index: 3;">This is the (somewhat limited) test account. Get your own account? &nbsp;<a href="#" style="background-color:transparent; color:rgba(0, 0, 0, 0.85); text-decoration:underline;">&gt; Open account</a></div>'; 
+    echo '<div class="row twelve columns">normal text with some standard link in it. <a href="#">this is the link</a></div>';
+    echo '<div class="row twelve columns"><form action="#" method="post"><input name="submit" type="submit" value="Some submit button"></form></div>';
+  }
+  
   function printValueTable ($result, $numEntries) {
     echo '<div class="row twelve columns"><table>';
     while ($row = $result->fetch_row()) {
@@ -138,6 +161,10 @@
   
   echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">';
   doUserStatistics($dbConnection);
+  echo '</div>';
+  
+  echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">';
+  doTextExamples();
   echo '</div>';
   
   $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 1 to 3)

@@ -144,8 +144,7 @@ body {
   font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
   line-height: 1.6;
   font-weight: 400;
-  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: rgba(171, 204, 20, 0.7); 
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;  
 } 
 
 /* Typography */
@@ -176,9 +175,7 @@ p {
 
 /* Links */
 a {
-  padding: 2px 4px 1px 1px;
-  color: #8d3a53; /* reddish */ 
-  background-color: rgba(180, 180, 180, 0.5);
+  padding: 2px 4px 1px 1px;  
   text-decoration: none;}
 a:hover {
   color: #0FA0CE; 
@@ -193,8 +190,7 @@ input[type="reset"],
 input[type="button"] {
   display: inline-block;
   height: 38px;
-  padding: 0 20px;
-  color: #80b466;
+  padding: 0 20px;  
   text-align: center;
   font-size: 11px;
   font-weight: 600;
@@ -202,8 +198,7 @@ input[type="button"] {
   letter-spacing: .1rem;
   text-transform: uppercase;
   text-decoration: none;
-  white-space: nowrap;
-  background-color: rgba(0, 113, 255, 0.35);
+  white-space: nowrap;  
   border-radius: 4px;
   border: 1px solid #80b466;
   cursor: pointer;
@@ -221,15 +216,6 @@ input[type="button"]:focus {
   color: #888;
   border-color: #ddd;
   outline: 0; }
-.button.button-primary,
-button.button-primary,
-input[type="submit"].button-primary,
-input[type="reset"].button-primary,
-input[type="button"].button-primary {
-  color: #ABCC14;
-  background-color: rgba(0, 113, 255, 0.35);
-  border-color: rgba(0, 113, 255, 0.8);
-}
 .button.button-primary:hover,
 button.button-primary:hover,
 input[type="submit"].button-primary:hover,
@@ -422,10 +408,8 @@ hr {
   font-size: 1.5rem;
   vertical-align: 1rem;  
 }
-.differentColor { /* use the 'hover' color set of the button */
-  text-transform: uppercase; 
-  color: #ABCC14;
-  background-color: rgba(255, 47, 25, 0.3); /* red */ 
+.differentColor { /* use the hover color set of the button */
+  text-transform: uppercase;    
   border: none;
 }
 .logoImg {
@@ -438,10 +422,8 @@ hr {
   display: inline-block;
   min-height: 38px;
   padding: 0 20px;
-  color: #80b466;
   text-align: left;
   font-weight: 600;  
-  background-color: rgba(0, 113, 255, 0.40);
   border-radius: 8px;
   border: 1px solid #80b466;      
   box-sizing: border-box; 
@@ -458,8 +440,6 @@ hr {
   text-decoration: none;
   border-radius: 4px;
   box-sizing: border-box; 
-  color: #ABCC14;
-  background-color: rgba(255, 47, 25, 0.3); /* red */ 
   border: none;
 }
 .overlayMessage {
@@ -478,7 +458,6 @@ hr {
   white-space: nowrap;
   border-radius: 4px;
   box-sizing: border-box;   
-  color: #ABCC14;
   border: none;  
   position: relative; 
   display: block; 
