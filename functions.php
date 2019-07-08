@@ -261,40 +261,41 @@ function printStatic () {
 }
 
 
-// defines all the styles with a color in it
+// defines all the styles with a color in it. TODO (maybe) borders are defined with the 1px solid #color shortcut in the skeleton css
 function printInlineCss() { 
-  // available colors
-  // - font  
-  $greenish = '#80b466';  // darker
-  $greenish2 = 'rgba(171, 204, 20, 0.7)';
-  
-  // - background
+  // available colors  
+  $greenish = 'rgba(171, 204, 20, 0.7)';  
   $blueish = 'rgba(0, 113, 255, 0.40)';
   $reddish = 'rgba(255, 47, 25, 0.3)';
-  
-  // - borders
+  $reddish2 = '#8d3a53';
+  $greyish = 'rgba(180, 180, 180, 0.5)';  
   $whiteish = '#E1E1E1';
+  
+  $font_norm = $greenish;
+  $font_link = $reddish2;
+  
+  $borders_lines = $whiteish;
+  $border_buttons = $greenish;
+  
+  $bg_norm = $blueish;
+  $bg_diff = $reddish;
+  $bg_link = $greyish;  
   
   echo '
   <style>
-    body { color: rgba(171, 204, 20, 0.7); } 
-    a { color: #8d3a53; background-color: rgba(180, 180, 180, 0.5); }
+    body { color: '.$font_norm.'; } 
+    a { color: '.$font_link.'; background-color: '.$bg_link.'; }
     .button,
     button,
     input[type="submit"],
     input[type="reset"],
-    input[type="button"] { color: #80b466; background-color: rgba(0, 113, 255, 0.35); border-color: #80b466; }    
-    .button.button-primary,
-    button.button-primary,
-    input[type="submit"].button-primary,
-    input[type="reset"].button-primary,
-    input[type="button"].button-primary { color: #ABCC14; background-color: rgba(0, 113, 255, 0.35); border-color: rgba(0, 113, 255, 0.8); }    
+    input[type="button"] { color: '.$font_norm.'; background-color: '.$bg_norm.'; border-color: '.$font_norm.'; }    
     th,
     td { border-color: #E1E1E1; }
     hr { border-color: #E1E1E1; }
-    .differentColor { color: #ABCC14; background-color: rgba(255, 47, 25, 0.3); }
-    .textBox { color: #80b466; background-color: rgba(0, 113, 255, 0.40); border-color: #80b466; }
-    .noPwWarning { color: #ABCC14; background-color: rgba(255, 47, 25, 0.3); }
-    .overlayMessage { color: #ABCC14; } 
+    .differentColor { color: '.$font_norm.'; background-color: rgba(255, 47, 25, 0.3); }
+    .textBox { color: '.$font_norm.'; background-color: rgba(0, 113, 255, 0.40); border-color: '.$font_norm.'; }
+    .noPwWarning { color: '.$font_norm.'; background-color: rgba(255, 47, 25, 0.3); }
+    .overlayMessage { color: '.$font_norm.'; } 
   </style>'; 
 }

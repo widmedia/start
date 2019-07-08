@@ -8,7 +8,7 @@
     <div class="container">
       <h3 class="section-heading">About</h3>
       <div class="row">
-        <div class="four columns"><a href="#" class="button button-primary">TODO: some image</a></div>
+        <div class="four columns"><a href="#" class="button">TODO: some image</a></div>
         <div class="eight columns textBox">
           <h4>Contact</h4>
           <p>widmedia.ch/start is developed by Daniel Widmer. Please find the complete code at <a href="https://github.com/widmedia/start">github</a> (open source)</p>

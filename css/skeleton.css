@@ -213,23 +213,10 @@ button:focus,
 input[type="submit"]:focus,
 input[type="reset"]:focus,
 input[type="button"]:focus {
-  color: #888;
-  border-color: #ddd;
-  outline: 0; }
-.button.button-primary:hover,
-button.button-primary:hover,
-input[type="submit"].button-primary:hover,
-input[type="reset"].button-primary:hover,
-input[type="button"].button-primary:hover,
-.button.button-primary:focus,
-button.button-primary:focus,
-input[type="submit"].button-primary:focus,
-input[type="reset"].button-primary:focus,
-input[type="button"].button-primary:focus {
   color: #ABCC14;
   background-color: rgba(255, 47, 25, 0.35);
   border-color: rgba(255, 47, 25, 0.8);
-}
+  outline: 0; }
 
 
 /* Forms */

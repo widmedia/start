@@ -40,7 +40,7 @@
     if ($result = $dbConnection->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
       $counter = 0;        
       while ($row = $result->fetch_assoc()) {
-        echo $divClass.'<a href="link.php?id='.$row["id"].'" target="_blank" class="button button-primary">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></div>';        
+        echo $divClass.'<a href="link.php?id='.$row["id"].'" target="_blank" class="button">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></div>';        
         $counter++;
 
         if (($counter % $modulo) == 0) {
