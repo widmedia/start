@@ -8,7 +8,7 @@
     <div class="container">
       <h3 class="section-heading">About</h3>
       <div class="row">
-        <div class="four columns u-max-full-width"><img src="images/myself.jpg" alt="some picture of daniel widmer" style="width:100%"></div>
+        <div class="four columns u-max-full-width"><img src="images/myself.jpg" alt="some picture of daniel widmer" style="width:100%; border:1px solid rgba(163, 168, 0, 0.85);"></div>
         <div class="eight columns textBox">
           <h4>Contact</h4>
           <p>widmedia.ch/start is developed by Daniel Widmer. Please find the complete code at <a href="https://github.com/widmedia/start">github</a> (open source)</p>
