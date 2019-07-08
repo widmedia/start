@@ -5,7 +5,7 @@
   // prints a message when logged in as a test user
   function printMsgTestUser ($userid) {
     if ($userid == 2) { 
-      echo '<div class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.5); z-index: 3;">This is the (somewhat limited) test account. Get your own account? &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:rgba(0, 0, 0, 0.85); text-decoration:underline;">&gt; Open account</a></div>'; 
+      echo '<div class="overlayMessage" style="z-index: 3;">This is the (somewhat limited) test account. Get your own account? &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:rgba(0, 0, 0, 0.85); text-decoration:underline;">&gt; Open account</a></div>'; 
     }
   } 
 
@@ -20,7 +20,7 @@
     } // select query
     
     if (!$verified) {
-      echo '<div class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.5); z-index: 4;">Your email address has not yet been verified. Please do so within 24 hours, otherwise this account will be deleted.</div>';
+      echo '<div class="overlayMessage" style="z-index: 4;">Your email address has not yet been verified. Please do so within 24 hours, otherwise this account will be deleted.</div>';
     }
   } // function
   

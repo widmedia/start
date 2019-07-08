@@ -235,7 +235,8 @@ select {
   border: 1px solid #D1D1D1;
   border-radius: 4px;
   box-shadow: none;
-  box-sizing: border-box; }
+  box-sizing: border-box; 
+  color: #000; }
 /* Removes awkward default styles on some inputs for iOS */
 input[type="email"],
 input[type="number"],
@@ -448,7 +449,14 @@ hr {
   border: none;  
   position: relative; 
   display: block; 
-} 
+}
+.userStatBar {
+  display: inline-block; 
+  padding: 0 8px;  
+  border-radius: 3px; 
+  border: 1px solid #80b466;      
+}
+    
 .mySlides {display: none; box-sizing: border-box;}
 .slideshow-container {
   max-width: 800px;

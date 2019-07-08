@@ -53,7 +53,7 @@ function printMessage ($messageNumber) {
   elseif ($messageNumber == 6) { $message = 'user account has been updated'; }
   elseif ($messageNumber == 7) { $message = 'logout successful, cookie has been deleted as well'; }
   else                         { $message = 'updated'; }    
-  echo '<div id="overlay" class="overlayMessage" style="background-color: rgba(255, 47, 25, 0.8); z-index: 2;">'.$message.'</div>';
+  echo '<div id="overlay" class="overlayMessage" style="z-index: 2;">'.$message.'</div>';
 }  
 
 // checks whether the number is bigger than 0 and displays some very generic failure message
@@ -261,22 +261,23 @@ function printStatic () {
 }
 
 
-// defines all the styles with a color in it. TODO (maybe) borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
+// defines all the styles with a color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
 function printInlineCss() { 
-  // font without a background needs to be darker than the font with a background (red or blue background does not matter)
-  $lightGreen = 'rgba(171, 204, 20, 1.0)';
-  $darkGreen  = 'rgba(85, 102, 10, 1)';
+  // yellowish (works good on blue, works on grey as well): rgba(250, 255, 59, 0.85) = #faff3b;
+  $lightMain = 'rgba(250, 255, 59, 0.85)';
+  $darkMain =  'rgba(163, 168, 0, 0.85)'; // darker version of above settings
+  // before: $lightGreen = 'rgba(171, 204, 20, 1.0)'; $darkGreen  = 'rgba(85, 102, 10, 1)';
   
-  $font_woBg = $lightGreen; // $darkGreen;
-  $font_Bg = $lightGreen;
-  $font_link = '#8d3a53'; // another red
+  $font_woBg = $lightMain;
+  $font_Bg = $lightMain;
+  $font_link = '#8d3a53'; // some red
   
   $borders_lines = '#e1e1e1'; // whitish
-  $border_buttons = $darkGreen;
+  $border_buttons = $darkMain;
   
   $bg_norm = 'rgba(0, 113, 255, 0.40)'; // blueish
-  $bg_diff = 'rgba(255, 47, 25, 0.3)'; // reddish
-  $bg_link = 'rgba(180, 180, 180, 0.5)'; // greyish
+  $bg_diff = 'rgba(255, 47, 25, 0.3)'; // reddish (NB: overlay uses the same color but different transparency value)
+  $bg_link = 'rgba(180, 180, 180, 0.5)'; // grayish
   
   echo '
   <style>
@@ -293,6 +294,7 @@ function printInlineCss() {
     .differentColor { color: '.$font_Bg.'; background-color: '.$bg_diff.'; }
     .textBox { color: '.$font_Bg.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }
     .noPwWarning { color: '.$font_Bg.'; background-color: '.$bg_diff.'; }
-    .overlayMessage { color: '.$font_Bg.'; } 
+    .overlayMessage { color: '.$font_Bg.'; background-color: rgba(255, 47, 25, 0.6); }
+    .userStatBar { color: '.$font_Bg.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }    
   </style>'; 
 }

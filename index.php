@@ -289,16 +289,6 @@
 
   printStatic();
   echo '<script type="text/javascript" src="js/scripts.js"></script>
-  <style>
-    .userStatBar {
-      display: inline-block; 
-      padding: 0 8px;  
-      color: #80b466; 
-      background-color: rgba(0, 113, 255, 0.35); 
-      border-radius: 3px; 
-      border: 1px solid #80b466;      
-    }
-  </style> 
   </head>';
 
   // possible actions: 
