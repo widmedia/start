@@ -72,11 +72,7 @@
   }
   
   // reads the user db, checks how many users have been active in this month and updates the statistics database (userStat)
-  // userStat structure
-  // - id (int 11)
-  // - year (format 2019) int4
-  // - month (format 07) int 2
-  // - numUser (int 11)
+  // userStat structure: id (int 11) / year (format 2019) int4 / month (format 07) int 2 / numUser (int 11)
   function doUserStatistics($dbConnection) {
     // find current year and month
     $currentTime = time();
@@ -86,7 +82,7 @@
     if ($result = $dbConnection->query('SELECT `numUser` FROM `userStat` WHERE `year` = "'.$year.'" AND `month` = "'.$month.'" LIMIT 1')) {
       if ($result->num_rows == 1) { // stats for this month have already been done
         $row = $result->fetch_assoc();
-        printConfirm('stats for '.$year.'-'.$month.' are already existing', $row['numUser'].' have been active this month');
+        echo '<div class="row twelve columns textBox">stats for '.$year.'-'.$month.' are already existing, '.$row['numUser'].' have been active this month</div>';
       } else { // need to do the statistics
         $activeUsers = 0;
         $inactiveUsers = 0;
@@ -103,11 +99,7 @@
           $result = $dbConnection->query('INSERT INTO `userStat` (`year`, `month`, `numUser`) VALUES ("'.$year.'", "'.$month.'", "'.$activeUsers.'")');
         } // query
       } // have one result
-    } // query
-      
-    
-    
-    
+    } // query    
   }
 
   echo '
@@ -194,7 +186,7 @@
   <div class="section noBottom">
     <div class="container">
       <div class="row twelve columns"><hr /></div>
-      <div class="row twelve columns"><a class="button differentColor" href="../main.php"><img src="../images/home_green.png" class="logoImg"> back to main</a></div>
+      <div class="row twelve columns"><a class="button differentColor" href="../main.php"><img src="../images/icon_home.png" class="logoImg"> back to main</a></div>
     </div>
   </div>                
   </div> <!-- /section categories -->
