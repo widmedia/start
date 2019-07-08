@@ -15,8 +15,8 @@
     echo '</div><div class="row twelve columns">&nbsp;</div>';                    
     echo '
     <div class="row">
-      <div class="six columns"><a class="button differentColor" href="editUser.php?do=1"><img src="images/db_green.png" class="logoImg"> account management</a></div>
-      <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/zero_green.png" class="logoImg"> set all link counters to zero</a></div>
+      <div class="six columns"><a class="button differentColor" href="editUser.php?do=1"><img src="images/icon_db.png" class="logoImg"> account management</a></div>
+      <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon_zero.png" class="logoImg"> set all link counters to zero</a></div>
     </div>';    
   } // function 
 
@@ -28,7 +28,7 @@
       $deleteText = '';
     } else {
       $submitText = 'save';
-      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/delete.png" class="logoImg"> delete</a>';
+      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/icon_delete.png" class="logoImg"> delete</a>';
     }
     echo '
     <form action="editLinks.php?do=2&id='.$linkId.'" method="post">      

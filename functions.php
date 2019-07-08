@@ -78,10 +78,10 @@ function getCategory($dbConnection, $userid, $category) {
 function printFooter() {
   $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
   
-  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/edit_green.png" class="logoImg"> edit</a>';
-  $home   = '<a class="button differentColor" href="main.php"><img src="images/home_green.png" class="logoImg"> home</a>';
-  $about  = '<a class="button differentColor" href="about.php"><img src="images/info_green.png" class="logoImg"> about</a>'; 
-  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/logout_green.png" class="logoImg"> log out</a>';
+  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> edit</a>';
+  $home   = '<a class="button differentColor" href="main.php"><img src="images/icon_home.png" class="logoImg"> home</a>';
+  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> about</a>'; 
+  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon_logout.png" class="logoImg"> log out</a>';
   
   // default values. For main.php as current site   
   $linkLeft   = $edit;

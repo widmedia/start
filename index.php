@@ -258,9 +258,9 @@
       </ul></div>
     </div>';
     printHr();
-    echo '<div class="row twelve columns">Go for it <img src="images/arrow_right_green.png" alt="pointing to the open account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button button-primary"><img src="images/plus_green.png" alt="open your own account" class="logoImg"> open a new account</a></div>';
+    echo '<div class="row twelve columns">Go for it <img src="images/icon_arrow_right.png" alt="pointing to the open account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button button-primary"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> open a new account</a></div>';
     printHr();
-    echo '<div class="row twelve columns">Try it first <img src="images/arrow_right_green.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>';
+    echo '<div class="row twelve columns">Try it first <img src="images/icon_arrow_right.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button button-primary">log in as the test user</a></div>';
     printHr();
   } // function
   
@@ -281,8 +281,8 @@
     </form>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="six columns"><a href="index.php?do=2#newUser" class="button button-primary"><img src="images/plus_green.png" alt="open your own account" class="logoImg"> open a new account</a></div>
-      <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/question_green.png" alt="get an email with your new password" class="logoImg"> (TODO) forgot my password</a></div>
+      <div class="six columns"><a href="index.php?do=2#newUser" class="button button-primary"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> open a new account</a></div>
+      <div class="six columns"><a href="index.php?do=9" class="button button-primary"><img src="images/icon_question.png" alt="get an email with your new password" class="logoImg"> (TODO) forgot my password</a></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>';    
   } // function  

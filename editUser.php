@@ -40,7 +40,7 @@
     <div class="row"><div class="twelve columns"><hr /></div></div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
-      <div class="twelve columns"><a href="editUser.php?do=2" class="button differentColor"><img src="images/delete.png" class="logoImg"> delete this account (without any further confirmation)</a></div>
+      <div class="twelve columns"><a href="editUser.php?do=2" class="button differentColor"><img src="images/icon_delete.png" class="logoImg"> delete this account (without any further confirmation)</a></div>
     </div>
     </form>';
   } // function
