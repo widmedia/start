@@ -263,13 +263,16 @@ function printStatic () {
 
 // defines all the styles with a color in it. TODO (maybe) borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
 function printInlineCss() { 
-  $greenish = 'rgba(171, 204, 20, 1.0)';          
-    
-  $font_norm = $greenish;
+  // font without a background needs to be darker than the font with a background (red or blue background does not matter)
+  $lightGreen = 'rgba(171, 204, 20, 1.0)';
+  $darkGreen  = 'rgba(85, 102, 10, 1)';
+  
+  $font_woBg = $lightGreen; // $darkGreen;
+  $font_Bg = $lightGreen;
   $font_link = '#8d3a53'; // another red
   
-  $borders_lines = '#e1e1e1'; // whiteish
-  $border_buttons = $greenish; // might want a darker green here
+  $borders_lines = '#e1e1e1'; // whitish
+  $border_buttons = $darkGreen;
   
   $bg_norm = 'rgba(0, 113, 255, 0.40)'; // blueish
   $bg_diff = 'rgba(255, 47, 25, 0.3)'; // reddish
@@ -277,19 +280,19 @@ function printInlineCss() {
   
   echo '
   <style>
-    body { color: '.$font_norm.'; } 
+    body { color: '.$font_woBg.'; } 
     a { color: '.$font_link.'; background-color: '.$bg_link.'; }
     .button,
     button,
     input[type="submit"],
     input[type="reset"],
-    input[type="button"] { color: '.$font_norm.'; background-color: '.$bg_norm.'; border-color: '.$font_norm.'; }    
+    input[type="button"] { color: '.$font_Bg.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }    
     th,
     td { border-color: '.$borders_lines.'; }
     hr { border-color: '.$borders_lines.'; }
-    .differentColor { color: '.$font_norm.'; background-color: '.$bg_diff.'; }
-    .textBox { color: '.$font_norm.'; background-color: '.$bg_norm.'; border-color: '.$font_norm.'; }
-    .noPwWarning { color: '.$font_norm.'; background-color: '.$bg_diff.'; }
-    .overlayMessage { color: '.$font_norm.'; } 
+    .differentColor { color: '.$font_Bg.'; background-color: '.$bg_diff.'; }
+    .textBox { color: '.$font_Bg.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }
+    .noPwWarning { color: '.$font_Bg.'; background-color: '.$bg_diff.'; }
+    .overlayMessage { color: '.$font_Bg.'; } 
   </style>'; 
 }

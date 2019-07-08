@@ -498,10 +498,6 @@ hr {
 @media only screen and (max-width: 300px) {
   .captionText {font-size: 11px}
 }
-/* Categories */
-.categories {
-  color: #ABCC14;
-}
 .categories .section-description { 
   margin-bottom: 0rem;
 }
