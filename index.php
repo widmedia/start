@@ -137,7 +137,7 @@
   // sends an email to the new user with a special link and updates the database with that email confirmation link
   function newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe) {
     $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
-    $emailBody = "Hello,\n\nThank you for opening an account on widmedia.ch/start.\nYou need to confirm your email address within 24 hours to fully use your account. Please click on the link below to do so:\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
+    $emailBody = "Hello,\n\nThank you for opening a free account on widmedia.ch/start.\nYou need to confirm your email address within 24 hours to fully use your account. Please click on the link below to do so:\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
     if ($hasPw == 1) {
       $emailBody = $emailBody."You did select password protection for your account. Please use the form on https://widmedia.ch/start/index.php#login to log in.\n";
     } else {
@@ -200,7 +200,7 @@
       <div class="nine columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><input name="create" type="submit" value="create account"></div>
+    <div class="row twelve columns"><input name="create" type="submit" value="create your free account"></div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns">&nbsp;</div>
     </form>
@@ -209,18 +209,18 @@
   
   function printTitle() {
     echo '<h2 class="section-heading">widmedia.ch/start</h2>
-    <div class="row" style="font-weight: bold; font-size: larger; text-align: left"><div class="twelve columns">a simple customizable start page, a personal link collection</div></div>';
+    <div class="row twelve columns" style="font-weight: bold; font-size: larger; text-align: left">a simple and free customizable start page, a personal link collection</div>';
     printHr();
     echo '
     <div class="row">
       <div class="eight columns">
         <div class="slideshow-container">
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_01.png" alt="your startpage with all the links" style="width:100%; vertical-align:middle;"><div class="captionText">Your list of links</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_02.png" alt="click your external link" style="width:100%; vertical-align:middle;"><div class="captionText">Click it</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_03.png" alt="the link opens in a new tab" style="width:100%; vertical-align:middle;"><div class="captionText">The page opens in a new tab</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_04.png" alt="edit your links, add a new one" style="width:100%; vertical-align:middle;"><div class="captionText">Edit your links, add a new one</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_05.png" alt="there it is, your new link" style="width:100%; vertical-align:middle;"><div class="captionText">There it is, your new link</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_06.png" alt="your new start page" style="width:100%; vertical-align:middle;"><div class="captionText">...and open that one</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_01.png" alt="your startpage with all the links" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Your list of links</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_02.png" alt="click your external link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Click it</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_03.png" alt="the link opens in a new tab" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">The page opens in a new tab</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_04.png" alt="edit your links, add a new one" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Edit your links, add a new one</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_05.png" alt="there it is, your new link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">There it is, your new link</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_06.png" alt="your new start page" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">...and open that one</div></div>
         </div>
         <br>
         <div style="text-align:center">
@@ -248,17 +248,17 @@
           }
         </script>
         </div>
-      <div class="four columns textBox"><br /><ul>
+      <div class="four columns textBox"><br><ul>
         <li>your personal list of links</li>
         <li>sorted by occurence</li>
         <li>links open on new tab</li>
         <li>edit and add your own links</li>
         <li>easy login</li>
-        <li>try it first: <a href="index.php?userid=2">test user</a> ... or <a href="index.php?do=2#newUser">get your own account</a></li>        
+        <li>try it first: <a href="index.php?userid=2">test user</a> ... or <a href="index.php?do=2#newUser">get your own free account</a></li>        
       </ul></div>
     </div>';
     printHr();
-    echo '<div class="row twelve columns">Go for it <img src="images/icon_arrow_right.png" alt="pointing to the open account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> open a new account</a></div>';
+    echo '<div class="row twelve columns">Go for it <img src="images/icon_arrow_right.png" alt="pointing to the open free account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own free account" class="logoImg"> open a new free account</a></div>';
     printHr();
     echo '<div class="row twelve columns">Try it first <img src="images/icon_arrow_right.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button">log in as the test user</a></div>';
     printHr();
@@ -281,7 +281,7 @@
     </form>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="six columns"><a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> open a new account</a></div>
+      <div class="six columns"><a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> open a free new account</a></div>
       <div class="six columns"><a href="index.php?do=9" class="button"><img src="images/icon_question.png" alt="get an email with your new password" class="logoImg"> (TODO) forgot my password</a></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>';    

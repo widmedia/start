@@ -213,7 +213,7 @@ button:focus,
 input[type="submit"]:focus,
 input[type="reset"]:focus,
 input[type="button"]:focus {
-  color: #ABCC14;
+  color: #000;
   background-color: rgba(255, 47, 25, 0.35);
   border-color: rgba(255, 47, 25, 0.8);
   outline: 0; }
@@ -283,7 +283,7 @@ label > .label-body {
 
 /* Lists */
 ul {
-  list-style: circle inside; }
+  list-style: disc; }
 ol {
   list-style: decimal inside; }
 ol, ul {
@@ -379,8 +379,7 @@ hr {
   padding: 8rem 0 0rem;
   margin-bottom: 0rem;
 }
-.section-heading,
-.section-description {
+.section-heading {
   margin-bottom: 1.2rem;
   text-align: left;
 }
@@ -454,7 +453,10 @@ hr {
   display: inline-block; 
   padding: 0 8px;  
   border-radius: 3px; 
-  border: 1px solid #80b466;      
+  border: 1px solid #80b466;
+}
+.imgBorder {
+  border: 1px solid #80b466;  
 }
     
 .mySlides {display: none; box-sizing: border-box;}
@@ -506,33 +508,21 @@ hr {
 @media only screen and (max-width: 300px) {
   .captionText {font-size: 11px}
 }
-.categories .section-description { 
+.categories { 
   margin-bottom: 0rem;
 }
 
-/* Bigger than 550 */
+
 @media (min-width: 550px) {
   .section {
     padding: 4rem 0 1rem;
   }
 }
-
-/* Bigger than 750 */
-@media (min-width: 750px) {
-  .section {
-    padding: 4rem 0 1rem;
-  }
-  .section-description {
-    max-width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-  }
+@media (min-width: 750px) {  
   .categories {
-    padding: 15rem 0 8rem;
+    padding: 6rem 0 8rem;
   }
 }
-
-/* Bigger than 1000 */
 @media (min-width: 1000px) {
   .section {
     padding: 6rem 0 1rem;  

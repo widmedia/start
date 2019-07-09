@@ -60,7 +60,7 @@ function printMessage ($messageNumber) {
 function printError($errorMsgNum) {
   $userid = getUserid();
   if ($errorMsgNum > 0 and $userid != 2) {
-    printConfirm('Error', '"Something" at step '.$errorMsgNum.' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br/>If you think you did everything right, please send me an email: sali@widmedia.ch');
+    printConfirm('Error', '"Something" at step '.$errorMsgNum.' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br>If you think you did everything right, please send me an email: sali@widmedia.ch');
   }
 }
 
@@ -88,17 +88,17 @@ function printFooter() {
   $linkMiddle = $about;
   $linkRight  = $logout;
   if (($currentSiteUnsafe == '/start/editLinks.php') or ($currentSiteUnsafe == '/start/editUser.php')) {
-      $linkLeft   = $home; 
-      $linkMiddle = $about;
-      $linkRight  = $logout;
+    $linkLeft   = $home; 
+    $linkMiddle = $about;
+    $linkRight  = $logout;
   } elseif ($currentSiteUnsafe == '/start/about.php') {
-      $linkLeft   = $home;
-      $linkMiddle = '&nbsp;';
-      $linkRight  = $logout;
+    $linkLeft   = '&nbsp;';
+    $linkMiddle = $home;
+    $linkRight  = '&nbsp;';
   }  elseif ($currentSiteUnsafe == '/start/index.php') {
-      $linkLeft   = '&nbsp;';
-      $linkMiddle = $about;
-      $linkRight  = '&nbsp;';
+    $linkLeft   = $home;  // always have a home button. Even if I'm already on index page
+    $linkMiddle = '&nbsp;';
+    $linkRight  = $about;
   }
 
   echo '      
@@ -263,13 +263,10 @@ function printStatic () {
 
 // defines all the styles with a color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
 function printInlineCss() { 
-  // yellowish (works good on blue, works on grey as well): rgba(250, 255, 59, 0.85) = #faff3b;
+  // yellowish (works good on blue, works on gray as well): rgba(250, 255, 59, 0.85) = #faff3b;
   $lightMain = 'rgba(250, 255, 59, 0.85)';
-  $darkMain =  'rgba(163, 168, 0, 0.85)'; // darker version of above settings
-  // before: $lightGreen = 'rgba(171, 204, 20, 1.0)'; $darkGreen  = 'rgba(85, 102, 10, 1)';
+  $darkMain =  'rgba(182, 189, 0, 0.85)'; // darker version of above settings  
   
-  $font_woBg = $lightMain;
-  $font_Bg = $lightMain;
   $font_link = '#8d3a53'; // some red
   
   $borders_lines = '#e1e1e1'; // whitish
@@ -281,20 +278,21 @@ function printInlineCss() {
   
   echo '
   <style>
-    body { color: '.$font_woBg.'; } 
+    body { color: '.$lightMain.'; } 
     a { color: '.$font_link.'; background-color: '.$bg_link.'; }
     .button,
     button,
     input[type="submit"],
     input[type="reset"],
-    input[type="button"] { color: '.$font_Bg.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }    
+    input[type="button"] { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }    
     th,
     td { border-color: '.$borders_lines.'; }
     hr { border-color: '.$borders_lines.'; }
-    .differentColor { color: '.$font_Bg.'; background-color: '.$bg_diff.'; }
-    .textBox { color: '.$font_Bg.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }
-    .noPwWarning { color: '.$font_Bg.'; background-color: '.$bg_diff.'; }
-    .overlayMessage { color: '.$font_Bg.'; background-color: rgba(255, 47, 25, 0.6); }
-    .userStatBar { color: '.$font_Bg.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }    
+    .differentColor { color: '.$lightMain.'; background-color: '.$bg_diff.'; }
+    .textBox { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }
+    .noPwWarning { color: '.$lightMain.'; background-color: '.$bg_diff.'; }
+    .overlayMessage { color: '.$lightMain.'; background-color: rgba(255, 47, 25, 0.6); }
+    .userStatBar { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }
+    .imgBorder { border-color: '.$border_buttons.'; }
   </style>'; 
 }
