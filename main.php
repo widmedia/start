@@ -64,9 +64,7 @@
   }
   $userid = getUserid();
   
-  // temporary  
-  if (makeSafeInt($_GET['tmp'], 1) == 1) { printNavMenu(1); }
-  // /temporary
+  printNavMenu(1);
   
   printMsgTestUser($userid);      
   printMsgAccountVerify($dbConnection, $userid);

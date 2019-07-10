@@ -78,10 +78,10 @@ function getCategory($dbConnection, $userid, $category) {
 function printFooter() {
   $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
   
-  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> edit</a>';
-  $home   = '<a class="button differentColor" href="main.php"><img src="images/icon_home.png" class="logoImg"> home</a>';
-  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> about</a>'; 
-  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon_logout.png" class="logoImg"> log out</a>';
+  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> Edit</a>';
+  $home   = '<a class="button differentColor" href="main.php"><img src="images/icon_home.png" class="logoImg"> Links</a>';
+  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> About</a>'; 
+  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon_logout.png" class="logoImg"> Log out</a>';
   
   // default values. For main.php as current site   
   $linkLeft   = $edit;
@@ -117,86 +117,29 @@ function printFooter() {
 // TODO:
 // - css into skeleton
 // - currently done only for main.php
-// - the design: height of the whole thing -> smaller. width of the whole thing? Some border maybe?
 function printNavMenu($loggedIn) {
   // $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
   //if ($currentSiteUnsafe == '/start/about.php') {
   //  $title   = 'About';    
   //} elseif ($currentSiteUnsafe == '/start/editLinks.php') {
   echo '
-  <nav role="navigation">
+  <nav role="navigation" style="width:400px">
     <div id="menuToggle">
-      <input type="checkbox" />
+      <input type="checkbox">
       <span></span>
       <span></span>
       <span></span>
       <ul id="menu">
         <li><a href="index.php?do=6">Home</a></li>
-        <li><a href="index.php?do=2">Home - open new account</a></li>
+        <li><a href="index.php?do=2#newUser">Home - open new account</a></li>
         <li><a href="about.php">About</a></li>
         <li><a href="main.php">Links (this page)</a></li>          
         <li><a href="editLinks.php">Links - edit links</a></li>
-        <li><a href="editUser.php">Links - edit user account</a></li>
-        <li><a href="index.php?do=1">- log out</a></li>
+        <li><a href="editUser.php?do=1">Links - edit user account</a></li>
+        <li><a href="index.php?do=1">log out</a></li>
       </ul>
     </div>
   </nav>';
-
-  echo '<style>    
-  #menuToggle {
-    display: block;
-    position: relative;
-    top: 50px;
-    left: 50px;  
-    z-index: 5;    
-    user-select: none;
-  }
-  #menuToggle input {
-    display: block;
-    width: 40px;
-    height: 32px;
-    position: absolute;
-    top: -7px;
-    left: -5px;  
-    cursor: pointer;  
-    opacity: 0; /* hide this */
-    z-index: 6; /* and place it over the hamburger */
-  }
-  #menuToggle span {
-    display: block;
-    width: 33px;
-    height: 4px;
-    margin-bottom: 5px;
-    position: relative; 
-    background: #cdcdcd;
-    border-radius: 3px;  
-    z-index: 5;  
-    transform-origin: 4px 0px;  
-    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-                background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-                opacity 0.55s ease;
-  }
-  #menuToggle span:first-child { transform-origin: 0% 0%; }
-  #menuToggle span:nth-last-child(2) { transform-origin: 0% 100%; }
-  #menuToggle input:checked ~ span { opacity: 1; transform: rotate(45deg) translate(-2px, -1px); background: #232323; }
-  #menuToggle input:checked ~ span:nth-last-child(3) { opacity: 0; transform: rotate(0deg) scale(0.2, 0.2); }
-  #menuToggle input:checked ~ span:nth-last-child(2) { transform: rotate(-45deg) translate(0, -1px); }
-  #menu {
-    position: absolute;
-    width: 300px;
-    margin: -100px 0 0 -50px;
-    padding: 50px;
-    padding-top: 125px;      
-    background: #ededed;
-    list-style-type: none;        
-    transform-origin: 0% 0%;
-    transform: translate(-100%, 0);     
-    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
-  }
-  #menu li { padding: 5px 0; font-size: 20px; margin-bottom: 0rem; }
-  #menu ul { margin-bottom: 0rem; }
-  #menuToggle input:checked ~ ul { transform: none; }    
-  </style>';
 } // function
 
   
@@ -365,7 +308,7 @@ function printInlineCss() {
   echo '
   <style>
     body { color: '.$lightMain.'; } 
-    a { color: '.$font_link.'; }
+    a { color: '.$font_link.'; background-color: '.$bg_link.';}
     a:hover { color: '.$lightMain.'; }
     .button,
     button,
@@ -385,7 +328,7 @@ function printInlineCss() {
     .differentColor { color: '.$lightMain.'; background-color: '.$bg_diff.'; }
     .textBox { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; }
     .noPwWarning { color: '.$lightMain.'; background-color: '.$bg_diff.'; }
-    .overlayMessage { color: '.$lightMain.'; background-color: '.$bg_diff2.'); }
+    .overlayMessage { color: '.$lightMain.'; background-color: '.$bg_diff2.'; }
     .userStatBar { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; }
     .imgBorder { border-color: '.$darkMain.'; }
   </style>'; 
