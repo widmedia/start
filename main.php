@@ -64,8 +64,7 @@
   }
   $userid = getUserid();
   
-  printNavMenu(1);
-  
+  printNavMenu();  
   printMsgTestUser($userid);      
   printMsgAccountVerify($dbConnection, $userid);
 

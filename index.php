@@ -207,7 +207,7 @@
     ';   
   } // function
   
-  function printTitle() {
+  function printTitle() {    
     echo '<h2 class="section-heading">widmedia.ch/start</h2>
     <div class="row twelve columns" style="font-weight: bold; font-size: larger; text-align: left">a simple and free customizable start page, a personal link collection</div>';
     printHr();
@@ -306,7 +306,7 @@
   } else {
     echo '<body>';
   }
-  
+  printNavMenu();
   echo '<div class="section categories noBottom"><div class="container">';
   
   if ($doSafe == 0) { // valid use case. Entry point of this site

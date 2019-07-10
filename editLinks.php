@@ -48,9 +48,9 @@
 
 
   printStatic();
-  echo '
-  </head>
-  <body>  
+  echo '</head><body>';
+  printNavMenu();
+  echo '  
   <div class="section categories">
     <div class="container">';
      

@@ -114,14 +114,32 @@ function printFooter() {
   </div>'; 
 } // function
 
-// TODO:
-// - css into skeleton
-// - currently done only for main.php
-function printNavMenu($loggedIn) {
-  // $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
-  //if ($currentSiteUnsafe == '/start/about.php') {
-  //  $title   = 'About';    
-  //} elseif ($currentSiteUnsafe == '/start/editLinks.php') {
+function printNavMenu() {
+  $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER is something like /start/main.php (without any parameters) 
+  $notLoggedIn = (getUserid() == 0);
+  
+  $home      = '<li><a href="index.php?do=6">Home</a></li>';  
+  $about     = '<li><a href="about.php">About</a></li>';  
+  $links     = '<li><a href="main.php">Links</a></li>';
+  $editLinks = '<li><a href="editLinks.php">- edit links</a></li>';
+  $editUser  = '<li><a href="editUser.php?do=1">- edit user account</a></li>';
+  $logOut    = '<li><a href="index.php?do=1">log out</a></li>';
+  
+  if ($siteUnsafe == 'index.php')     { $home       = '<li class="menuCurrentPage">Home</li>'; }
+  if ($siteUnsafe == 'about.php')     { $about      = '<li class="menuCurrentPage">About</li>'; }  
+  if ($siteUnsafe == 'main.php')      { $links      = '<li class="menuCurrentPage">Links</li>'; }
+  if ($siteUnsafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- edit links</li>'; }
+  if ($siteUnsafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- edit user account</li>'; }
+
+  if ($notLoggedIn) { // user is not logged in
+    $strikeThrough = ' style="text-decoration: line-through;"';
+
+    $links     = '<li'.$strikeThrough.'>Links</li>';
+    $editLinks = '<li'.$strikeThrough.'>- edit links</li>';
+    $editUser  = '<li'.$strikeThrough.'>- edit user account</li>';
+    $logOut    = '<li'.$strikeThrough.'>log out</li>';   
+  } 
+
   echo '
   <nav role="navigation" style="width:400px">
     <div id="menuToggle">
@@ -130,13 +148,12 @@ function printNavMenu($loggedIn) {
       <span></span>
       <span></span>
       <ul id="menu">
-        <li><a href="index.php?do=6">Home</a></li>
-        <li><a href="index.php?do=2#newUser">Home - open new account</a></li>
-        <li><a href="about.php">About</a></li>
-        <li><a href="main.php">Links (this page)</a></li>          
-        <li><a href="editLinks.php">Links - edit links</a></li>
-        <li><a href="editUser.php?do=1">Links - edit user account</a></li>
-        <li><a href="index.php?do=1">log out</a></li>
+        '.$home.'
+        '.$about.'
+        '.$links.'
+        '.$editLinks.'
+        '.$editUser.'
+        '.$logOut.'
       </ul>
     </div>
   </nav>';
@@ -301,6 +318,7 @@ function printInlineCss() {
   $borders_lines = '#e1e1e1'; // whitish  
   
   $bg_norm  = 'rgba(0, 113, 255, 0.40)'; // blueish
+  $bg_norm2 = 'rgba(0, 113, 255, 0.70)'; // same color, different transparency for navMenu
   $bg_diff  = 'rgba(255, 47, 25, 0.3)'; // reddish 
   $bg_diff2 = 'rgba(255, 47, 25, 0.6)'; // same color, different transparency for overlay and borders
   $bg_link  = 'rgba(180, 180, 180, 0.5)'; // grayish
@@ -331,5 +349,9 @@ function printInlineCss() {
     .overlayMessage { color: '.$lightMain.'; background-color: '.$bg_diff2.'; }
     .userStatBar { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; }
     .imgBorder { border-color: '.$darkMain.'; }
+    #menu { background-color: '.$bg_norm2.'; border-color: '.$darkMain.'; }
+    #menu a { color: '.$lightMain.'; }
+    #menu a:hover, #menu a:focus { color: '.$darkMain.'; }
+    .menuCurrentPage { color: '.$darkMain.'; }  
   </style>'; 
 }

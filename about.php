@@ -1,9 +1,9 @@
 <?php
   require_once('functions.php'); 
   printStatic();
+  echo '</head><body>';
+  printNavMenu();
 ?>
-</head>
-<body>
   <div class="section categories noBottom">
     <div class="container">
       <h3 class="section-heading">About</h3>

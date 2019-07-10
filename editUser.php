@@ -48,8 +48,9 @@
 
   printStatic();
   echo '<script defer type="text/javascript" src="js/scripts.js"></script>  
-  </head>
-  <body>
+  </head><body>';
+  printNavMenu();
+  echo '
   <div class="section categories">
     <div class="container">';     
       $userid = getUserid();
