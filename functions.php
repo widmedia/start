@@ -113,6 +113,92 @@ function printFooter() {
     </div>
   </div>'; 
 } // function
+
+// TODO:
+// - css into skeleton
+// - currently done only for main.php
+// - the design: height of the whole thing -> smaller. width of the whole thing? Some border maybe?
+function printNavMenu($loggedIn) {
+  // $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
+  //if ($currentSiteUnsafe == '/start/about.php') {
+  //  $title   = 'About';    
+  //} elseif ($currentSiteUnsafe == '/start/editLinks.php') {
+  echo '
+  <nav role="navigation">
+    <div id="menuToggle">
+      <input type="checkbox" />
+      <span></span>
+      <span></span>
+      <span></span>
+      <ul id="menu">
+        <li><a href="index.php?do=6">Home</a></li>
+        <li><a href="index.php?do=2">Home - open new account</a></li>
+        <li><a href="about.php">About</a></li>
+        <li><a href="main.php">Links (this page)</a></li>          
+        <li><a href="editLinks.php">Links - edit links</a></li>
+        <li><a href="editUser.php">Links - edit user account</a></li>
+        <li><a href="index.php?do=1">- log out</a></li>
+      </ul>
+    </div>
+  </nav>';
+
+  echo '<style>    
+  #menuToggle {
+    display: block;
+    position: relative;
+    top: 50px;
+    left: 50px;  
+    z-index: 5;    
+    user-select: none;
+  }
+  #menuToggle input {
+    display: block;
+    width: 40px;
+    height: 32px;
+    position: absolute;
+    top: -7px;
+    left: -5px;  
+    cursor: pointer;  
+    opacity: 0; /* hide this */
+    z-index: 6; /* and place it over the hamburger */
+  }
+  #menuToggle span {
+    display: block;
+    width: 33px;
+    height: 4px;
+    margin-bottom: 5px;
+    position: relative; 
+    background: #cdcdcd;
+    border-radius: 3px;  
+    z-index: 5;  
+    transform-origin: 4px 0px;  
+    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+                background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+                opacity 0.55s ease;
+  }
+  #menuToggle span:first-child { transform-origin: 0% 0%; }
+  #menuToggle span:nth-last-child(2) { transform-origin: 0% 100%; }
+  #menuToggle input:checked ~ span { opacity: 1; transform: rotate(45deg) translate(-2px, -1px); background: #232323; }
+  #menuToggle input:checked ~ span:nth-last-child(3) { opacity: 0; transform: rotate(0deg) scale(0.2, 0.2); }
+  #menuToggle input:checked ~ span:nth-last-child(2) { transform: rotate(-45deg) translate(0, -1px); }
+  #menu {
+    position: absolute;
+    width: 300px;
+    margin: -100px 0 0 -50px;
+    padding: 50px;
+    padding-top: 125px;      
+    background: #ededed;
+    list-style-type: none;        
+    transform-origin: 0% 0%;
+    transform: translate(-100%, 0);     
+    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
+  }
+  #menu li { padding: 5px 0; font-size: 20px; margin-bottom: 0rem; }
+  #menu ul { margin-bottom: 0rem; }
+  #menuToggle input:checked ~ ul { transform: none; }    
+  </style>';
+} // function
+
   
 // checks whether userid is 2 (= test user)
 function testUserCheck($userid) {
@@ -269,30 +355,38 @@ function printInlineCss() {
   
   $font_link = '#8d3a53'; // some red
   
-  $borders_lines = '#e1e1e1'; // whitish
-  $border_buttons = $darkMain;
+  $borders_lines = '#e1e1e1'; // whitish  
   
-  $bg_norm = 'rgba(0, 113, 255, 0.40)'; // blueish
-  $bg_diff = 'rgba(255, 47, 25, 0.3)'; // reddish (NB: overlay uses the same color but different transparency value)
-  $bg_link = 'rgba(180, 180, 180, 0.5)'; // grayish
+  $bg_norm  = 'rgba(0, 113, 255, 0.40)'; // blueish
+  $bg_diff  = 'rgba(255, 47, 25, 0.3)'; // reddish 
+  $bg_diff2 = 'rgba(255, 47, 25, 0.6)'; // same color, different transparency for overlay and borders
+  $bg_link  = 'rgba(180, 180, 180, 0.5)'; // grayish
   
   echo '
   <style>
     body { color: '.$lightMain.'; } 
-    a { color: '.$font_link.'; background-color: '.$bg_link.'; }
+    a { color: '.$font_link.'; }
+    a:hover { color: '.$lightMain.'; }
     .button,
     button,
-    input[type="submit"],
-    input[type="reset"],
-    input[type="button"] { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }    
+    input[type="submit"],    
+    input[type="button"] { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; } 
+    .button:hover,
+    button:hover,
+    input[type="submit"]:hover,    
+    input[type="button"]:hover,
+    .button:focus,
+    button:focus,
+    input[type="submit"]:focus,    
+    input[type="button"]:focus { color: '.$darkMain.'; background-color: '.$bg_diff.'; border-color: '.$bg_diff2.'; }
     th,
     td { border-color: '.$borders_lines.'; }
     hr { border-color: '.$borders_lines.'; }
     .differentColor { color: '.$lightMain.'; background-color: '.$bg_diff.'; }
-    .textBox { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }
+    .textBox { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; }
     .noPwWarning { color: '.$lightMain.'; background-color: '.$bg_diff.'; }
-    .overlayMessage { color: '.$lightMain.'; background-color: rgba(255, 47, 25, 0.6); }
-    .userStatBar { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$border_buttons.'; }
-    .imgBorder { border-color: '.$border_buttons.'; }
+    .overlayMessage { color: '.$lightMain.'; background-color: '.$bg_diff2.'); }
+    .userStatBar { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; }
+    .imgBorder { border-color: '.$darkMain.'; }
   </style>'; 
 }

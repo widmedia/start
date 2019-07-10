@@ -176,9 +176,9 @@ p {
 /* Links */
 a {
   padding: 2px 4px 1px 1px;  
-  text-decoration: none;}
-a:hover {
-  color: #0FA0CE; 
+  text-decoration: none;
+  transition: color 0.3s ease;}
+a:hover {  
   text-decoration: none;}
 
 
@@ -186,7 +186,6 @@ a:hover {
 .button,
 button,
 input[type="submit"],
-input[type="reset"],
 input[type="button"] {
   display: inline-block;
   height: 38px;
@@ -206,16 +205,11 @@ input[type="button"] {
 .button:hover,
 button:hover,
 input[type="submit"]:hover,
-input[type="reset"]:hover,
 input[type="button"]:hover,
 .button:focus,
 button:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus,
-input[type="button"]:focus {
-  color: #000;
-  background-color: rgba(255, 47, 25, 0.35);
-  border-color: rgba(255, 47, 25, 0.8);
+input[type="button"]:focus {  
   outline: 0; }
 
 

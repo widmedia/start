@@ -312,7 +312,7 @@
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printTitle();
     printEntryPoint();
-    printUserStat($dbConnection);    
+    printUserStat($dbConnection);
   } elseif ($doSafe > 0) {
     $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
     $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
@@ -324,6 +324,7 @@
     } elseif ($doSafe == 2) { // present the new user form
       printTitle();
       printNewUserForm();
+      printUserStat($dbConnection);
     } elseif ($doSafe == 3) { // process the new user form data, add a new user
       // step 1: user data need to make sense: email-addr valid
       $hasPw = makeSafeInt($_POST['hasPw'], 1);
@@ -389,7 +390,11 @@
             } else { $dispErrorMsg = 53; } // update query
           } else { $dispErrorMsg = 52; } // 1 result
         } else { $dispErrorMsg = 51; } // select query
-      } else { $dispErrorMsg = 50; } // valid userid         
+      } else { $dispErrorMsg = 50; } // valid userid
+    } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to main
+      printTitle();
+      printEntryPoint();
+      printUserStat($dbConnection);
     } else {
       $dispErrorMsg = 1;
     } // switch

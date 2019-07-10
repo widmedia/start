@@ -23,7 +23,7 @@
       echo '<div class="overlayMessage" style="z-index: 4;">Your email address has not yet been verified. Please do so within 24 hours, otherwise this account will be deleted.</div>';
     }
   } // function
-  
+    
   // function to output several links in a formatted way
   // creating a div for every link and div-rows for every $module-th entry
   // has a limit of 100 links per category
@@ -63,6 +63,10 @@
     echo '<body>';
   }
   $userid = getUserid();
+  
+  // temporary  
+  if (makeSafeInt($_GET['tmp'], 1) == 1) { printNavMenu(1); }
+  // /temporary
   
   printMsgTestUser($userid);      
   printMsgAccountVerify($dbConnection, $userid);
