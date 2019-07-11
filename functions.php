@@ -6,14 +6,14 @@
 function initialize () {
   session_start(); // this code must precede any HTML output
   
-  $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // special treatment for index.php and main.php
+  $siteUnsafe = getCurrentSite();   
   
-  if ($currentSiteUnsafe != '/start/index.php') { // on every other page than index, I need the userid already set
+  if ($siteUnsafe != 'index.php') { // on every other page than index, I need the userid already set
     if (!getUserid()) {
       // there might be two reasons: 
       // - user is connecting directly to main.php from where-ever (common case as you might store the main-page as bookmark). If so, just redirect to index.php
       // - session is really destroyed (e.g. user logged out). In this case, print an error message
-      if ($currentSiteUnsafe == '/start/main.php') { // redirect to index
+      if ($siteUnsafe == 'main.php') { // redirect to index
         redirectRelative('index.php');
         return false;  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
       }
@@ -75,9 +75,8 @@ function getCategory($dbConnection, $userid, $category) {
 } // function
   
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
-function printFooter() {
-  $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
-  
+function printFooter() {  
+  $siteUnsafe = getCurrentSite(); 
   $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> Edit</a>';
   $home   = '<a class="button differentColor" href="main.php"><img src="images/icon_home.png" class="logoImg"> Links</a>';
   $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> About</a>'; 
@@ -87,15 +86,15 @@ function printFooter() {
   $linkLeft   = $edit;
   $linkMiddle = $about;
   $linkRight  = $logout;
-  if (($currentSiteUnsafe == '/start/editLinks.php') or ($currentSiteUnsafe == '/start/editUser.php')) {
+  if (($siteUnsafe == 'editLinks.php') or ($siteUnsafe == 'editUser.php')) {
     $linkLeft   = $home; 
     $linkMiddle = $about;
     $linkRight  = $logout;
-  } elseif ($currentSiteUnsafe == '/start/about.php') {
+  } elseif ($siteUnsafe == 'about.php') {
     $linkLeft   = '&nbsp;';
     $linkMiddle = $home;
     $linkRight  = '&nbsp;';
-  }  elseif ($currentSiteUnsafe == '/start/index.php') {
+  }  elseif ($siteUnsafe == 'index.php') {
     $linkLeft   = $home;  // always have a home button. Even if I'm already on index page
     $linkMiddle = '&nbsp;';
     $linkRight  = $about;
@@ -114,8 +113,13 @@ function printFooter() {
   </div>'; 
 } // function
 
+// returns the current site in the format 'about.php'
+function getCurrentSite() {
+  return (substr($_SERVER['SCRIPT_NAME'],7)); // SERVER[...] is something like /start/main.php (without any parameters) 
+}
+
 function printNavMenu() {
-  $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER is something like /start/main.php (without any parameters) 
+  $siteUnsafe = getCurrentSite(); 
   $notLoggedIn = (getUserid() == 0);
   
   $home      = '<li><a href="index.php?do=6">Home</a></li>';  
@@ -253,24 +257,22 @@ function printHr () {
 
 // prints static header information which is the same on all pages
 function printStatic () {
-  // description tag and title are different for every site
-  $currentSiteUnsafe = $_SERVER['SCRIPT_NAME']; // returns something like /start/main.php (without any parameters)
-  
-  // NB: link.php is special as only in the error case a html site is generated
-  if ($currentSiteUnsafe == '/start/about.php') {
+  // description tag and title are different for every site  
+  $siteUnsafe = getCurrentSite(); // NB: link.php is special as only in the error case a html site is generated
+  if ($siteUnsafe == 'about.php') {
     $title   = 'About';
     $description = 'a modifiable page containing various links, intended to be used as a personal start page';
-  } elseif ($currentSiteUnsafe == '/start/editLinks.php') {
+  } elseif ($siteUnsafe == 'editLinks.php') {
     $title   = 'Edit my links';
     $description = 'page to add, edit or delete links';
-  } elseif ($currentSiteUnsafe == '/start/editUser.php') {
+  } elseif ($siteUnsafe == 'editUser.php') {
     $title   = 'Edit or delete user account';
     $description = 'page to edit or delete the user account';
-  } elseif ($currentSiteUnsafe == '/start/index.php') {  
+  } elseif ($siteUnsafe == 'index.php') {  
     $title   = 'Startpage';
     $description = 'a modifiable page containing various links, intended to be used as a personal start page';
-  } elseif ($currentSiteUnsafe == '/start/main.php') {  
-    $title   = 'Startpage';
+  } elseif ($siteUnsafe == 'main.php') {  
+    $title   = 'Links';
     $description = 'a modifiable page containing various links, intended to be used as a personal start page';
   } else {
     $title   = 'Error page';
@@ -318,7 +320,7 @@ function printInlineCss() {
   $borders_lines = '#e1e1e1'; // whitish  
   
   $bg_norm  = 'rgba(0, 113, 255, 0.40)'; // blueish
-  $bg_norm2 = 'rgba(0, 113, 255, 0.70)'; // same color, different transparency for navMenu
+  $bg_norm2 = 'rgba(0, 113, 255, 0.80)'; // same color, different transparency for navMenu
   $bg_diff  = 'rgba(255, 47, 25, 0.3)'; // reddish 
   $bg_diff2 = 'rgba(255, 47, 25, 0.6)'; // same color, different transparency for overlay and borders
   $bg_link  = 'rgba(180, 180, 180, 0.5)'; // grayish
