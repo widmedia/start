@@ -122,7 +122,10 @@ function printNavMenu() {
   $siteUnsafe = getCurrentSite(); 
   $notLoggedIn = (getUserid() == 0);
   
-  $home      = '<li><a href="index.php?do=6">Home</a></li>';  
+  // default values, when a user is logged in
+  $home      = '<li><a href="index.php?do=6">Home</a></li>';
+  $login     = '';
+  $newAcc    = '';
   $about     = '<li><a href="about.php">About</a></li>';  
   $links     = '<li><a href="main.php">Links</a></li>';
   $editLinks = '<li><a href="editLinks.php">- edit links</a></li>';
@@ -137,11 +140,13 @@ function printNavMenu() {
 
   if ($notLoggedIn) { // user is not logged in
     $strikeThrough = ' style="text-decoration: line-through;"';
-
+    
+    $login     = '<li><a href="index.php#login">- log in</a></li>';
+    $newAcc    = '<li><a href="index.php?do=2#newUser">- new account</a></li>';
     $links     = '<li'.$strikeThrough.'>Links</li>';
     $editLinks = '<li'.$strikeThrough.'>- edit links</li>';
     $editUser  = '<li'.$strikeThrough.'>- edit user account</li>';
-    $logOut    = '<li'.$strikeThrough.'>log out</li>';   
+    $logOut    = '';   
   } 
 
   echo '
@@ -153,6 +158,8 @@ function printNavMenu() {
       <span></span>
       <ul id="menu">
         '.$home.'
+        '.$login.'
+        '.$newAcc.'
         '.$about.'
         '.$links.'
         '.$editLinks.'
@@ -167,7 +174,7 @@ function printNavMenu() {
 // checks whether userid is 2 (= test user)
 function testUserCheck($userid) {
   if ($userid == 2) {
-    printConfirm('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2#newUser">open account</a><br><br>(btw: you may ignore the error message(s) below)');
+    printConfirm('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2#newUser">open account</a>');
     return false;
   } else {
     return true;
@@ -252,46 +259,65 @@ function redirectRelative ($page) {
 
 // prints a horizontal ruler over twelve columns
 function printHr () {
-  echo '<div class="row twelve columns"><hr /></div>';  
+  echo '<div class="row twelve columns"><hr></div>';  
 }
 
 // prints static header information which is the same on all pages
 function printStatic () {
   // description tag and title are different for every site  
   $siteUnsafe = getCurrentSite(); // NB: link.php is special as only in the error case a html site is generated
+  $urlOk = false; // safety measure because $siteUnsafe may contain harmful code
   if ($siteUnsafe == 'about.php') {
     $title   = 'About';
-    $description = 'a modifiable page containing various links, intended to be used as a personal start page';
+    $description = 'Some background info about the widmedia.ch/start project';
+    $urlOk = true;
   } elseif ($siteUnsafe == 'editLinks.php') {
     $title   = 'Edit my links';
     $description = 'page to add, edit or delete links';
+    $urlOk = true;
   } elseif ($siteUnsafe == 'editUser.php') {
-    $title   = 'Edit or delete user account';
+    $title   = 'Edit or delete your user account';
     $description = 'page to edit or delete the user account';
+    $urlOk = true;
   } elseif ($siteUnsafe == 'index.php') {  
     $title   = 'Startpage';
-    $description = 'a modifiable page containing various links, intended to be used as a personal start page';
+    $description = 'your new personal start page, a modifiable page with all your links';
+    $urlOk = true;
   } elseif ($siteUnsafe == 'main.php') {  
     $title   = 'Links';
-    $description = 'a modifiable page containing various links, intended to be used as a personal start page';
+    $description = 'a modifiable page with all your links, intended to be used as a personal start page';
+    $urlOk = true;
   } else {
     $title   = 'Error page';
     $description = 'page not found';    
   }
-
- 
+  
+  if ($urlOk) {
+    $url = 'https://widmedia.ch/start/'.$siteUnsafe;
+  } else {
+    $url = 'https://widmedia.ch/start/'; // a generic one
+  }
+   
   echo '
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>'.$title.'</title>
+  <meta property="og:title" content="'.$title.'" />
   <meta name="author" content="Daniel Widmer">
-  <meta name="description" content="'.$description.'">
-  <link rel="canonical" href="https://widmedia.ch/start" />    
+  <meta name="description" content="'.$description.'">  
+  <link rel="canonical" href="'.$url.'" />
+  
   <meta name="robots" content="index, follow">    
   <meta name="content-language" content="en">
-  <meta name="language" content="english, en">
+  <meta name="language" content="english, en"> 
+
+  <meta property="og:description" content="'.$description.'" />
+  <meta property="og:url" content="'.$url.'" />
+  <meta property="og:type" content="website" />  
+  <meta property="og:image:secure_url" itemprop="image" content="https://widmedia.ch/start/images/screen_main.png" />
+  <meta property="og:image:type" content="image/png" />
 
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -351,6 +377,7 @@ function printInlineCss() {
     .overlayMessage { color: '.$lightMain.'; background-color: '.$bg_diff2.'; }
     .userStatBar { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; }
     .imgBorder { border-color: '.$darkMain.'; }
+    .tooltip .tooltiptext { color: '.$lightMain.'; background-color: '.$bg_norm.'; }
     #menu { background-color: '.$bg_norm2.'; border-color: '.$darkMain.'; }
     #menu a { color: '.$lightMain.'; }
     #menu a:hover, #menu a:focus { color: '.$darkMain.'; }

@@ -5,7 +5,7 @@
   // prints a message when logged in as a test user
   function printMsgTestUser ($userid) {
     if ($userid == 2) { 
-      echo '<div class="overlayMessage" style="z-index: 3;">This is the (somewhat limited) test account. Get your own account? &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:rgba(0, 0, 0, 0.85); text-decoration:underline;">&gt; Open account</a></div>'; 
+      echo '<div class="overlayMessage" style="z-index: 3;">This is the (somewhat limited) test account. Get your own account? &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">Open account</a></div>'; 
     }
   } 
 
@@ -36,11 +36,13 @@
       $modulo = 4;
       $divClass = '<div class="halbeReihe three columns linktext">';      
     }
-     
+
     if ($result = $dbConnection->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
       $counter = 0;        
       while ($row = $result->fetch_assoc()) {
-        echo $divClass.'<a href="link.php?id='.$row["id"].'" target="_blank" class="button">'.$row['text'].'</a><span class="counter">'.$row['cntTot'].'</span></div>';        
+        $link = $row['link'];
+        if (strlen($link) > 26) { $link = substr($link,0,23).'...'; }
+        echo $divClass.'<a href="link.php?id='.$row['id'].'" target="_blank" class="button tooltip">'.$row['text'].'<span class="tooltiptext">'.$link.'</span></a><span class="counter">'.$row['cntTot'].'</span></div>';        
         $counter++;
 
         if (($counter % $modulo) == 0) {
@@ -67,7 +69,7 @@
   printNavMenu();  
   printMsgTestUser($userid);      
   printMsgAccountVerify($dbConnection, $userid);
-
+  
   echo '<div class="section categories noBottom"><div class="container">';
   
   echo '<h3 class="section-heading">'.getCategory($dbConnection, $userid, 1).'</h3><div class="row">';

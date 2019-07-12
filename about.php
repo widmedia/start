@@ -1,5 +1,6 @@
 <?php
-  require_once('functions.php'); 
+  require_once('functions.php');
+  session_start(); // this code must precede any HTML output  
   printStatic();
   echo '</head><body>';
   printNavMenu();
