@@ -26,7 +26,7 @@ following files do NOT require a logged-in user:
 - about.php
 
 following files do require a logged-in user:
-- main.php
+- links.php
 - link.php
 - editUser.php
 - editLink.php

@@ -7,43 +7,45 @@ function initialize () {
   session_start(); // this code must precede any HTML output
   
   $siteUnsafe = getCurrentSite();   
-  
-  if ($siteUnsafe != 'index.php') { // on every other page than index, I need the userid already set
-    if (!getUserid()) {
-      // there might be two reasons: 
-      // - user is connecting directly to main.php from where-ever (common case as you might store the main-page as bookmark). If so, just redirect to index.php
-      // - session is really destroyed (e.g. user logged out). In this case, print an error message
-      if ($siteUnsafe == 'main.php') { // redirect to index
-        redirectRelative('index.php');
-        return false;  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
+  if ($siteUnsafe != 'about.php') { // on every other page than about, I need the userid already set
+    if ($siteUnsafe != 'index.php') { // index is special, I might do forwarding when cookies are set
+      if (!getUserid()) {
+        // there might be two reasons: 
+        // - user is connecting directly to links.php from where-ever (common case as you might store the links-page as bookmark). If so, just redirect to index.php
+        // - session is really destroyed (e.g. user logged out). In this case, print an error message
+        if ($siteUnsafe == 'links.php') { // redirect to index
+          redirectRelative('index.php');
+          return false;  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
+        }        
+        printErrorAndDie('Login error', 'You might want to go to <a href="index.php">the start page</a>');
       }
-      
-      printStatic();
-      echo '</head><body>';
-      printConfirm('Login error', 'You might want to go to <a href="index.php">the start page</a>');
-      echo '</body></html>';
-      die();
     }
-  }
-  
+  }  
   require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
-  if ($dbConnection->connect_error) { 
-    die('Connection to the data base failed. Please try again later and/or send me an email: sali@widmedia.ch');
+  if ($dbConnection->connect_error) {
+    printErrorAndDie('Connection to the data base failed', 'Please try again later and/or send me an email: sali@widmedia.ch');
   }
   return $dbConnection;
 }
-  
+
 //prints the h4 title and one row
 function printConfirm($heading, $text) {
-  echo '
-  <div class="row twelve columns textBox">
+  echo '<div class="row twelve columns textBox">
     <h4>'.$heading.'</h4>
     <p>'.$text.'</p>
-  </div>  
-  ';
+  </div>';
 } 
 
-// prints some disappearing message box. used on main.php and index.php
+// prints a valid html error page and stops php execution
+function printErrorAndDie($heading, $text) {
+  printStatic();
+  echo '</head><body>';
+  printConfirm($heading, $text);
+  echo '</body></html>';
+  die();  
+}
+
+// prints some disappearing message box. used on links.php and index.php
 function printMessage ($messageNumber) {    
   if     ($messageNumber == 1) { $message = 'link has been updated'; } // ugly but still nicer than a switch statement with all the break commands
   elseif ($messageNumber == 2) { $message = 'category has been updated'; }
@@ -59,7 +61,7 @@ function printMessage ($messageNumber) {
 // checks whether the number is bigger than 0 and displays some very generic failure message
 function printError($errorMsgNum) {
   $userid = getUserid();
-  if ($errorMsgNum > 0 and $userid != 2) {
+  if ($errorMsgNum > 0 and $userid != 2) { // no error is printed for the test user
     printConfirm('Error', '"Something" at step '.$errorMsgNum.' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br>If you think you did everything right, please send me an email: sali@widmedia.ch');
   }
 }
@@ -78,11 +80,11 @@ function getCategory($dbConnection, $userid, $category) {
 function printFooter() {  
   $siteUnsafe = getCurrentSite(); 
   $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> Edit</a>';
-  $home   = '<a class="button differentColor" href="main.php"><img src="images/icon_home.png" class="logoImg"> Links</a>';
+  $home   = '<a class="button differentColor" href="links.php"><img src="images/icon_home.png" class="logoImg"> Links</a>';
   $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> About</a>'; 
   $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon_logout.png" class="logoImg"> Log out</a>';
   
-  // default values. For main.php as current site   
+  // default values. For links.php as current site   
   $linkLeft   = $edit;
   $linkMiddle = $about;
   $linkRight  = $logout;
@@ -115,7 +117,7 @@ function printFooter() {
 
 // returns the current site in the format 'about.php'
 function getCurrentSite() {
-  return (substr($_SERVER['SCRIPT_NAME'],7)); // SERVER[...] is something like /start/main.php (without any parameters) 
+  return (substr($_SERVER['SCRIPT_NAME'],7)); // SERVER[...] is something like /start/links.php (without any parameters) 
 }
 
 function printNavMenu() {
@@ -127,14 +129,14 @@ function printNavMenu() {
   $login     = '';
   $newAcc    = '';
   $about     = '<li><a href="about.php">About</a></li>';  
-  $links     = '<li><a href="main.php">Links</a></li>';
+  $links     = '<li><a href="links.php">Links</a></li>';
   $editLinks = '<li><a href="editLinks.php">- edit links</a></li>';
   $editUser  = '<li><a href="editUser.php?do=1">- edit user account</a></li>';
   $logOut    = '<li><a href="index.php?do=1">log out</a></li>';
   
   if ($siteUnsafe == 'index.php')     { $home       = '<li class="menuCurrentPage">Home</li>'; }
   if ($siteUnsafe == 'about.php')     { $about      = '<li class="menuCurrentPage">About</li>'; }  
-  if ($siteUnsafe == 'main.php')      { $links      = '<li class="menuCurrentPage">Links</li>'; }
+  if ($siteUnsafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; }
   if ($siteUnsafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- edit links</li>'; }
   if ($siteUnsafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- edit user account</li>'; }
 
@@ -181,7 +183,7 @@ function testUserCheck($userid) {
   }
 }
 
-// deletes both the cookie and the session 
+// deletes both the cookie and the session. TODO: think about whether I really want to delete the cookie
 function sessionAndCookieDelete () {
   $expire = time() - 42000; // some big enough value in the past to make sure things like summer time changes do not affect it  
   
@@ -283,9 +285,9 @@ function printStatic () {
     $title   = 'Startpage';
     $description = 'your new personal start page, a modifiable page with all your links';
     $urlOk = true;
-  } elseif ($siteUnsafe == 'main.php') {  
+  } elseif ($siteUnsafe == 'links.php') {  
     $title   = 'Links';
-    $description = 'a modifiable page with all your links, intended to be used as a personal start page';
+    $description = 'the main page with all your links, your personal start page';
     $urlOk = true;
   } else {
     $title   = 'Error page';
@@ -300,7 +302,7 @@ function printStatic () {
    
   echo '
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8">
   <title>'.$title.'</title>
@@ -335,14 +337,12 @@ function printStatic () {
 }
 
 
-// defines all the styles with a color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
-function printInlineCss() { 
-  // yellowish (works good on blue, works on gray as well): rgba(250, 255, 59, 0.85) = #faff3b;
-  $lightMain = 'rgba(250, 255, 59, 0.85)';
+// defines all the styles with color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
+function printInlineCss() {   
+  $lightMain = 'rgba(250, 255, 59, 0.85)'; // yellowish (works good on blue, works on gray as well) = #faff3b;
   $darkMain =  'rgba(182, 189, 0, 0.85)'; // darker version of above settings  
   
-  $font_link = '#8d3a53'; // some red
-  
+  $font_link     = '#8d3a53'; // some red  
   $borders_lines = '#e1e1e1'; // whitish  
   
   $bg_norm  = 'rgba(0, 113, 255, 0.40)'; // blueish
@@ -383,4 +383,14 @@ function printInlineCss() {
     #menu a:hover, #menu a:focus { color: '.$darkMain.'; }
     .menuCurrentPage { color: '.$darkMain.'; }  
   </style>'; 
+}
+
+function getLanguage($dbConnection, $textId) {
+  // db organized as follows: id(int_11) / en(text) / de(text)
+  $lang = 'en'; // TODO: take from cookie and/or from session var
+
+  if ($result = $dbConnection->query('SELECT `'.$lang.'` FROM `language` WHERE `id` = "'.$textId.'" LIMIT 1')) {
+    $row = $result->fetch_row();
+    return (htmlentities($row[0]));
+  } // no else case because can't do that much otherwise
 }

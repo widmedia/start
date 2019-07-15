@@ -121,7 +121,7 @@
                 
                 if ($emailOk) {
                   if ($result = $dbConnection->query('UPDATE `user` SET `hasPw` = "'.$hasPwCheckBox.'", `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {
-                    redirectRelative('main.php?msg=6');
+                    redirectRelative('links.php?msg=6');
                   } else { $dispErrorMsg = 35; } // update query
                 } else { $dispErrorMsg = 34; } // emailCheck
               } else { $dispErrorMsg = 33; } // pwCheck ok                

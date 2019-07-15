@@ -116,19 +116,19 @@
               if ($categorySafe == 0) { // means I update one link
                 if ($idSafe > 0) { // this means I need a link id
                   if ($result = $dbConnection->query('UPDATE `links` SET `text` = "'.$textSqlSafe.'", `link` = "'.$linkSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'" LIMIT 1')) {
-                    redirectRelative('main.php?msg=1');
+                    redirectRelative('links.php?msg=1');
                   } else { $dispErrorMsg = 24; } // update sql did work out
                 } else { $dispErrorMsg = 23; } // id check did work out
               } else { // I'm adding a new link
                 if ($result = $dbConnection->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`) VALUES ("'.$userid.'", "'.$categorySafe.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'")')) {
-                  redirectRelative('main.php?msg=5');
+                  redirectRelative('links.php?msg=5');
                 } else { $dispErrorMsg = 22; } // insert query did work
               } // distinction between adding and editing
             } else { $dispErrorMsg = 21; } // testuser check
           } else { $dispErrorMsg = 20; printConfirm('Wrong URL', 'For the URL input, you need to have something in the format "http://somewebsite.ch" or "https://somewebsite.ch"'); } // have a validUrl
         } elseif ($doSafe == 3) { // I want to reset all the link counters to 0          
           if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
-            redirectRelative('main.php?msg=4');            
+            redirectRelative('links.php?msg=4');            
           } else { $dispErrorMsg = 30; } // update query did work        
         } elseif ($doSafe == 4) { // delete a link. Displaying a confirmation message                 
           if ($idSafe > 0) {
@@ -136,7 +136,7 @@
               if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) {
                 if ($result->num_rows == 1) {
                   if ($dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) { // should return true
-                    redirectRelative('main.php?msg=3');
+                    redirectRelative('links.php?msg=3');
                   } else { $dispErrorMsg = 44; } // delete sql did work out
                 } else { $dispErrorMsg = 43; } // did get one result
               } else { $dispErrorMsg = 42; } // select sql did work out
@@ -148,7 +148,7 @@
             if ($categorySafe > 0) {            
               if ($result = $dbConnection->query('UPDATE `categories` SET `text` = "'.$textSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe .'" LIMIT 1')) {
                 $textHtmlSafe = htmlspecialchars($textUnsafe);          
-                redirectRelative('main.php?msg=2');
+                redirectRelative('links.php?msg=2');
               } else { $dispErrorMsg = 52; } // update sql did work out                        
             } else { $dispErrorMsg = 51; } // category check did work out
           } else { $dispErrorMsg = 50; } // testuser check    

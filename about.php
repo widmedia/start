@@ -1,13 +1,14 @@
 <?php
   require_once('functions.php');
-  session_start(); // this code must precede any HTML output  
+  $dbConnection = initialize();
   printStatic();
   echo '</head><body>';
   printNavMenu();
-?>
+  echo '
   <div class="section categories noBottom">
     <div class="container">
-      <h3 class="section-heading">About</h3>
+      <h3 class="section-heading">'.getLanguage($dbConnection,1).'</h3>'; // About
+?>
       <div class="row">
         <div class="four columns u-max-full-width"><img src="images/myself.jpg" alt="some picture of Daniel Widmer" class="imgBorder" style="width:100%;"></div>
         <div class="eight columns textBox">

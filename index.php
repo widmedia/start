@@ -21,11 +21,11 @@
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
     if ($useridGetSafe > 0) { // login like index.php?userid=2 the $_GET-userid has higher priority than the cookie userid
       if (verifyCredentials($dbConnection, 3, $useridGetSafe, '', '')) {
-        redirectRelative('main.php');
+        redirectRelative('links.php');
       }
     } elseif ($useridCookieSafe > 0) {
       if (verifyCredentials($dbConnection, 2, $useridCookieSafe, '', $randCookieSafe)) {
-        redirectRelative('main.php');
+        redirectRelative('links.php');
       }
     }
   }
@@ -366,7 +366,7 @@
                 setcookie('randCookie', $row[0], $expire);
               } else { $dispErrorMsg = 43; } // select query
             } // setCookie is selected
-            redirectRelative('main.php');
+            redirectRelative('links.php');
           } else { $dispErrorMsg = 42; } // verification ok
         } else { $dispErrorMsg = 41; } // email found in db
       } else { $dispErrorMsg = 40; } // valid email          
@@ -391,7 +391,7 @@
           } else { $dispErrorMsg = 52; } // 1 result
         } else { $dispErrorMsg = 51; } // select query
       } else { $dispErrorMsg = 50; } // valid userid
-    } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to main
+    } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
       printTitle();
       printEntryPoint();
       printUserStat($dbConnection);

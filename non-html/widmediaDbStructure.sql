@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.4
+-- version 4.9.0.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 04. Jul 2019 um 13:44
+-- Erstellungszeit: 15. Jul 2019 um 13:07
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -33,6 +33,18 @@ CREATE TABLE `categories` (
   `userid` int(11) NOT NULL,
   `category` int(1) NOT NULL,
   `text` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `language`
+--
+
+CREATE TABLE `language` (
+  `id` int(11) NOT NULL,
+  `en` text NOT NULL,
+  `de` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -92,6 +104,12 @@ ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `language`
+--
+ALTER TABLE `language`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indizes für die Tabelle `links`
 --
 ALTER TABLE `links`
@@ -117,6 +135,12 @@ ALTER TABLE `userStat`
 -- AUTO_INCREMENT für Tabelle `categories`
 --
 ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `language`
+--
+ALTER TABLE `language`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
