@@ -25,6 +25,7 @@ function initialize () {
   if ($dbConnection->connect_error) {
     printErrorAndDie('Connection to the data base failed', 'Please try again later and/or send me an email: sali@widmedia.ch');
   }
+  $dbConnection->set_charset('utf8');
   return $dbConnection;
 }
 
@@ -250,6 +251,11 @@ function makeSafeHex($unsafe, $length) {
   return $safe;
 }
 
+// returns a 'safe' string. Not that much to do though for a string
+function makeSafeStr($unsafe, $length) {
+  return (htmlentities(substr($unsafe, 0, $length))); // length-limited variable, html encoded
+}
+
 // does a (relative) redirect
 function redirectRelative ($page) {
   // redirecting relative to current page NB: some clients require absolute paths
@@ -388,9 +394,15 @@ function printInlineCss() {
 function getLanguage($dbConnection, $textId) {
   // db organized as follows: id(int_11) / en(text) / de(text)
   $lang = 'en'; // TODO: take from cookie and/or from session var
+  
+  // TODO. Temporary, set the language by the 'get' method
+  $langDiv = makeSafeStr($_GET['ln'], 2);
+  if ($langDiv == 'de') { // otherwise it stays at 'en'
+    $lang = 'de';
+  }
 
   if ($result = $dbConnection->query('SELECT `'.$lang.'` FROM `language` WHERE `id` = "'.$textId.'"')) {
-    $row = $result->fetch_row();
-    return (htmlentities($row[0]));
+    $row = $result->fetch_row();    
+    return $row[0];
   } // no else case because can't do that much otherwise
 }

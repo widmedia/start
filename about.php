@@ -25,7 +25,7 @@
           <p>'.getLanguage($dbConnection,8).' <a href="https://github.com/widmedia/start">github '.getLanguage($dbConnection,9).'.</a></p>
           <p>'.getLanguage($dbConnection,10).'</p>
           <p>'.getLanguage($dbConnection,11).' <br> 
-          '.getLanguage($dbConnection,12).' <a href="https://widmedia.ch/start">widmedia.ch/start</a> '.getLanguage($dbConnection,13).'</p>
+          '.getLanguage($dbConnection,12).' widmedia.ch '.getLanguage($dbConnection,13).'</p>
           <p>widmedia '.getLanguage($dbConnection,14).'</p>
         </div>        
       </div>
