@@ -47,15 +47,12 @@ function printErrorAndDie($heading, $text) {
 }
 
 // prints some disappearing message box. used on links.php and index.php
-function printMessage ($messageNumber) {    
-  if     ($messageNumber == 1) { $message = 'link has been updated'; } // ugly but still nicer than a switch statement with all the break commands
-  elseif ($messageNumber == 2) { $message = 'category has been updated'; }
-  elseif ($messageNumber == 3) { $message = 'link has been deleted'; }
-  elseif ($messageNumber == 4) { $message = 'counters have been reset to 0'; }
-  elseif ($messageNumber == 5) { $message = 'link has been added'; }
-  elseif ($messageNumber == 6) { $message = 'user account has been updated'; }
-  elseif ($messageNumber == 7) { $message = 'logout successful, cookie has been deleted as well'; }
-  else                         { $message = 'updated'; }    
+function printMessage ($dbConnection, $messageNumber) {    
+  if (($messageNumber >= 1) and ($messageNumber <= 7)) { 
+    $message = getLanguage($dbConnection,($messageNumber+18)); 
+  } else { 
+    $message = getLanguage($dbConnection,26); 
+  }    
   echo '<div id="overlay" class="overlayMessage" style="z-index: 2;">'.$message.'</div>';
 }  
 
@@ -121,7 +118,7 @@ function getCurrentSite() {
   return (substr($_SERVER['SCRIPT_NAME'],7)); // SERVER[...] is something like /start/links.php (without any parameters) 
 }
 
-function printNavMenu() {
+function printNavMenu($dbConnection) {
   $siteUnsafe = getCurrentSite(); 
   $notLoggedIn = (getUserid() == 0);
   
@@ -129,14 +126,14 @@ function printNavMenu() {
   $home      = '<li><a href="index.php?do=6">Home</a></li>';
   $login     = '';
   $newAcc    = '';
-  $about     = '<li><a href="about.php">About</a></li>';  
+  $about     = '<li><a href="about.php">'.getLanguage($dbConnection,1).'</a></li>';  
   $links     = '<li><a href="links.php">Links</a></li>';
   $editLinks = '<li><a href="editLinks.php">- edit links</a></li>';
   $editUser  = '<li><a href="editUser.php?do=1">- edit user account</a></li>';
   $logOut    = '<li><a href="index.php?do=1">log out</a></li>';
   
   if ($siteUnsafe == 'index.php')     { $home       = '<li class="menuCurrentPage">Home</li>'; }
-  if ($siteUnsafe == 'about.php')     { $about      = '<li class="menuCurrentPage">About</li>'; }  
+  if ($siteUnsafe == 'about.php')     { $about      = '<li class="menuCurrentPage">'.getLanguage($dbConnection,1).'</li>'; }  
   if ($siteUnsafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; }
   if ($siteUnsafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- edit links</li>'; }
   if ($siteUnsafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- edit user account</li>'; }

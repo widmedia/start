@@ -3,7 +3,7 @@
   $dbConnection = initialize();
   printStatic();
   echo '</head><body>';
-  printNavMenu();
+  printNavMenu($dbConnection);
   echo '
   <div class="section categories noBottom">
     <div class="container">

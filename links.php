@@ -60,13 +60,13 @@
   $msgSafe = makeSafeInt($_GET['msg'], 1);
   if ($msgSafe > 0) {
     echo '<body onLoad="overlayMsgFade();">'; 
-    printMessage($msgSafe); 
+    printMessage($dbConnection, $msgSafe); 
   } else {
     echo '<body>';
   }
   $userid = getUserid();
   
-  printNavMenu();  
+  printNavMenu($dbConnection);  
   printMsgTestUser($userid);      
   printMsgAccountVerify($dbConnection, $userid);
   

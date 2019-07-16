@@ -49,7 +49,7 @@
 
   printStatic();
   echo '</head><body>';
-  printNavMenu();
+  printNavMenu($dbConnection);
   echo '  
   <div class="section categories">
     <div class="container">';

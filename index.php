@@ -264,7 +264,7 @@
     printHr();
   } // function
   
-  function printEntryPoint() {    
+  function printEntryPoint($dbConnection) {    
     echo '
     <h3 class="section-heading"><span id="login">Log in</span></h3>
     <form action="index.php?do=4" method="post">
@@ -302,16 +302,16 @@
   $msgSafe = makeSafeInt($_GET['msg'], 1);
   if ($msgSafe > 0) {
     echo '<body onLoad="overlayMsgFade();">'; 
-    printMessage($msgSafe); 
+    printMessage($dbConnection, $msgSafe); 
   } else {
     echo '<body>';
   }
-  printNavMenu();
+  printNavMenu($dbConnection);
   echo '<div class="section categories noBottom"><div class="container">';
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printTitle();
-    printEntryPoint();
+    printEntryPoint($dbConnection);
     printUserStat($dbConnection);
   } elseif ($doSafe > 0) {
     $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
@@ -393,7 +393,7 @@
       } else { $dispErrorMsg = 50; } // valid userid
     } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
       printTitle();
-      printEntryPoint();
+      printEntryPoint($dbConnection);
       printUserStat($dbConnection);
     } else {
       $dispErrorMsg = 1;
