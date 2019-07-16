@@ -81,7 +81,7 @@
         } else { $dispErrorMsg = 20; } // deleteUser function did return false
       } elseif ($doSafe == 3) { // update an existing user: db operations
         if ($userid > 0) { // have a valid userid
-          if (testUserCheck($userid)) {
+          if (testUserCheck($dbConnection, $userid)) {
             if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
               $row = $result->fetch_assoc(); // guaranteed to get only one row
               $pwCheck = false;
@@ -126,7 +126,7 @@
                 } else { $dispErrorMsg = 34; } // emailCheck
               } else { $dispErrorMsg = 33; } // pwCheck ok                
             } else { $dispErrorMsg = 32; } // select query did work
-          } else { $dispErrorMsg = 31; } // testUserCheck
+          } // testUserCheck
         } else { $dispErrorMsg = 30; } // have a valid userid         
       } else { 
         $dispErrorMsg = 1;

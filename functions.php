@@ -121,6 +121,7 @@ function getCurrentSite() {
 function printNavMenu($dbConnection) {
   $siteUnsafe = getCurrentSite(); 
   $notLoggedIn = (getUserid() == 0);
+  // TODO: need some language flags to change the language settings (and store permanently) 
   
   // default values, when a user is logged in
   $home      = '<li><a href="index.php?do=6">Home</a></li>';
@@ -128,24 +129,24 @@ function printNavMenu($dbConnection) {
   $newAcc    = '';
   $about     = '<li><a href="about.php">'.getLanguage($dbConnection,1).'</a></li>';  
   $links     = '<li><a href="links.php">Links</a></li>';
-  $editLinks = '<li><a href="editLinks.php">- edit links</a></li>';
-  $editUser  = '<li><a href="editUser.php?do=1">- edit user account</a></li>';
+  $editLinks = '<li><a href="editLinks.php">- '.getLanguage($dbConnection,27).'</a></li>';
+  $editUser  = '<li><a href="editUser.php?do=1">- '.getLanguage($dbConnection,28).'</a></li>';
   $logOut    = '<li><a href="index.php?do=1">log out</a></li>';
   
   if ($siteUnsafe == 'index.php')     { $home       = '<li class="menuCurrentPage">Home</li>'; }
   if ($siteUnsafe == 'about.php')     { $about      = '<li class="menuCurrentPage">'.getLanguage($dbConnection,1).'</li>'; }  
   if ($siteUnsafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; }
-  if ($siteUnsafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- edit links</li>'; }
-  if ($siteUnsafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- edit user account</li>'; }
+  if ($siteUnsafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,27).'</li>'; }
+  if ($siteUnsafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,28).'</li>'; }
 
   if ($notLoggedIn) { // user is not logged in
     $strikeThrough = ' style="text-decoration: line-through;"';
     
     $login     = '<li><a href="index.php#login">- log in</a></li>';
-    $newAcc    = '<li><a href="index.php?do=2#newUser">- new account</a></li>';
+    $newAcc    = '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConnection,29).'</a></li>';
     $links     = '<li'.$strikeThrough.'>Links</li>';
-    $editLinks = '<li'.$strikeThrough.'>- edit links</li>';
-    $editUser  = '<li'.$strikeThrough.'>- edit user account</li>';
+    $editLinks = '<li'.$strikeThrough.'>- '.getLanguage($dbConnection,27).'</li>';
+    $editUser  = '<li'.$strikeThrough.'>- '.getLanguage($dbConnection,28).'</li>';
     $logOut    = '';   
   } 
 
@@ -172,9 +173,9 @@ function printNavMenu($dbConnection) {
 
   
 // checks whether userid is 2 (= test user)
-function testUserCheck($userid) {
+function testUserCheck($dbConnection, $userid) {
   if ($userid == 2) {
-    printConfirm('Testuser cannot be changed', 'I\'m sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account? <a href="index.php?do=2#newUser">open account</a>');
+    printConfirm(getLanguage($dbConnection,30), getLanguage($dbConnection,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,32).'</a>');
     return false;
   } else {
     return true;
@@ -201,7 +202,7 @@ function deleteUser($dbConnection, $userid) {
     if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
       // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
       $rowCnt = $result->num_rows;
-      if ($userid > 2) { // admin has userid 1, test user has userid 2
+      if (testUserCheck($dbConnection, $userid) and ($userid != 1)) { // admin has userid 1, test user has userid 2
         if ($rowCnt == 1) {                
           $result_delLinks = $dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
           $result_delCategories = $dbConnection->query('DELETE FROM `categories` WHERE `userid` = "'.$userid.'"');                  
@@ -211,7 +212,7 @@ function deleteUser($dbConnection, $userid) {
             return true;
           }
         }
-      } else { printConfirm('Forbidden', 'Sorry but the test user account and the admin account cannot be deleted'); }
+      } // for userid = 1 there is no meaningful error message. But that's ok, it only affects the admin
     }
   }
   return false; // should not reach this point
