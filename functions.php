@@ -389,7 +389,7 @@ function getLanguage($dbConnection, $textId) {
   // db organized as follows: id(int_11) / en(text) / de(text)
   $lang = 'en'; // TODO: take from cookie and/or from session var
 
-  if ($result = $dbConnection->query('SELECT `'.$lang.'` FROM `language` WHERE `id` = "'.$textId.'" LIMIT 1')) {
+  if ($result = $dbConnection->query('SELECT `'.$lang.'` FROM `language` WHERE `id` = "'.$textId.'"')) {
     $row = $result->fetch_row();
     return (htmlentities($row[0]));
   } // no else case because can't do that much otherwise

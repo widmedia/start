@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 15. Jul 2019 um 13:07
+-- Erstellungszeit: 15. Jul 2019 um 15:28
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -46,6 +46,22 @@ CREATE TABLE `language` (
   `en` text NOT NULL,
   `de` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Daten für Tabelle `language`
+--
+
+INSERT INTO `language` (`id`, `en`, `de`) VALUES
+(1, 'About', 'Über'),
+(2, 'some picture of', 'ein Foto von'),
+(3, 'Contact', 'Kontakt'),
+(4, 'is developed by Daniel Widmer. Please find the complete code at', 'wird durch Daniel Widmer entwickelt. Den gesamten source code findet man unter'),
+(5, 'Contact (German, English)', 'Kontakt (Deutsch, Englisch)'),
+(6, 'Data privacy', 'Datenschutz'),
+(7, 'Be aware: without password protection for your account, all your user data are openly visible and may be edited. When using the password protection, widmedia tries to secure your data as good as possible, however, widmedia cannot guarantee full protection.', ''),
+(8, 'Only data required for the functionality of this website is stored. The data base layout and structure as well as the underlying code is available for inspection on the open source', ''),
+(9, 'project', 'Projekt'),
+(10, 'The data will not be sold or transferred otherwise to any external party.', '');
 
 -- --------------------------------------------------------
 
@@ -141,7 +157,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`
