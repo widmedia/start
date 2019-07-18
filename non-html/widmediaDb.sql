@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 15. Jul 2019 um 15:28
+-- Erstellungszeit: 18. Jul 2019 um 14:18
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -58,10 +58,55 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (4, 'is developed by Daniel Widmer. Please find the complete code at', 'wird durch Daniel Widmer entwickelt. Den gesamten source code findet man unter'),
 (5, 'Contact (German, English)', 'Kontakt (Deutsch, Englisch)'),
 (6, 'Data privacy', 'Datenschutz'),
-(7, 'Be aware: without password protection for your account, all your user data are openly visible and may be edited. When using the password protection, widmedia tries to secure your data as good as possible, however, widmedia cannot guarantee full protection.', ''),
-(8, 'Only data required for the functionality of this website is stored. The data base layout and structure as well as the underlying code is available for inspection on the open source', ''),
+(7, 'Be aware: without password protection for your account, all your user data are openly visible and may be edited. When using the password protection, widmedia tries to secure your data as good as possible, however, widmedia cannot guarantee full protection.', 'Achtung: ohne Passwortschutz sind all Ihre Daten öffentlich zugänglich und können editiert oder gelöscht werden. Mit Passwortschutz versucht widmedia diese Daten so gut es geht vor unberechtigten Zugriffen zu schützen. Leider kann widmedia darauf keine Garantie erteilen.'),
+(8, 'Only data required for the functionality of this website is stored. The data base layout and structure as well as the underlying code is available for inspection on the open source', 'Gespeichert werden nur Daten, die für diese Website nötig sind. Sowohl das Datenbanklayout und die Struktur als auch der verwendete Code sind öffentlich zugänglich als open source'),
 (9, 'project', 'Projekt'),
-(10, 'The data will not be sold or transferred otherwise to any external party.', '');
+(10, 'The data will not be sold or transferred otherwise to any external party.', 'Ihre Daten werden nicht verkauft oder andersweitig an Drittpersonen weitergegeben.'),
+(11, 'On the other hand, widmedia cannot guarantee regular backups of your data, your data might be deleted or get lost in a different way.', 'Andererseits kann widmedia keine regelmässigen Backups garantieren. Ihre Daten können gelöscht werden oder verloren gehen.'),
+(12, 'Do not rely on', 'Verlassen Sie sich nicht auf '),
+(13, 'as your only data source and do not store any sensitive information on this site.', 'als einzige Datenquelle und speichern Sie keine kritischen Daten auf dieser Seite.'),
+(14, 'will not be held accountable for the material created, stored or available on this site, especially the links to external sites.', 'ist nicht zuständig für irgendwelche Nutzerdaten auf dieser Seite, insbesondere die Links auf externe Seiten.'),
+(15, 'External sources', 'Externe Quellen'),
+(16, 'No external sources are used.', 'Es werden keine externen Quellen verwendet.'),
+(17, 'Financing', 'Finanzierung'),
+(18, '...well, there is none. If you like to contribute, please contact me:', '...hmm, gibt es nicht wirklich. Wenn Sie etwas beitragen möchten, können Sie mich hier erreichen:'),
+(19, 'link has been updated', 'Link wurde aktualisiert'),
+(20, 'category has been updated', 'Kategoriename wurde aktualisiert'),
+(21, 'link has been deleted', 'Link wurde gelöscht'),
+(22, 'counters have been reset to 0', 'Zähler wurden zurückgesetzt'),
+(23, 'link has been added', 'Link wurde hinzugefügt'),
+(24, 'user account has been updated', 'User account wurde aktualisiert'),
+(25, 'logout successful, cookie has been deleted as well', 'Logout ok, Cookies wurden ebenfalls gelöscht'),
+(26, 'updated', 'aktualisiert'),
+(27, 'edit links', 'Links anpassen'),
+(28, 'edit user account ', 'Nutzerkonto'),
+(29, 'new account', 'neuer Account'),
+(30, 'Testuser cannot be changed', 'Testuser kann nicht angepasst werden'),
+(31, 'I am sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account?', 'Sorry aber als Testuser darf man nichts anpassen. Könnte ich dich eventuell für einen eigenen Account begeistern?'),
+(32, 'open account', 'Account eröffnen'),
+(33, '\"Something\" at step ', '\"Irgend etwas\" während Schritt '),
+(34, ' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br>If you think you did everything right, please send me an email:', ' lief falsch beim Verarbeiten der input Daten (Extrem hilfreiche Fehlermeldung, ich weiss...). Vielleicht probierst dus nochmals? <br>Falls du das Gefühl hast, dass du alles richtig gemacht hast, schreib mir doch bitte eine Email:'),
+(35, 'What would you like to edit?', 'Was möchtest du anpassen?'),
+(36, 'Category ', 'Kategorie '),
+(37, 'set all link counters to zero', 'alle Links-Zähler auf 0 setzen'),
+(38, 'add new link', 'neuen Link hinzufügen'),
+(39, 'save', 'speichern'),
+(40, 'delete', 'löschen'),
+(41, 'change category name', 'Kategorie umbenennen'),
+(42, 'Add a new link', 'Neuen Link hinzufügen'),
+(43, 'Wrong URL', 'Falsche URL'),
+(44, 'For the URL input, you need to have something in the format \"http://somewebsite.ch\" or \"https://somewebsite.ch\"', 'Als URL brauche ich etwas im Stil von \"http://somewebsite.ch\" oder \"https://somewebsite.ch\"'),
+(45, 'Edit', 'Anpassen'),
+(46, 'last login: ', 'letzter Login: '),
+(47, 'password protection for this account', 'Passwortschutz für diesen Account'),
+(48, 'Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself', 'Achtung: falls du kein Passwort verwendest, kann jeder auf deinen Account zugreifen und Sachen ändern oder den Account löschen'),
+(49, 'old password', 'altes Passwort'),
+(50, 'new password', 'neues Passwort'),
+(51, 'save changes', 'Änderungen speichern'),
+(52, 'delete this account (without any further confirmation)', 'Account löschen (ohne irgendwelche weitere Nachfragen)'),
+(53, 'Deleted the account', 'Account gelöscht'),
+(54, 'Deleted userid: ', 'Gelöschte Userid: '),
+(55, 'go back to', 'zurück zu');
 
 -- --------------------------------------------------------
 
@@ -157,7 +202,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

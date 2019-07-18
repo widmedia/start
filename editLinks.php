@@ -4,31 +4,31 @@
   
   function printEntryPoint($dbConnection, $userid) {
     echo '
-    <h3 class="section-heading">What would you like to edit?</h3>
+    <h3 class="section-heading">'.getLanguage($dbConnection,35).'</h3>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
       echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
       <input name="categoryInput" type="hidden" value="'.$i.'">
-      <input name="submit" type="submit" value="Category '.getCategory($dbConnection, $userid, $i).'"></form></div>';         
+      <input name="submit" type="submit" value="'.getLanguage($dbConnection,36).getCategory($dbConnection, $userid, $i).'"></form></div>';         
     }                
     echo '</div><div class="row twelve columns">&nbsp;</div>';                    
     echo '
     <div class="row">
-      <div class="six columns"><a class="button differentColor" href="editUser.php?do=1"><img src="images/icon_db.png" class="logoImg"> account management</a></div>
-      <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon_zero.png" class="logoImg"> set all link counters to zero</a></div>
+      <div class="six columns"><a class="button differentColor" href="editUser.php?do=1"><img src="images/icon_db.png" class="logoImg"> '.getLanguage($dbConnection,28).'</a></div>
+      <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon_zero.png" class="logoImg"> '.getLanguage($dbConnection,37).'</a></div>
     </div>';    
   } // function 
 
   
   // prints 1 row to either add a new link or edit an existing one  
-  function printSingleLinkFields ($doAdd, $category, $linkId, $link, $text) {
+  function printSingleLinkFields ($dbConnection, $doAdd, $category, $linkId, $link, $text) {
     if ($doAdd) { // this means I edit a link
-      $submitText = 'add new link';      
+      $submitText = getLanguage($dbConnection,38);      
       $deleteText = '';
     } else {
-      $submitText = 'save';
-      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/icon_delete.png" class="logoImg"> delete</a>';
+      $submitText = getLanguage($dbConnection,39);
+      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/icon_delete.png" class="logoImg"> '.getLanguage($dbConnection,40).'</a>';
     }
     echo '
     <form action="editLinks.php?do=2&id='.$linkId.'" method="post">      
@@ -40,10 +40,10 @@
     </form>';   
   } // function
   
-  function printCategoryForm($categorySafe, $heading) { 
+  function printCategoryForm($dbConnection, $categorySafe, $heading) { 
     echo '<div class="row twelve columns">
     <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
-    <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="change category name"></form><div>';
+    <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConnection,41).'"></form><div>';
   }
 
 
@@ -99,14 +99,14 @@
         } // link
         
         if ($doSafe == 1) { // present links of one category, have category name as text field
-          printCategoryForm($categorySafe, $heading);
-          echo '<div class="row twelve columns"><h3 class="section-heading">Add a new link</h3></div>';          
-          printSingleLinkFields(true, $categorySafe, 0, 'https://', 'text');
+          printCategoryForm($dbConnection, $categorySafe, $heading);
+          echo '<div class="row twelve columns"><h3 class="section-heading">'.getLanguage($dbConnection,42).'</h3></div>';          
+          printSingleLinkFields($dbConnection, true, $categorySafe, 0, 'https://', 'text');
           printHr();
           // print one form per row, an edit form for every link
           if ($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
             while ($row = $result->fetch_assoc()) {        
-              printSingleLinkFields(false, 0, $row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
+              printSingleLinkFields($dbConnection, false, 0, $row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
             } // while
           } // query ok
         } elseif ($doSafe == 2) { // add or edit a link
@@ -125,7 +125,7 @@
                 } else { $dispErrorMsg = 22; } // insert query did work
               } // distinction between adding and editing
             } // testuser check
-          } else { $dispErrorMsg = 20; printConfirm('Wrong URL', 'For the URL input, you need to have something in the format "http://somewebsite.ch" or "https://somewebsite.ch"'); } // have a validUrl
+          } else { $dispErrorMsg = 20; printConfirm(getLanguage($dbConnection,43), getLanguage($dbConnection,44)); } // have a validUrl
         } elseif ($doSafe == 3) { // I want to reset all the link counters to 0          
           if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
             redirectRelative('links.php?msg=4');            
@@ -158,7 +158,7 @@
       } // action = integer
       printError($dbConnection, $dispErrorMsg);        
       echo '</div> <!-- /container -->';
-      printFooter();
+      printFooter($dbConnection);
     ?>                
   </div> <!-- /section categories -->
 <!-- End Document -->

@@ -401,7 +401,7 @@
     printError($dbConnection, $dispErrorMsg);
   } // action == integer          
   echo '</div> <!-- /container -->';  
-  printFooter(); 
+  printFooter($dbConnection); 
 ?>     
   </div> <!-- /section categories -->
 </body>

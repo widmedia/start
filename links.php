@@ -82,7 +82,7 @@
   printLinks($dbConnection, $userid, 3);
   echo '</div>
   </div> <!-- /container -->';
-  printFooter();
+  printFooter($dbConnection);
 ?>                
   </div> <!-- /section categories -->
 </body>

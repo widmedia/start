@@ -2,7 +2,7 @@
   require_once('functions.php');
   $dbConnection = initialize();
   
-  function printUserEdit($row) {    
+  function printUserEdit($dbConnection, $row) {    
     $hasPwText       = '';
     $displayPwRows   = 'none';
     $pwFieldRequired = '';
@@ -15,10 +15,10 @@
     <h3 class="section-heading">Userid: '.$row['id'].'</h3>
     <form action="editUser.php?do=3" method="post">
     <div class="row">
-      <div class="twelve columns">last login: '.$row['lastLogin'].'</div>
+      <div class="twelve columns">'.getLanguage($dbConnection,46).$row['lastLogin'].'</div>
     </div>
     <div class="row">
-      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();"> password protection for this account <div id="noPwWarning" class="noPwWarning" style="display: none;">Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself</div></div>
+      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();"> '.getLanguage($dbConnection,47).' <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConnection,48).'</div></div>
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
@@ -26,21 +26,21 @@
       <div class="ten columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20"></div>
     </div>
     <div class="row" id="pwOldRow" style="display: '.$displayPwRows.';">
-      <div class="two columns">old password: </div>
+      <div class="two columns">'.getLanguage($dbConnection,49).': </div>
       <div class="ten columns"><input name="password" type="password" maxlength="63" value="" '.$pwFieldRequired.' size="20"></div>
     </div>
     <div class="row" id="pwRow" style="display: '.$displayPwRows.';">
-      <div class="two columns">new password: </div>
+      <div class="two columns">'.getLanguage($dbConnection,50).': </div>
       <div class="ten columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20"></div>
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
-      <div class="twelve columns"><input name="create" type="submit" value="save changes"></div>
+      <div class="twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConnection,51).'"></div>
     </div>
     <div class="row"><div class="twelve columns"><hr /></div></div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
-      <div class="twelve columns"><a href="editUser.php?do=2" class="button differentColor"><img src="images/icon_delete.png" class="logoImg"> delete this account (without any further confirmation)</a></div>
+      <div class="twelve columns"><a href="editUser.php?do=2" class="button differentColor"><img src="images/icon_delete.png" class="logoImg"> '.getLanguage($dbConnection,52).'</a></div>
     </div>
     </form>';
   } // function
@@ -70,14 +70,14 @@
         if ($userid) { // have a valid userid
           if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
             $row = $result->fetch_assoc(); // guaranteed to get only one row
-            printUserEdit($row);              
+            printUserEdit($dbConnection, $row);              
           } else { $dispErrorMsg = 11; } // select query did work
         } else { $dispErrorMsg = 10; } // have a valid userid
       } elseif ($doSafe == 2) { // delete an existing user
         // TODO: might want to verify the pw before deleting an account? (if there is a pw set)
         if (deleteUser($dbConnection, $userid)) {
           sessionAndCookieDelete();
-          printConfirm('Deleted the account', 'Deleted userid: '.$userid.' <br/><br/><a class="button differentColor" href="index.php">go back to index.php</a>');
+          printConfirm(getLanguage($dbConnection,53), getLanguage($dbConnection,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConnection,55).' index.php</a>');
         } else { $dispErrorMsg = 20; } // deleteUser function did return false
       } elseif ($doSafe == 3) { // update an existing user: db operations
         if ($userid > 0) { // have a valid userid
@@ -133,7 +133,7 @@
       } // switch
       printError($dbConnection, $dispErrorMsg);
       echo '</div> <!-- /container -->';
-      printFooter();
+      printFooter($dbConnection);
     ?>                
   </div> <!-- /section categories -->
 <!-- End Document -->

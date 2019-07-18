@@ -44,7 +44,7 @@
         </div>        
       </div>
     </div> <!-- /container -->';    
-      printFooter(); 
+      printFooter($dbConnection); 
     ?>                
   </div> <!-- /section categories -->
 </body>
