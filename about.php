@@ -1,7 +1,7 @@
 <?php
   require_once('functions.php');
   $dbConnection = initialize();
-  printStatic();
+  printStatic($dbConnection);
   echo '</head><body>';
   printNavMenu($dbConnection);
   echo '

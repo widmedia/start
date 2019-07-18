@@ -46,7 +46,7 @@
   } // function
 
 
-  printStatic();
+  printStatic($dbConnection);
   echo '<script defer type="text/javascript" src="js/scripts.js"></script>  
   </head><body>';
   printNavMenu($dbConnection);
@@ -131,7 +131,7 @@
       } else { 
         $dispErrorMsg = 1;
       } // switch
-      printError($dispErrorMsg);
+      printError($dbConnection, $dispErrorMsg);
       echo '</div> <!-- /container -->';
       printFooter();
     ?>                

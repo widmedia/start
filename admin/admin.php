@@ -181,7 +181,7 @@
       $dispErrorMsg = 40;
     }
   } 
-  printError($dispErrorMsg);
+  printError($dbConnection, $dispErrorMsg);
   
 ?>
   </div> <!-- /container -->

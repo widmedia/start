@@ -47,7 +47,7 @@
   }
 
 
-  printStatic();
+  printStatic($dbConnection);
   echo '</head><body>';
   printNavMenu($dbConnection);
   echo '  
@@ -156,7 +156,7 @@
           $dispErrorMsg = 1;
         } // switch              
       } // action = integer
-      printError($dispErrorMsg);        
+      printError($dbConnection, $dispErrorMsg);        
       echo '</div> <!-- /container -->';
       printFooter();
     ?>                

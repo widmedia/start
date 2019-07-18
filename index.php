@@ -71,7 +71,7 @@
       } else { $dispErrorMsg = 2; } // numRows == 1
     } else { $dispErrorMsg = 1; } // select query did work
 
-    printError($dispErrorMsg); // NB: this message will be displayed at the very start of a page. Not really nice but that's fine
+    printError($dbConnection, $dispErrorMsg); // NB: this message will be displayed at the very start of a page. Not really nice but that's fine
 
     if ($loginOk) {
       if ($result = $dbConnection->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"')) {
@@ -287,7 +287,7 @@
     <div class="row twelve columns">&nbsp;</div>';    
   } // function  
 
-  printStatic();
+  printStatic($dbConnection);
   echo '<script type="text/javascript" src="js/scripts.js"></script>
   </head>';
 
@@ -398,7 +398,7 @@
     } else {
       $dispErrorMsg = 1;
     } // switch
-    printError($dispErrorMsg);
+    printError($dbConnection, $dispErrorMsg);
   } // action == integer          
   echo '</div> <!-- /container -->';  
   printFooter(); 

@@ -39,7 +39,20 @@ function printConfirm($heading, $text) {
 
 // prints a valid html error page and stops php execution
 function printErrorAndDie($heading, $text) {
-  printStatic();
+  // cannot use printStatic as I don't yet have a dbConnection
+  echo '
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Error page</title>
+  <meta name="description" content="a generic error page">  
+  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/font.css" type="text/css">
+  <link rel="stylesheet" href="css/normalize.css" type="text/css">
+  <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
+  printInlineCss();
   echo '</head><body>';
   printConfirm($heading, $text);
   echo '</body></html>';
@@ -57,10 +70,10 @@ function printMessage ($dbConnection, $messageNumber) {
 }  
 
 // checks whether the number is bigger than 0 and displays some very generic failure message
-function printError($errorMsgNum) {
+function printError($dbConnection, $errorMsgNum) {
   $userid = getUserid();
   if ($errorMsgNum > 0 and $userid != 2) { // no error is printed for the test user
-    printConfirm('Error', '"Something" at step '.$errorMsgNum.' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br>If you think you did everything right, please send me an email: sali@widmedia.ch');
+    printConfirm('Error', getLanguage($dbConnection,33).$errorMsgNum.getLanguage($dbConnection,34).' sali@widmedia.ch');
   }
 }
 
@@ -169,6 +182,8 @@ function printNavMenu($dbConnection) {
       </ul>
     </div>
   </nav>';
+  
+  setLnSession();
 } // function
 
   
@@ -269,12 +284,13 @@ function printHr () {
 }
 
 // prints static header information which is the same on all pages
-function printStatic () {
+function printStatic($dbConnection) {
   // description tag and title are different for every site  
   $siteUnsafe = getCurrentSite(); // NB: link.php is special as only in the error case a html site is generated
   $urlOk = false; // safety measure because $siteUnsafe may contain harmful code
+  // TODO-language
   if ($siteUnsafe == 'about.php') {
-    $title   = 'About';
+    $title = getLanguage($dbConnection,1);
     $description = 'Some background info about the widmedia.ch/start project';
     $urlOk = true;
   } elseif ($siteUnsafe == 'editLinks.php') {
@@ -303,7 +319,7 @@ function printStatic () {
   } else {
     $url = 'https://widmedia.ch/start/'; // a generic one
   }
-   
+     
   echo '
 <!DOCTYPE html>
 <html>
@@ -322,21 +338,25 @@ function printStatic () {
   <meta property="og:description" content="'.$description.'" />
   <meta property="og:url" content="'.$url.'" />
   <meta property="og:type" content="website" />  
-  <meta property="og:image:secure_url" itemprop="image" content="https://widmedia.ch/start/images/screen_main.png" />
-  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image" content="images/linkList900x600.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="900" />
+  <meta property="og:image:height" content="600" />
+  <meta property="og:image" content="images/linkList800x800.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="800" />
+  <meta property="og:image:height" content="800" />
 
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png">
   
   <!-- CSS -->
   <link rel="stylesheet" href="css/font.css" type="text/css">
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
   printInlineCss();
-  echo '
-  <!-- Favicon -->  
-  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png">
-  ';
   // some sites include a js page as well before the header part is finished  
 }
 
@@ -389,16 +409,28 @@ function printInlineCss() {
   </style>'; 
 }
 
+function setLnSession() {
+  // set the session var only if I did get the ln-variable
+  if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
+    $lang = 'en';
+  
+    $langDiv = makeSafeStr($_GET['ln'], 2);
+    if ($langDiv == 'de') { // otherwise it stays at 'en'
+      $lang = 'de';
+    }
+    $_SESSION['ln'] = $lang;
+    // TODO: might store it in a cookie and/or into user data base
+  }  
+}
+
 function getLanguage($dbConnection, $textId) {
   // db organized as follows: id(int_11) / en(text) / de(text)
-  $lang = 'en'; // TODO: take from cookie and/or from session var
   
-  // TODO. Temporary, set the language by the 'get' method
-  $langDiv = makeSafeStr($_GET['ln'], 2);
-  if ($langDiv == 'de') { // otherwise it stays at 'en'
-    $lang = 'de';
+  $lang = 'en';
+  if (isset($_SESSION['ln'])) {
+    $lang = $_SESSION['ln'];
   }
-
+  
   if ($result = $dbConnection->query('SELECT `'.$lang.'` FROM `language` WHERE `id` = "'.$textId.'"')) {
     $row = $result->fetch_row();    
     return $row[0];

@@ -54,7 +54,7 @@
   } // function   
 
 
-  printStatic();
+  printStatic($dbConnection);
   echo '<script type="text/javascript" src="js/scripts.js"></script></head>';
   
   $msgSafe = makeSafeInt($_GET['msg'], 1);
