@@ -15,7 +15,7 @@ and needs to open a dbConnection like this:
 
 2) data base:
 -----------------------
-create a data base by executing the SQL command given in the file "widmediaDbStructure.sql". This will create several tables
+create a data base by executing the SQL command given in the file "widmediaDb.sql". This will create several tables
 the admin of the site must have userid = 1, the test user must have userid = 2 (those two users are treated differently)
 
 

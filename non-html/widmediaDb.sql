@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 18. Jul 2019 um 14:18
+-- Erstellungszeit: 18. Jul 2019 um 16:33
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -106,7 +106,25 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (52, 'delete this account (without any further confirmation)', 'Account löschen (ohne irgendwelche weitere Nachfragen)'),
 (53, 'Deleted the account', 'Account gelöscht'),
 (54, 'Deleted userid: ', 'Gelöschte Userid: '),
-(55, 'go back to', 'zurück zu');
+(55, 'go back to', 'zurück zu'),
+(56, 'User statistics ', 'User Statistik '),
+(57, 'number of active users (last login is less than 1 month old)', 'Anzahl aktiver User (letzer Login ist nicht älter als 1 Monat)'),
+(58, 'Mar', 'Mär'),
+(59, 'May', 'Mai'),
+(60, 'Oct', 'Okt'),
+(61, 'Dec', 'Dez'),
+(62, 'your email', 'deine Email'),
+(63, 'your password', 'dein Passwort'),
+(64, 'create your free account', 'Gratisaccount eröffnen'),
+(65, 'a simple and free customizable start page, your personal link collection', 'simpel, gratis und frei konfigurierbar: deine Linksammlung als neue Startseite'),
+(66, 'your personal list of links', 'deine persönliche Linkliste'),
+(67, 'sorted by occurence', 'sortiert nach Häufigkeit'),
+(68, 'links open on new tab', 'Links öffnen neue Tabs'),
+(69, 'edit and add your own links', 'pass die Links an, füge neue hinzu'),
+(70, 'easy login', 'einfacher Login'),
+(71, 'try it first', 'probiers einfach mal aus'),
+(72, 'test user', 'Testuser'),
+(73, 'or', 'oder');
 
 -- --------------------------------------------------------
 
@@ -202,7 +220,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

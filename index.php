@@ -163,7 +163,7 @@
     $result = $dbConnection->query('SELECT `month`, `numUser` FROM `userStat` WHERE `year` = "'.$year.'" ORDER BY `month`');
     
     $userStatPerMonth = array(0,0,0,0,0,0,0,0,0,0,0,0); // twelve zeros
-    $months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+    $months = array('Jan','Feb',getLanguage($dbConnection,58),'Apr',getLanguage($dbConnection,59),'Jun','Jul','Aug','Sep',getLanguage($dbConnection,60),'Nov',getLanguage($dbConnection,61));
     $maxVal = 0;
     while ($row = $result->fetch_assoc()) {
       $userStatPerMonth[($row['month']-1)] = $row['numUser']; // array index is from 0 to 11
@@ -175,41 +175,41 @@
     // print a table with the twelve months
     echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">&nbsp;</div>';
     printHr();
-    echo '<h3 class="section-heading">User statistics '.$year.'</h3><div class="row">';
+    echo '<h3 class="section-heading">'.getLanguage($dbConnection,56).$year.'</h3><div class="row">';
     for ($i = 0; $i < 12; $i++) {       
       $height = round($userStatPerMonth[$i] / $maxVal * 100)+1; // maxVal corresponds to 100 px min-height
       echo '<div class="one columns" style="vertical-align: bottom;"><span style="font-weight: 600;">'.$months[$i].'</span><br><span class="userStatBar" style="min-height: '.$height.'px;">'.$userStatPerMonth[$i].'</span></div>';
     }
     echo '</div>
-    <div class="row twelve columns">number of active users (last login is less than 1 month old)</div>';
+    <div class="row twelve columns">'.getLanguage($dbConnection,57).'</div>';
   }
     
   
   // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
-  function printNewUserForm() {
-    echo '<h3 class="section-heading"><span id="newUser">New account</span></h3>
+  function printNewUserForm($dbConnection) {
+    echo '<h3 class="section-heading"><span id="newUser">'.getLanguage($dbConnection,32).'</span></h3>
     <form action="index.php?do=3" method="post">
-    <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> password protection for this account <div id="noPwWarning" class="noPwWarning" style="display: none;">Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself</div></div>
+    <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> '.getLanguage($dbConnection,47).' <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConnection,48).'</div></div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="three columns">your email: </div>
+      <div class="three columns">'.getLanguage($dbConnection,62).': </div>
       <div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
     </div>    
     <div class="row" id="pwRow">
-      <div class="three columns">your password: </div>
+      <div class="three columns">'.getLanguage($dbConnection,63).': </div>
       <div class="nine columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><input name="create" type="submit" value="create your free account"></div>
+    <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConnection,64).'"></div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns">&nbsp;</div>
     </form>
     ';   
   } // function
   
-  function printTitle() {    
+  function printTitle($dbConnection) {    
     echo '<h2 class="section-heading">widmedia.ch/start</h2>
-    <div class="row twelve columns" style="font-weight: bold; font-size: larger; text-align: left">a simple and free customizable start page, your personal link collection</div>';
+    <div class="row twelve columns" style="font-weight: bold; font-size: larger; text-align: left">'.getLanguage($dbConnection,65).'</div>';
     printHr();
     echo '
     <div class="row">
@@ -249,12 +249,12 @@
         </script>
         </div>
       <div class="four columns textBox"><br><ul>
-        <li>your personal list of links</li>
-        <li>sorted by occurence</li>
-        <li>links open on new tab</li>
-        <li>edit and add your own links</li>
-        <li>easy login</li>
-        <li>try it first: <a href="index.php?userid=2">test user</a> ... or <a href="index.php?do=2#newUser">get your own free account</a></li>        
+        <li>'.getLanguage($dbConnection,66).'</li>
+        <li>'.getLanguage($dbConnection,67).'</li>
+        <li>'.getLanguage($dbConnection,68).'</li>
+        <li>'.getLanguage($dbConnection,69).'</li>
+        <li>'.getLanguage($dbConnection,70).'</li>
+        <li>'.getLanguage($dbConnection,71).': <a href="index.php?userid=2">'.getLanguage($dbConnection,72).'</a> ... '.getLanguage($dbConnection,73).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,64).'</a></li>        
       </ul></div>
     </div>';
     printHr();
@@ -310,7 +310,7 @@
   echo '<div class="section categories noBottom"><div class="container">';
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
-    printTitle();
+    printTitle($dbConnection);
     printEntryPoint($dbConnection);
     printUserStat($dbConnection);
   } elseif ($doSafe > 0) {
@@ -322,8 +322,8 @@
     if ($doSafe == 1) { // log out
       logOut();
     } elseif ($doSafe == 2) { // present the new user form
-      printTitle();
-      printNewUserForm();
+      printTitle($dbConnection);
+      printNewUserForm($dbConnection);
       printUserStat($dbConnection);
     } elseif ($doSafe == 3) { // process the new user form data, add a new user
       // step 1: user data need to make sense: email-addr valid
@@ -392,7 +392,7 @@
         } else { $dispErrorMsg = 51; } // select query
       } else { $dispErrorMsg = 50; } // valid userid
     } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
-      printTitle();
+      printTitle($dbConnection);
       printEntryPoint($dbConnection);
       printUserStat($dbConnection);
     } else {
