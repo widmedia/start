@@ -76,7 +76,7 @@
   } elseif ($doSafe == 2) { // delete an existing user
     // TODO: might want to verify the pw before deleting an account? (if there is a pw set)
     if (deleteUser($dbConnection, $userid)) {
-      sessionAndCookieDelete();
+      sessionAndCookieDelete();  //TODO: this resets all session vars and thus the language as well... Not what I want
       printStartOfHtml($dbConnection);
       printConfirm(getLanguage($dbConnection,53), getLanguage($dbConnection,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConnection,55).' index.php</a>');
     } else { $dispErrorMsg = 20; } // deleteUser function did return false
