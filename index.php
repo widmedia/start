@@ -137,16 +137,16 @@
   // sends an email to the new user with a special link and updates the database with that email confirmation link
   function newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe) {
     $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
-    $emailBody = "Hello,\n\nThank you for opening a free account on widmedia.ch/start.\nYou need to confirm your email address within 24 hours to fully use your account. Please click on the link below to do so:\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
+    $emailBody = "Sali,\n\n".getLanguage($dbConnection,95)."\n".getLanguage($dbConnection,96)."\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
     if ($hasPw == 1) {
-      $emailBody = $emailBody."You did select password protection for your account. Please use the form on https://widmedia.ch/start/index.php#login to log in.\n";
+      $emailBody = $emailBody.getLanguage($dbConnection,97).'https://widmedia.ch/start/index.php#login '.getLanguage($dbConnection,98)."\n";
     } else {
-      $emailBody = $emailBody."You did not select password protection. This means you (and, btw. everybody else) may login with this link:\nhttps://widmedia.ch/start/index.php?userid=".$newUserid."\nPlease store this link for future use as a bookmark or maybe your browser starting page.\n";
+      $emailBody = $emailBody.getLanguage($dbConnection,99)."\nhttps://widmedia.ch/start/index.php?userid=".$newUserid."\n".getLanguage($dbConnection,100)."\n";
     }
-    $emailBody = $emailBody."Have fun and best regards,\nDaniel from widmedia\n\n--\nContact (English or German): sali@widmedia.ch\n";
+    $emailBody = $emailBody.getLanguage($dbConnection,101)."\nDaniel ".getLanguage($dbConnection,102)." widmedia\n\n--\n".getLanguage($dbConnection,5).": sali@widmedia.ch\n";
     
     if ($result = $dbConnection->query('UPDATE `user` SET `verCode` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) {   
-      if (mail($emailSqlSafe, 'Your new account on widmedia.ch/start', $emailBody)) {
+      if (mail($emailSqlSafe, getLanguage($dbConnection,103), $emailBody)) {
         return true;
       } // mail send
     } // update query
@@ -215,12 +215,12 @@
     <div class="row">
       <div class="eight columns">
         <div class="slideshow-container">
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_01.png" alt="your startpage with all the links" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Your list of links</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_02.png" alt="click your external link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Click it</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_03.png" alt="the link opens in a new tab" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">The page opens in a new tab</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_04.png" alt="edit your links, add a new one" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Edit your links, add a new one</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_05.png" alt="there it is, your new link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">There it is, your new link</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_06.png" alt="your new start page" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">...and open that one</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_01.png" alt="your startpage with all the links" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConnection,74).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_02.png" alt="click your external link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConnection,75).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_03.png" alt="the link opens in a new tab" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConnection,76).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_04.png" alt="edit your links, add a new one" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConnection,77).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_05.png" alt="there it is, your new link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConnection,78).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser_06.png" alt="your new start page" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConnection,79).'</div></div>
         </div>
         <br>
         <div style="text-align:center">
@@ -258,9 +258,9 @@
       </ul></div>
     </div>';
     printHr();
-    echo '<div class="row twelve columns">Go for it <img src="images/icon_arrow_right.png" alt="pointing to the open free account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own free account" class="logoImg"> open a new free account</a></div>';
+    echo '<div class="row twelve columns">'.getLanguage($dbConnection,80).' <img src="images/icon_arrow_right.png" alt="pointing to the open free account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own free account" class="logoImg"> '.getLanguage($dbConnection,81).'</a></div>';
     printHr();
-    echo '<div class="row twelve columns">Try it first <img src="images/icon_arrow_right.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button">log in as the test user</a></div>';
+    echo '<div class="row twelve columns">'.getLanguage($dbConnection,82).' <img src="images/icon_arrow_right.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button">'.getLanguage($dbConnection,83).'</a></div>';
     printHr();
   } // function
   
@@ -269,27 +269,23 @@
     <h3 class="section-heading"><span id="login">Log in</span></h3>
     <form action="index.php?do=4" method="post">
     <div class="row">
-      <div class="three columns">email: </div>
+      <div class="three columns">Email: </div>
       <div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
     </div>
     <div class="row">
-      <div class="three columns">password: </div>
+      <div class="three columns">'.getLanguage($dbConnection,84).': </div>
       <div class="nine columns"><input name="password" type="password" maxlength="63" value="" required size="20"></div>
     </div>
-    <div class="row twelve columns" style="font-size: smaller;"><input type="checkbox" name="setCookie" value="1" checked>save log in information for 4 weeks</div>
+    <div class="row twelve columns" style="font-size: smaller;"><input type="checkbox" name="setCookie" value="1" checked>'.getLanguage($dbConnection,85).'</div>
     <div class="row twelve columns"><input name="login" type="submit" value="log in"></div>
     </form>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="six columns"><a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> open a free new account</a></div>
-      <div class="six columns"><a href="index.php?do=9" class="button"><img src="images/icon_question.png" alt="get an email with your new password" class="logoImg"> (TODO) forgot my password</a></div>
+      <div class="six columns"><a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> '.getLanguage($dbConnection,81).'</a></div>
+      <div class="six columns"><a href="index.php?do=9" class="button"><img src="images/icon_question.png" alt="get an email with your new password" class="logoImg"> '.getLanguage($dbConnection,87).'</a></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>';    
   } // function  
-
-  printStatic($dbConnection);
-  echo '<script type="text/javascript" src="js/scripts.js"></script>
-  </head>';
 
   // possible actions: 
   // 0/non-existing: normal case
@@ -298,16 +294,24 @@
   // 3=> process adding new user
   // 4=> process login form (email/pw/setCookie)
   // 5=> do the email verification
-  
-  $msgSafe = makeSafeInt($_GET['msg'], 1);
-  if ($msgSafe > 0) {
-    echo '<body onLoad="overlayMsgFade();">'; 
-    printMessage($dbConnection, $msgSafe); 
-  } else {
-    echo '<body>';
+
+  // bugfix. TODO: not very nice
+  if (($doSafe != 1) and ($doSafe != 4))  { // need to send headers for those cases
+
+    printStatic($dbConnection);
+    echo '<script type="text/javascript" src="js/scripts.js"></script>
+    </head>';
+    
+    $msgSafe = makeSafeInt($_GET['msg'], 1);
+    if ($msgSafe > 0) {
+      echo '<body onLoad="overlayMsgFade();">'; 
+      printMessage($dbConnection, $msgSafe); 
+    } else {
+      echo '<body>';
+    }
+    printNavMenu($dbConnection);
+    echo '<div class="section categories noBottom"><div class="container">';
   }
-  printNavMenu($dbConnection);
-  echo '<div class="section categories noBottom"><div class="container">';
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printTitle($dbConnection);
@@ -340,17 +344,17 @@
                 if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {                      
                   if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) {
                     if ($hasPw == 1) {
-                      $loginText = 'go to login page <a href="index.php">https://widmedia.ch/start/index.php</a>';
+                      $loginText = getLanguage($dbConnection,88).' <a href="index.php">https://widmedia.ch/start/index.php</a>';
                     } else {
                       $loginText = 'login <a href="index.php?userid='.$newUserid.'">https://widmedia.ch/start/index.php?userid='.$newUserid.'</a>';
                     }                    
-                    printConfirm('Your account has been created', 'Congratulations and thanks. Your account is now ready. Please '.$loginText.'
-                    <br /><br />(This might me a good moment to store this page as your browser starting page. Unfortunately I cannot provide you a link to do so. Modern browsers will not allow it.)');
+                    printConfirm(getLanguage($dbConnection,89), getLanguage($dbConnection,90).$loginText.'
+                    <br><br>'.getLanguage($dbConnection,86));
                   } else { $dispErrorMsg = 37; } // newUserEmail
                 } else { $dispErrorMsg = 36; } // links, categories insert
               } else { $dispErrorMsg = 35; } // user insert                        
-            } else { $dispErrorMsg = 34; echo 'you selected a password but the password is too short (at least 4 characters)'; } // if password, then length ok TODO: error message
-          } else { $dispErrorMsg = 33; echo 'An account with this email address is already existing'; } // email does not exist. TODO: error message
+            } else { $dispErrorMsg = 34; echo getLanguage($dbConnection,91); } // if password, then length ok
+          } else { $dispErrorMsg = 33; echo getLanguage($dbConnection,92); } // email does not exist
         } else { $dispErrorMsg = 32; } // query worked
       } else { $dispErrorMsg = 31; } // have a valid email 
     } elseif ($doSafe == 4) { // process the login data, maybe set a cookie
@@ -386,7 +390,7 @@
               } else {
                 $loginLink = $loginLink.'?userid='.$useridGetSafe;  
               }
-              printConfirm('Verified', 'Thank you. Your email address has been verified and your account is now fully functional. Please <a href="'.$loginLink.'">log in</a>.');
+              printConfirm(getLanguage($dbConnection,93), getLanguage($dbConnection,94).' <a href="'.$loginLink.'">log in</a>.');
             } else { $dispErrorMsg = 53; } // update query
           } else { $dispErrorMsg = 52; } // 1 result
         } else { $dispErrorMsg = 51; } // select query

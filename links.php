@@ -3,9 +3,9 @@
   $dbConnection = initialize();
   
   // prints a message when logged in as a test user
-  function printMsgTestUser ($userid) {
+  function printMsgTestUser ($dbConnection, $userid) {
     if ($userid == 2) { 
-      echo '<div class="overlayMessage" style="z-index: 3;">This is the (somewhat limited) test account. Get your own account? &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">Open account</a></div>'; 
+      echo '<div class="overlayMessage" style="z-index: 3;">'.getLanguage($dbConnection,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConnection,32).'</a></div>'; 
     }
   } 
 
@@ -20,7 +20,7 @@
     } // select query
     
     if (!$verified) {
-      echo '<div class="overlayMessage" style="z-index: 4;">Your email address has not yet been verified. Please do so within 24 hours, otherwise this account will be deleted.</div>';
+      echo '<div class="overlayMessage" style="z-index: 4;">'.getLanguage($dbConnection,104).'</div>';
     }
   } // function
     
@@ -67,7 +67,7 @@
   $userid = getUserid();
   
   printNavMenu($dbConnection);  
-  printMsgTestUser($userid);      
+  printMsgTestUser($dbConnection, $userid);      
   printMsgAccountVerify($dbConnection, $userid);
   
   echo '<div class="section categories noBottom"><div class="container">';
