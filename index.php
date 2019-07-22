@@ -343,7 +343,7 @@
               if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {                      
                 if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) {
                   if ($hasPw == 1) {
-                    $loginText = getLanguage($dbConnection,88).' <a href="index.php">https://widmedia.ch/start/index.php#login</a>';
+                    $loginText = getLanguage($dbConnection,88).' <a href="index.php#login">https://widmedia.ch/start/index.php#login</a>';
                   } else {
                     $loginText = 'login <a href="index.php?userid='.$newUserid.'">https://widmedia.ch/start/index.php?userid='.$newUserid.'</a>';
                   }                    
@@ -352,8 +352,8 @@
                 } else { $dispErrorMsg = 37; } // newUserEmail
               } else { $dispErrorMsg = 36; } // links, categories insert
             } else { $dispErrorMsg = 35; } // user insert                        
-          } else { $dispErrorMsg = 34; echo getLanguage($dbConnection,91); } // if password, then length ok
-        } else { $dispErrorMsg = 33; echo getLanguage($dbConnection,92); } // email does not exist
+          } else { $dispErrorMsg = 34; printConfirm('Error',getLanguage($dbConnection,91)); } // if password, then length ok
+        } else { $dispErrorMsg = 33; printConfirm('Error',getLanguage($dbConnection,92)); } // email does not exist
       } else { $dispErrorMsg = 32; } // query worked
     } else { $dispErrorMsg = 31; } // have a valid email 
   } elseif ($doSafe == 4) { // process the login data, maybe set a cookie
@@ -403,7 +403,6 @@
   } else {
     $dispErrorMsg = 1;
   } // switch
-  // TODO: for some cases I do not call printStartOfHtml. For those, I should do it here, before printing the error message...
   printError($dbConnection, $dispErrorMsg);
   
   echo '</div> <!-- /container -->';  

@@ -74,6 +74,12 @@ function printMessage ($dbConnection, $messageNumber) {
 function printError($dbConnection, $errorMsgNum) {
   $userid = getUserid();
   if ($errorMsgNum > 0 and $userid != 2) { // no error is printed for the test user
+    if (!headers_sent()) {
+      printStatic($dbConnection);
+      echo '</head><body>';
+      printNavMenu($dbConnection);
+      echo '<div class="section categories noBottom"><div class="container">';
+    } // headers
     printConfirm('Error', getLanguage($dbConnection,33).$errorMsgNum.getLanguage($dbConnection,34).' sali@widmedia.ch');
   }
 }
@@ -191,6 +197,12 @@ function printNavMenu($dbConnection) {
 // checks whether userid is 2 (= test user)
 function testUserCheck($dbConnection, $userid) {
   if ($userid == 2) {
+    if (!headers_sent()) {
+      printStatic($dbConnection);
+      echo '</head><body>';
+      printNavMenu($dbConnection);
+      echo '<div class="section categories noBottom"><div class="container">';
+    } // headers
     printConfirm(getLanguage($dbConnection,30), getLanguage($dbConnection,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,32).'</a>');
     return false;
   } else {
