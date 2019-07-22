@@ -137,13 +137,13 @@
   // sends an email to the new user with a special link and updates the database with that email confirmation link
   function newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe) {
     $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
-    $emailBody = "Sali,\n\n".getLanguage($dbConnection,95)."\n".getLanguage($dbConnection,96)."\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
+    $emailBody = "Sali,\n\n".getLanguage($dbConnection,95)."\n\n".getLanguage($dbConnection,96)."\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
     if ($hasPw == 1) {
-      $emailBody = $emailBody.getLanguage($dbConnection,97).'https://widmedia.ch/start/index.php#login '.getLanguage($dbConnection,98)."\n";
+      $emailBody = $emailBody.getLanguage($dbConnection,97)."\nhttps://widmedia.ch/start/index.php#login ".getLanguage($dbConnection,98)."\n";
     } else {
       $emailBody = $emailBody.getLanguage($dbConnection,99)."\nhttps://widmedia.ch/start/index.php?userid=".$newUserid."\n".getLanguage($dbConnection,100)."\n";
     }
-    $emailBody = $emailBody.getLanguage($dbConnection,101)."\nDaniel ".getLanguage($dbConnection,102)." widmedia\n\n--\n".getLanguage($dbConnection,5).": sali@widmedia.ch\n";
+    $emailBody = $emailBody."\n\n".getLanguage($dbConnection,101)."\nDaniel ".getLanguage($dbConnection,102)." widmedia\n\n--\n".getLanguage($dbConnection,5).": sali@widmedia.ch\n";
     
     if ($result = $dbConnection->query('UPDATE `user` SET `verCode` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) {   
       if (mail($emailSqlSafe, getLanguage($dbConnection,103), $emailBody)) {
@@ -343,7 +343,7 @@
               if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {                      
                 if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) {
                   if ($hasPw == 1) {
-                    $loginText = getLanguage($dbConnection,88).' <a href="index.php">https://widmedia.ch/start/index.php</a>';
+                    $loginText = getLanguage($dbConnection,88).' <a href="index.php">https://widmedia.ch/start/index.php#login</a>';
                   } else {
                     $loginText = 'login <a href="index.php?userid='.$newUserid.'">https://widmedia.ch/start/index.php?userid='.$newUserid.'</a>';
                   }                    

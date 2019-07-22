@@ -1,4 +1,4 @@
- <?php
+<?php
   // this file does the redirection and increases the link counter by one
   require_once('functions.php');
   $dbConnection = initialize();  // does the session start and opens connection to the data base. Returns the dbConnection variable
@@ -21,5 +21,5 @@
   } // valid integer
   
   // should never reach this code...
-  die('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Errorpage</title><link rel="stylesheet" href="css/skeleton.css" type="text/css"></head>
-  <body><br>Something related to the data base went wrong (in file link.php)... well, that doesn\'t help that much, does it?<br>But you might still want to inform me (sali@widmedia.ch) or just try again later</body></html>');
+  printErrorAndDie('Error in file link.php','Something related to the data base went wrong... well, that doesn\'t help that much, does it?<br>But you might still want to inform me (sali@widmedia.ch) or just try again later.');
+?>

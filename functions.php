@@ -31,10 +31,11 @@ function initialize () {
 
 //prints the h4 title and one row
 function printConfirm($heading, $text) {
-  echo '<div class="row twelve columns textBox">
-    <h4>'.$heading.'</h4>
-    <p>'.$text.'</p>
-  </div>';
+  echo '
+<div class="row twelve columns textBox">
+  <h4>'.$heading.'</h4>
+  <p>'.$text.'</p>
+</div>';
 } 
 
 // prints a valid html error page and stops php execution
