@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 22. Jul 2019 um 12:57
+-- Erstellungszeit: 22. Jul 2019 um 16:49
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -136,10 +136,10 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (82, 'Try it first', 'Zuerst mal ausprobieren'),
 (83, 'log in as the test user', 'Login als Testuser'),
 (84, 'Password', 'Passwort'),
-(85, 'save log in information for 4 weeks in a cookie', 'Log in infos während 4 Wochen in einem Cookie speichern'),
+(85, 'save log in information for 4 weeks in a cookie', 'Login Infos während 4 Wochen in einem Cookie speichern'),
 (86, '(This might me a good moment to store this page as your browser starting page. Unfortunately I cannot provide you a link to do so. Modern browsers will not allow it.)', '(Das wäre jetzt ein guter Moment um diese Seite als deine Browser-Startseite zu setzen. Leider kann ich das nicht automatisch, kein halbwegs moderner Browser erlaubt das.)'),
 (87, '(TODO) forgot my password', '(TODO) Passwort vergessen'),
-(88, 'go to login page', 'zur Loginseite'),
+(88, 'go to login page', ' Zur Loginseite'),
 (89, 'Your account has been created', 'Dein Account wurde erstellt'),
 (90, 'Congratulations and thanks. Your account is now ready. Please ', 'Merci und Gratulation. Dein Account wurde erstellt.'),
 (91, 'you selected a password but the password is too short (at least 4 characters)', 'Du hast den Passwortschutz gewählt, aber das Passwort ist zu kurz (mindestens 4 Zeichen)'),
@@ -148,7 +148,7 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (94, 'Thank you. Your email address has been verified and your account is now fully functional. Please', 'Merci. Deine Emailadresse wurde verifiziert und dein Account ist jetzt voll funktionsfähig.'),
 (95, 'Thank you for opening a free account on widmedia.ch/start.', 'Dankeschön dass du deinen Gratisaccount auf widmedia.ch/start eröffnet hast.'),
 (96, 'You need to confirm your email address within 24 hours to fully use your account. Please click on the link below to do so:', 'Du musst deine Emailadresse innerhalb von 24 Stunden bestätigen. Bitte klicke dazu auf den untenstehenden Link:'),
-(97, 'You did select password protection for your account. Please use the form on', 'Du hast einen Account mit Passwortschutz gewählt. Auf'),
+(97, 'You did select password protection for your account. Please use the form on ', 'Du hast einen Account mit Passwortschutz gewählt. Auf '),
 (98, 'to log in.', 'kannst du dich einloggen.'),
 (99, 'You did not select password protection. This means you (and, btw. everybody else) may login with this link:', 'Du hast einen Account ohne Passwortschutz gewählt. Das heisst du (und übrigens jeder/jede) kann sich mit diesem Link einloggen:'),
 (100, 'Please store this link for future use as a bookmark or maybe your browser starting page.', 'Bitte speichere diesen Link entweder als Bookmark oder direkt als Startseite deines Browsers.'),
