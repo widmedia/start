@@ -473,7 +473,7 @@ hr {
 #menuToggle {
   display: block;
   position: fixed;
-  top: 30px;
+  top: 28px;
   left: 30px;
   z-index: 5;
 }

@@ -286,18 +286,9 @@
     </div>
     <div class="row twelve columns">&nbsp;</div>';    
   } // function  
-
-  // possible actions: 
-  // 0/non-existing: normal case
-  // 1=> logout
-  // 2=> add new user
-  // 3=> process adding new user
-  // 4=> process login form (email/pw/setCookie)
-  // 5=> do the email verification
-
-  // bugfix. TODO: not very nice
-  if (($doSafe != 1) and ($doSafe != 4))  { // need to send headers for those cases
-
+  
+  // required for most use cases but for some I cannot print any HTML output before redirecting
+  function printStartOfHtml($dbConnection) {
     printStatic($dbConnection);
     echo '<script type="text/javascript" src="js/scripts.js"></script>
     </head>';
@@ -313,97 +304,108 @@
     echo '<div class="section categories noBottom"><div class="container">';
   }
   
+  // possible actions: 
+  // 0/non-existing: normal case
+  // 1=> logout
+  // 2=> add new user
+  // 3=> process adding new user
+  // 4=> process login form (email/pw/setCookie)
+  // 5=> do the email verification
+  
+  $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
+  $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
+  $setCookieSafe  = makeSafeInt($_POST['setCookie'], 1);
+  $hasPw          = makeSafeInt($_POST['hasPw'], 1);
+  
   if ($doSafe == 0) { // valid use case. Entry point of this site
+    printStartOfHtml($dbConnection);
     printTitle($dbConnection);
     printEntryPoint($dbConnection);
     printUserStat($dbConnection);
-  } elseif ($doSafe > 0) {
-    $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
-    $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
-    $setCookieSafe  = makeSafeInt($_POST['setCookie'], 1);
-    
-    
-    if ($doSafe == 1) { // log out
-      logOut();
-    } elseif ($doSafe == 2) { // present the new user form
-      printTitle($dbConnection);
-      printNewUserForm($dbConnection);
-      printUserStat($dbConnection);
-    } elseif ($doSafe == 3) { // process the new user form data, add a new user
-      // step 1: user data need to make sense: email-addr valid
-      $hasPw = makeSafeInt($_POST['hasPw'], 1);
-     
-      if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
-        // check whether email already exists
-        $emailSqlSafe = mysqli_real_escape_string($dbConnection, $emailUnsafe);
-        if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
-          if ($result->num_rows == 0) {
-            if (($hasPw == 0) or (($hasPw == 1) and (strlen($passwordUnsafe) > 3))) {                    
-              if ($result = $dbConnection->query('INSERT INTO `user` (`email`, `lastLogin`) VALUES ("'.$emailSqlSafe.'", CURRENT_TIMESTAMP)')) { 
-                $newUserid = $dbConnection->insert_id;
-                if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {                      
-                  if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) {
-                    if ($hasPw == 1) {
-                      $loginText = getLanguage($dbConnection,88).' <a href="index.php">https://widmedia.ch/start/index.php</a>';
-                    } else {
-                      $loginText = 'login <a href="index.php?userid='.$newUserid.'">https://widmedia.ch/start/index.php?userid='.$newUserid.'</a>';
-                    }                    
-                    printConfirm(getLanguage($dbConnection,89), getLanguage($dbConnection,90).$loginText.'
-                    <br><br>'.getLanguage($dbConnection,86));
-                  } else { $dispErrorMsg = 37; } // newUserEmail
-                } else { $dispErrorMsg = 36; } // links, categories insert
-              } else { $dispErrorMsg = 35; } // user insert                        
-            } else { $dispErrorMsg = 34; echo getLanguage($dbConnection,91); } // if password, then length ok
-          } else { $dispErrorMsg = 33; echo getLanguage($dbConnection,92); } // email does not exist
-        } else { $dispErrorMsg = 32; } // query worked
-      } else { $dispErrorMsg = 31; } // have a valid email 
-    } elseif ($doSafe == 4) { // process the login data, maybe set a cookie
-      if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email
-        $userid = mail2userid($dbConnection, $emailUnsafe);
-        if ($userid > 0) { // now, can do the check of the hash value
-          if (verifyCredentials($dbConnection, 1, $userid, $passwordUnsafe, '')) {                
-            if ($setCookieSafe == 1) {
-              $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
-              setcookie('userIdCookie', $userid, $expire); 
-              if ($result = $dbConnection->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' )) { // this is just a random number which has been set at user creation
-                $row = $result->fetch_row();
-                setcookie('randCookie', $row[0], $expire);
-              } else { $dispErrorMsg = 43; } // select query
-            } // setCookie is selected
-            redirectRelative('links.php');
-          } else { $dispErrorMsg = 42; } // verification ok
-        } else { $dispErrorMsg = 41; } // email found in db
-      } else { $dispErrorMsg = 40; } // valid email          
-    } elseif ($doSafe == 5) { // confirm the email address 
-      if ($useridGetSafe > 2) {
-        // NB: I'm not even looking at the date (mentioned a 24 hour limit in the email). That's fine. I'll just delete accounts which have not been verified after some days...
-        $verGet = makeSafeHex($_GET['ver'], 64);
-        $verSqlSafe = mysqli_real_escape_string($dbConnection, $verGet);
-        if ($result = $dbConnection->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$useridGetSafe.'" AND `verCode` = "'.$verSqlSafe.'"')) {
-          if ($result->num_rows == 1) {
-            $row = $result->fetch_row();
-            $hasPw = $row[0];
-            if ($result = $dbConnection->query('UPDATE `user` SET `verified` = "1" WHERE `id` = "'.$useridGetSafe.'"')) {   
-              $loginLink = 'https://widmedia.ch/start/index.php';
-              if ($hasPw == 1) {
-                $loginLink = $loginLink.'#login';  
-              } else {
-                $loginLink = $loginLink.'?userid='.$useridGetSafe;  
-              }
-              printConfirm(getLanguage($dbConnection,93), getLanguage($dbConnection,94).' <a href="'.$loginLink.'">log in</a>.');
-            } else { $dispErrorMsg = 53; } // update query
-          } else { $dispErrorMsg = 52; } // 1 result
-        } else { $dispErrorMsg = 51; } // select query
-      } else { $dispErrorMsg = 50; } // valid userid
-    } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
-      printTitle($dbConnection);
-      printEntryPoint($dbConnection);
-      printUserStat($dbConnection);
-    } else {
-      $dispErrorMsg = 1;
-    } // switch
-    printError($dbConnection, $dispErrorMsg);
-  } // action == integer          
+  } elseif ($doSafe == 1) { // log out
+    logOut();
+  } elseif ($doSafe == 2) { // present the new user form
+    printStartOfHtml($dbConnection);
+    printTitle($dbConnection);
+    printNewUserForm($dbConnection);
+    printUserStat($dbConnection);
+  } elseif ($doSafe == 3) { // process the new user form data, add a new user
+    printStartOfHtml($dbConnection);
+    // step 1: user data need to make sense: email-addr valid           
+    if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
+      // check whether email already exists
+      $emailSqlSafe = mysqli_real_escape_string($dbConnection, $emailUnsafe);
+      if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
+        if ($result->num_rows == 0) {
+          if (($hasPw == 0) or (($hasPw == 1) and (strlen($passwordUnsafe) > 3))) {                    
+            if ($result = $dbConnection->query('INSERT INTO `user` (`email`, `lastLogin`) VALUES ("'.$emailSqlSafe.'", CURRENT_TIMESTAMP)')) { 
+              $newUserid = $dbConnection->insert_id;
+              if (newUserLoginAndLinks($dbConnection, $newUserid, $hasPw, $passwordUnsafe)) {                      
+                if(newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe)) {
+                  if ($hasPw == 1) {
+                    $loginText = getLanguage($dbConnection,88).' <a href="index.php">https://widmedia.ch/start/index.php</a>';
+                  } else {
+                    $loginText = 'login <a href="index.php?userid='.$newUserid.'">https://widmedia.ch/start/index.php?userid='.$newUserid.'</a>';
+                  }                    
+                  printConfirm(getLanguage($dbConnection,89), getLanguage($dbConnection,90).$loginText.'
+                  <br><br>'.getLanguage($dbConnection,86));
+                } else { $dispErrorMsg = 37; } // newUserEmail
+              } else { $dispErrorMsg = 36; } // links, categories insert
+            } else { $dispErrorMsg = 35; } // user insert                        
+          } else { $dispErrorMsg = 34; echo getLanguage($dbConnection,91); } // if password, then length ok
+        } else { $dispErrorMsg = 33; echo getLanguage($dbConnection,92); } // email does not exist
+      } else { $dispErrorMsg = 32; } // query worked
+    } else { $dispErrorMsg = 31; } // have a valid email 
+  } elseif ($doSafe == 4) { // process the login data, maybe set a cookie
+    if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email
+      $userid = mail2userid($dbConnection, $emailUnsafe);
+      if ($userid > 0) { // now, can do the check of the hash value
+        if (verifyCredentials($dbConnection, 1, $userid, $passwordUnsafe, '')) {                
+          if ($setCookieSafe == 1) {
+            $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
+            setcookie('userIdCookie', $userid, $expire); 
+            if ($result = $dbConnection->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' )) { // this is just a random number which has been set at user creation
+              $row = $result->fetch_row();
+              setcookie('randCookie', $row[0], $expire);
+            } else { $dispErrorMsg = 43; } // select query
+          } // setCookie is selected
+          redirectRelative('links.php');
+        } else { $dispErrorMsg = 42; } // verification ok
+      } else { $dispErrorMsg = 41; } // email found in db
+    } else { $dispErrorMsg = 40; } // valid email          
+  } elseif ($doSafe == 5) { // confirm the email address
+    printStartOfHtml($dbConnection);
+    if ($useridGetSafe > 2) {
+      // NB: I'm not even looking at the date (mentioned a 24 hour limit in the email). That's fine. I'll just delete accounts which have not been verified after some days...
+      $verGet = makeSafeHex($_GET['ver'], 64);
+      $verSqlSafe = mysqli_real_escape_string($dbConnection, $verGet);
+      if ($result = $dbConnection->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$useridGetSafe.'" AND `verCode` = "'.$verSqlSafe.'"')) {
+        if ($result->num_rows == 1) {
+          $row = $result->fetch_row();
+          $hasPw = $row[0];
+          if ($result = $dbConnection->query('UPDATE `user` SET `verified` = "1" WHERE `id` = "'.$useridGetSafe.'"')) {   
+            $loginLink = 'https://widmedia.ch/start/index.php';
+            if ($hasPw == 1) {
+              $loginLink = $loginLink.'#login';  
+            } else {
+              $loginLink = $loginLink.'?userid='.$useridGetSafe;  
+            }
+            printConfirm(getLanguage($dbConnection,93), getLanguage($dbConnection,94).' <a href="'.$loginLink.'">log in</a>.');
+          } else { $dispErrorMsg = 53; } // update query
+        } else { $dispErrorMsg = 52; } // 1 result
+      } else { $dispErrorMsg = 51; } // select query
+    } else { $dispErrorMsg = 50; } // valid userid
+  } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
+    printStartOfHtml($dbConnection);
+    printTitle($dbConnection);
+    printEntryPoint($dbConnection);
+    printUserStat($dbConnection);
+  } else {
+    $dispErrorMsg = 1;
+  } // switch
+  // TODO: for some cases I do not call printStartOfHtml. For those, I should do it here, before printing the error message...
+  printError($dbConnection, $dispErrorMsg);
+  
   echo '</div> <!-- /container -->';  
   printFooter($dbConnection); 
 ?>     
