@@ -6,14 +6,14 @@
 function initialize () {
   session_start(); // this code must precede any HTML output
   
-  $siteUnsafe = getCurrentSite();   
-  if ($siteUnsafe != 'about.php') { // on every other page than about, I need the userid already set
-    if ($siteUnsafe != 'index.php') { // index is special, I might do forwarding when cookies are set
+  $siteSafe = getCurrentSite();   
+  if ($siteSafe != 'about.php') { // on every other page than about, I need the userid already set
+    if ($siteSafe != 'index.php') { // index is special, I might do forwarding when cookies are set
       if (!getUserid()) {
         // there might be two reasons: 
         // - user is connecting directly to links.php from where-ever (common case as you might store the links-page as bookmark). If so, just redirect to index.php
         // - session is really destroyed (e.g. user logged out). In this case, print an error message
-        if ($siteUnsafe == 'links.php') { // redirect to index
+        if ($siteSafe == 'links.php') { // redirect to index
           redirectRelative('index.php');
           return false;  // this code is not reached because redirect does an exit but it's anyhow cleaner like this
         }        
@@ -96,7 +96,7 @@ function getCategory($dbConnection, $userid, $category) {
   
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
 function printFooter($dbConnection) {  
-  $siteUnsafe = getCurrentSite(); 
+  $siteSafe = getCurrentSite(); 
   $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> '.getLanguage($dbConnection,45).'</a>';
   $home   = '<a class="button differentColor" href="links.php"><img src="images/icon_home.png" class="logoImg"> Links</a>';
   $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> '.getLanguage($dbConnection,1).'</a>'; 
@@ -106,15 +106,15 @@ function printFooter($dbConnection) {
   $linkLeft   = $edit;
   $linkMiddle = $about;
   $linkRight  = $logout;
-  if (($siteUnsafe == 'editLinks.php') or ($siteUnsafe == 'editUser.php')) {
+  if (($siteSafe == 'editLinks.php') or ($siteSafe == 'editUser.php')) {
     $linkLeft   = $home; 
     $linkMiddle = $about;
     $linkRight  = $logout;
-  } elseif ($siteUnsafe == 'about.php') {
+  } elseif ($siteSafe == 'about.php') {
     $linkLeft   = '&nbsp;';
     $linkMiddle = $home;
     $linkRight  = '&nbsp;';
-  }  elseif ($siteUnsafe == 'index.php') {
+  }  elseif ($siteSafe == 'index.php') {
     $linkLeft   = $home;  // always have a home button. Even if I'm already on index page
     $linkMiddle = '&nbsp;';
     $linkRight  = $about;
@@ -133,43 +133,43 @@ function printFooter($dbConnection) {
   </div>'; 
 } // function
 
-// returns the current site in the format 'about.php'
+// returns the current site in the format 'about.php' in a safe way
 function getCurrentSite() {
-  return (substr($_SERVER['SCRIPT_NAME'],7)); // SERVER[...] is something like /start/links.php (without any parameters) 
+  $siteSafe = '';
+  $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER[...] is something like /start/links.php (without any parameters) 
+  
+  if (($siteUnsafe == 'about.php') or
+      ($siteUnsafe == 'editLinks.php') or
+      ($siteUnsafe == 'editUser.php') or
+      ($siteUnsafe == 'index.php') or 
+      ($siteUnsafe == 'link.php') or
+      ($siteUnsafe == 'links.php')) {
+        $siteSafe = $siteUnsafe;
+      }
+  return ($siteSafe); 
 }
 
 function printNavMenu($dbConnection) {
-  $siteUnsafe = getCurrentSite(); 
+  $siteSafe = getCurrentSite();
   $notLoggedIn = (getUserid() == 0);
-  // TODO: need some language flags to change the language settings (and store permanently) 
   
-  // default values, when a user is logged in
-  $home      = '<li><a href="index.php?do=6">Home</a></li>';
-  $login     = '';
-  $newAcc    = '';
-  $about     = '<li><a href="about.php">'.getLanguage($dbConnection,1).'</a></li>';  
-  $links     = '<li><a href="links.php">Links</a></li>';
-  $editLinks = '<li><a href="editLinks.php">- '.getLanguage($dbConnection,27).'</a></li>';
-  $editUser  = '<li><a href="editUser.php?do=1">- '.getLanguage($dbConnection,28).'</a></li>';
-  $logOut    = '<li><a href="index.php?do=1">log out</a></li>';
+  if ($siteSafe == 'index.php') { $home = '<li class="menuCurrentPage">Home</li>'; } else { $home = '<li><a href="index.php?do=6">Home</a></li>'; }
+  if ($notLoggedIn) { $login = '<li><a href="index.php#login">- log in</a></li>'; } else { $login = ''; }
+  if ($notLoggedIn) { $newAcc = '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConnection,29).'</a></li>'; } else { $newAcc = ''; }
+  if ($siteSafe == 'about.php') { $about = '<li class="menuCurrentPage">'.getLanguage($dbConnection,1).'</li>'; }  else { $about = '<li><a href="about.php">'.getLanguage($dbConnection,1).'</a></li>'; } 
+  if ($siteSafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; } else { $links = '<li><a href="links.php">Links</a></li>'; }
+  if ($siteSafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,27).'</li>'; } else { $editLinks = '<li><a href="editLinks.php">- '.getLanguage($dbConnection,27).'</a></li>'; }
+  if ($siteSafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,28).'</li>'; } else { $editUser = '<li><a href="editUser.php?do=1">- '.getLanguage($dbConnection,28).'</a></li>'; }
   
-  if ($siteUnsafe == 'index.php')     { $home       = '<li class="menuCurrentPage">Home</li>'; }
-  if ($siteUnsafe == 'about.php')     { $about      = '<li class="menuCurrentPage">'.getLanguage($dbConnection,1).'</li>'; }  
-  if ($siteUnsafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; }
-  if ($siteUnsafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,27).'</li>'; }
-  if ($siteUnsafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,28).'</li>'; }
-
-  if ($notLoggedIn) { // user is not logged in
+  if ($notLoggedIn) { // remove the link, replace it with a strikethrough for those site where a login is a must
     $strikeThrough = ' style="text-decoration: line-through;"';
-    
-    $login     = '<li><a href="index.php#login">- log in</a></li>';
-    $newAcc    = '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConnection,29).'</a></li>';
     $links     = '<li'.$strikeThrough.'>Links</li>';
     $editLinks = '<li'.$strikeThrough.'>- '.getLanguage($dbConnection,27).'</li>';
-    $editUser  = '<li'.$strikeThrough.'>- '.getLanguage($dbConnection,28).'</li>';
-    $logOut    = '';   
+    $editUser  = '<li'.$strikeThrough.'>- '.getLanguage($dbConnection,28).'</li>';    
   } 
-
+  if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">'.getLanguage($dbConnection,106).'</a></li>'; }
+  
+  // TODO: design of the language selection
   echo '
   <nav role="navigation" style="width:400px">
     <div id="menuToggle">
@@ -186,10 +186,11 @@ function printNavMenu($dbConnection) {
         '.$editLinks.'
         '.$editUser.'
         '.$logOut.'
+        <li>&nbsp;</li>
+        <li style="font-size:smaller;"><a href="'.$siteSafe.'?ln=de">DE</a>&nbsp;&nbsp;&nbsp;<a href="'.$siteSafe.'?ln=en">EN</a></li>
       </ul>
     </div>
   </nav>';
-  
   setLnSession();
 } // function
 
@@ -291,39 +292,32 @@ function printHr () {
 // prints static header information which is the same on all pages
 function printStatic($dbConnection) {
   // description tag and title are different for every site  
-  $siteUnsafe = getCurrentSite(); // NB: link.php is special as only in the error case a html site is generated
-  $urlOk = false; // safety measure because $siteUnsafe may contain harmful code
+  $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a html site is generated
+  
   // TODO-language
-  if ($siteUnsafe == 'about.php') {
+  if ($siteSafe == 'about.php') {
     $title = getLanguage($dbConnection,1);
-    $description = 'Some background info about the widmedia.ch/start project';
-    $urlOk = true;
-  } elseif ($siteUnsafe == 'editLinks.php') {
+    $description = 'Some background info about the widmedia.ch/start project';    
+  } elseif ($siteSafe == 'editLinks.php') {
     $title   = 'Edit my links';
     $description = 'page to add, edit or delete links';
-    $urlOk = true;
-  } elseif ($siteUnsafe == 'editUser.php') {
+  } elseif ($siteSafe == 'editUser.php') {
     $title   = 'Edit or delete your user account';
-    $description = 'page to edit or delete the user account';
-    $urlOk = true;
-  } elseif ($siteUnsafe == 'index.php') {  
+    $description = 'page to edit or delete the user account';    
+  } elseif ($siteSafe == 'index.php') {  
     $title   = 'Startpage';
-    $description = 'your new personal start page, a modifiable page with all your links';
-    $urlOk = true;
-  } elseif ($siteUnsafe == 'links.php') {  
+    $description = 'your new personal start page, a modifiable page with all your links';    
+  } elseif ($siteSafe == 'links.php') {  
     $title   = 'Links';
-    $description = 'the main page with all your links, your personal start page';
-    $urlOk = true;
+    $description = 'the main page with all your links, your personal start page';    
   } else {
     $title   = 'Error page';
     $description = 'page not found';    
   }
   
-  if ($urlOk) {
-    $url = 'https://widmedia.ch/start/'.$siteUnsafe;
-  } else {
-    $url = 'https://widmedia.ch/start/'; // a generic one
-  }
+  
+  $url = 'https://widmedia.ch/start/'.$siteSafe;
+  
      
   echo '
 <!DOCTYPE html>
