@@ -29,7 +29,7 @@ function initialize () {
   return $dbConnection;
 }
 
-//prints the h4 title and one row
+//prints the h4 title and one row. Assumes that the start of the html page is printed already
 function printConfirm($heading, $text) {
   echo '
 <div class="row twelve columns textBox">
@@ -210,18 +210,11 @@ function testUserCheck($dbConnection, $userid) {
   }
 }
 
-// deletes both the cookie and the session. TODO: think about whether I really want to delete the cookie
+// deletes the userid cookie and the userid session. 
+// NB: Leaves the ln-variables, otherwise I cannot print the 'logout-successful' message in German
 function sessionAndCookieDelete () {
-  $expire = time() - 42000; // some big enough value in the past to make sure things like summer time changes do not affect it  
-  
-  $_SESSION['userid'] = 0; // the most important one, make sure it's really 0 (before deleting everything)
-  setcookie('userIdCookie', 0, $expire); 
-  $_SESSION['randCookie'] = 0;
-  setcookie('randCookie', 0, $expire);
-  
-  // now the more generic stuff
-  $_SESSION = array(); // unset all of the session variables.
-  session_destroy(); // finally, destroy the session    
+  $_SESSION['userid'] = 0; // the most important one, make sure it's really 0
+  setcookie('userIdCookie', 0, (time() - 42000)); // some big enough value in the past to make sure things like summer time changes do not affect it
 }  
 
 // does the db operations to remove a certain user. Does some checks as well
@@ -267,7 +260,6 @@ function makeSafeInt ($unsafe, $length) {
 }
 
 // returns a 'safe' character-as-hex value
-// - randCookie is defined as 64-long hex value
 function makeSafeHex($unsafe, $length) {
   $safe = 0;
   $unsafe = substr($unsafe, 0, $length); // length-limited variable  
