@@ -13,7 +13,7 @@
     }
     echo '
     <h3 class="section-heading">Userid: '.$row['id'].'</h3>
-    <form action="editUser.php?do=3" method="post">
+    <form action="editUser.php?do=2" method="post">
     <div class="row">
       <div class="twelve columns">'.getLanguage($dbConnection,46).$row['lastLogin'].'</div>
     </div>
@@ -40,7 +40,7 @@
     <div class="row"><div class="twelve columns"><hr /></div></div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
-      <div class="twelve columns"><a href="editUser.php?do=2" class="button differentColor"><img src="images/icon_delete.png" class="logoImg"> '.getLanguage($dbConnection,52).'</a></div>
+      <div class="twelve columns"><a href="editUser.php?do=1" class="button differentColor"><img src="images/icon_delete.png" class="logoImg"> '.getLanguage($dbConnection,52).'</a></div>
     </div>
     </form>';
   } // function
@@ -54,18 +54,18 @@
   }
   
   // possible actions: 
-  // 1=> edit an existing user: present the form
-  // 2=> delete an existing user: db operations
-  // 3=> update an existing user: db operations
+  // 0=> edit an existing user: present the form
+  // 1=> delete an existing user: db operations
+  // 2=> update an existing user: db operations
   
   // Form processing
   $userid = getUserid();
-  $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 1 to 3)
+  $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 0 to 2)
   
   $dispErrorMsg = 0;
   $heading = ''; // default value, stays empty if some error happens
 
-  if ($doSafe == 1) { // edit an existing user: present the form
+  if ($doSafe == 0) { // edit an existing user: present the form
     if ($userid) { // have a valid userid
       if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
         $row = $result->fetch_assoc(); // guaranteed to get only one row
@@ -73,14 +73,14 @@
         printUserEdit($dbConnection, $row);              
       } else { $dispErrorMsg = 11; } // select query did work
     } else { $dispErrorMsg = 10; } // have a valid userid
-  } elseif ($doSafe == 2) { // delete an existing user
+  } elseif ($doSafe == 1) { // delete an existing user
     // TODO: might want to verify the pw before deleting an account? (if there is a pw set)
     if (deleteUser($dbConnection, $userid)) {
       sessionAndCookieDelete();  //TODO: this resets all session vars and thus the language as well... Not what I want
       printStartOfHtml($dbConnection);
       printConfirm(getLanguage($dbConnection,53), getLanguage($dbConnection,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConnection,55).' index.php</a>');
     } else { $dispErrorMsg = 20; } // deleteUser function did return false
-  } elseif ($doSafe == 3) { // update an existing user: db operations
+  } elseif ($doSafe == 2) { // update an existing user: db operations
     if ($userid > 0) { // have a valid userid
       if (testUserCheck($dbConnection, $userid)) {
         if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              

@@ -15,7 +15,7 @@
     echo '</div><div class="row twelve columns">&nbsp;</div>';                    
     echo '
     <div class="row">
-      <div class="six columns"><a class="button differentColor" href="editUser.php?do=1"><img src="images/icon_db.png" class="logoImg"> '.getLanguage($dbConnection,28).'</a></div>
+      <div class="six columns"><a class="button differentColor" href="editUser.php"><img src="images/icon_db.png" class="logoImg"> '.getLanguage($dbConnection,28).'</a></div>
       <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon_zero.png" class="logoImg"> '.getLanguage($dbConnection,37).'</a></div>
     </div>';    
   } // function 

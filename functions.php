@@ -159,7 +159,7 @@ function printNavMenu($dbConnection) {
   if ($siteSafe == 'about.php') { $about = '<li class="menuCurrentPage">'.getLanguage($dbConnection,1).'</li>'; }  else { $about = '<li><a href="about.php">'.getLanguage($dbConnection,1).'</a></li>'; } 
   if ($siteSafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; } else { $links = '<li><a href="links.php">Links</a></li>'; }
   if ($siteSafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,27).'</li>'; } else { $editLinks = '<li><a href="editLinks.php">- '.getLanguage($dbConnection,27).'</a></li>'; }
-  if ($siteSafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,28).'</li>'; } else { $editUser = '<li><a href="editUser.php?do=1">- '.getLanguage($dbConnection,28).'</a></li>'; }
+  if ($siteSafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,28).'</li>'; } else { $editUser = '<li><a href="editUser.php">- '.getLanguage($dbConnection,28).'</a></li>'; }
   
   if ($notLoggedIn) { // remove the link, replace it with a strikethrough for those site where a login is a must
     $strikeThrough = ' style="text-decoration: line-through;"';
