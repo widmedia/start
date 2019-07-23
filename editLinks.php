@@ -46,12 +46,12 @@
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConnection,41).'"></form><div>';
   }
 
-  function printStartOfHtml($dbConnection) {  
-    printStatic($dbConnection);
-    echo '</head><body>';
-    printNavMenu($dbConnection);
-    echo '<div class="section categories"><div class="container">';
-  }
+  //function printStartOfHtml($dbConnection) {  
+  //  printStatic($dbConnection);
+  //  echo '</head><body>';
+  //  printNavMenu($dbConnection);
+  //  echo '<div class="section categories"><div class="container">';
+  //}
      
   $userid = getUserid();      
   

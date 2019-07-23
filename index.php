@@ -287,23 +287,6 @@
     <div class="row twelve columns">&nbsp;</div>';    
   } // function  
   
-  // required for most use cases but for some I cannot print any HTML output before redirecting
-  function printStartOfHtml($dbConnection) {
-    printStatic($dbConnection);
-    echo '<script type="text/javascript" src="js/scripts.js"></script>
-    </head>';
-    
-    $msgSafe = makeSafeInt($_GET['msg'], 1);
-    if ($msgSafe > 0) {
-      echo '<body onLoad="overlayMsgFade();">'; 
-      printMessage($dbConnection, $msgSafe); 
-    } else {
-      echo '<body>';
-    }
-    printNavMenu($dbConnection);
-    echo '<div class="section categories noBottom"><div class="container">';
-  }
-  
   // possible actions: 
   // 0/non-existing: normal case
   // 1=> logout

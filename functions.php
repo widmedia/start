@@ -93,6 +93,23 @@ function getCategory($dbConnection, $userid, $category) {
     return 0; // should never reach this point
   } // if 
 } // function
+
+// required for most use cases but for some I cannot print any HTML output before redirecting
+function printStartOfHtml($dbConnection) {
+  printStatic($dbConnection);
+  echo '<script type="text/javascript" src="js/scripts.js"></script></head>';
+  
+  $msgSafe = makeSafeInt($_GET['msg'], 1);
+  if ($msgSafe > 0) {
+    echo '<body onLoad="overlayMsgFade();">'; 
+    printMessage($dbConnection, $msgSafe); 
+  } else {
+    echo '<body>';
+  }
+  printNavMenu($dbConnection);
+  echo '<div class="section categories noBottom"><div class="container">';
+}
+
   
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
 function printFooter($dbConnection) {  

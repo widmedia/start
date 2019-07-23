@@ -46,12 +46,12 @@
   } // function
 
   // required for most use cases but for some I cannot print any HTML output before redirecting
-  function printStartOfHtml($dbConnection) {  
-    printStatic($dbConnection);
-    echo '<script defer type="text/javascript" src="js/scripts.js"></script></head><body>';
-    printNavMenu($dbConnection);
-    echo '<div class="section categories"><div class="container">';     
-  }
+  // function printStartOfHtml($dbConnection) {  
+  //   printStatic($dbConnection);
+  //   echo '<script defer type="text/javascript" src="js/scripts.js"></script></head><body>';
+  //   printNavMenu($dbConnection);
+  //   echo '<div class="section categories"><div class="container">';     
+  // }
   
   // possible actions: 
   // 0=> edit an existing user: present the form
