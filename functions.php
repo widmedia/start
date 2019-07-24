@@ -1,5 +1,31 @@
 <?php
-// This file contains functions to be included in other blocks and rely heavily on the context around them
+// This file is a pure function definition file. It is included in other sites
+
+// function list:
+// - initialize ()
+// - printConfirm ($dbConnection, $heading, $text)
+// - printErrorAndDie ($heading, $text)
+// - printError ($dbConnection, $errorMsgNum)
+// - getCategory ($dbConnection, $userid, $category)
+// - printStartOfHtml ($dbConnection)
+// - printFooter ($dbConnection)
+// - overlayDiv ($disappearing, $zIndex, $text)
+// - printOverlayGeneric ($dbConnection, $messageNumber)    
+// - printOverlayAccountVerify ($dbConnection, $userid)
+// - getCurrentSite ()
+// - printNavMenu ($dbConnection)
+// - testUserCheck ($dbConnection, $userid)
+// - sessionAndCookieDelete ()
+// - deleteUser ($dbConnection, $userid)
+// - getUserid ()
+// - makeSafeInt ($unsafe, $length)
+// - makeSafeHex ($unsafe, $length)
+// - makeSafeStr ($unsafe, $length)
+// - redirectRelative ($page)
+// - printStatic ($dbConnection)
+// - printInlineCss ()
+// - getLanguage ($dbConnection, $textId)
+
   
 // this function is called on every (user related) page on the very start  
 // it does the session start and opens connection to the data base. Returns the dbConnection variable
@@ -30,7 +56,7 @@ function initialize () {
 }
 
 //prints the h4 title and one row
-function printConfirm($dbConnection, $heading, $text) {
+function printConfirm ($dbConnection, $heading, $text) {
   if (!headers_sent()) {
     printStartOfHtml($dbConnection);
   } // headers
@@ -38,7 +64,7 @@ function printConfirm($dbConnection, $heading, $text) {
 } 
 
 // prints a valid html error page and stops php execution
-function printErrorAndDie($heading, $text) {
+function printErrorAndDie ($heading, $text) {
   // cannot use printStatic as I don't yet have a dbConnection
   echo '
 <!DOCTYPE html>
@@ -58,7 +84,7 @@ function printErrorAndDie($heading, $text) {
 }
 
 // checks whether the number is bigger than 0 and displays some very generic failure message
-function printError($dbConnection, $errorMsgNum) {
+function printError ($dbConnection, $errorMsgNum) {
   $userid = getUserid();
   if ($errorMsgNum > 0 and $userid != 2) { // no error is printed for the test user    
     printConfirm($dbConnection, 'Error', getLanguage($dbConnection,33).$errorMsgNum.getLanguage($dbConnection,34).' sali@widmedia.ch');
@@ -66,7 +92,7 @@ function printError($dbConnection, $errorMsgNum) {
 }
 
 // function returns the text of the category. If something does not work as expected, 0 is returned
-function getCategory($dbConnection, $userid, $category) {
+function getCategory ($dbConnection, $userid, $category) {
   if ($result = $dbConnection->query('SELECT `text` FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1')) {
     $row = $result->fetch_assoc();
     return $row['text'];
@@ -76,7 +102,7 @@ function getCategory($dbConnection, $userid, $category) {
 } // function
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
-function printStartOfHtml($dbConnection) {
+function printStartOfHtml ($dbConnection) {
   printStatic($dbConnection);  
   
   $msgSafe = makeSafeInt($_GET['msg'], 1);
@@ -94,7 +120,7 @@ function printStartOfHtml($dbConnection) {
 }
  
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
-function printFooter($dbConnection) {
+function printFooter ($dbConnection) {
   echo '</div>'; // close the container
   $siteSafe = getCurrentSite(); 
   $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> '.getLanguage($dbConnection,45).'</a>';
@@ -137,7 +163,7 @@ function printFooter($dbConnection) {
 } // function
 
 // displays a red-colored div, either disappearing or not
-function overlayDiv($disappearing, $zIndex, $text) {
+function overlayDiv ($disappearing, $zIndex, $text) {
   $divId = '';
   if ($disappearing) { $divId = ' id="overlay" '; } // will disappear (using javascript) if the div gets an id
   echo '<div '.$divId.'class="overlayMessage" style="z-index: '.$zIndex.';">'.$text.'</div>';  
@@ -169,7 +195,7 @@ function printOverlayAccountVerify ($dbConnection, $userid) {
 } // function
 
 // returns the current site in the format 'about.php' in a safe way. Any do=xy parameters are obmitted
-function getCurrentSite() {
+function getCurrentSite () {
   $siteSafe = '';
   $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER[...] is something like /start/links.php (without any parameters)   
   if (
@@ -185,7 +211,7 @@ function getCurrentSite() {
   return ($siteSafe); 
 }
 
-function printNavMenu($dbConnection) {
+function printNavMenu ($dbConnection) {
   $siteSafe = getCurrentSite();
   $notLoggedIn = (getUserid() == 0);
   
@@ -227,12 +253,21 @@ function printNavMenu($dbConnection) {
       </ul>
     </div>
   </nav>';
-  setLnSession();
-} // function
-
   
+  // set the session var only if I did get the ln-variable
+  if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
+    $lang = 'en';  
+    $langDiv = makeSafeStr($_GET['ln'], 2);
+    if ($langDiv == 'de') { // otherwise it stays at 'en'
+      $lang = 'de';
+    }
+    $_SESSION['ln'] = $lang;
+    // TODO: might store it in a cookie and/or into user data base
+  }
+}
+
 // checks whether userid is 2 (= test user)
-function testUserCheck($dbConnection, $userid) { // actually it is returning true, if it is not the testUser
+function testUserCheck ($dbConnection, $userid) { // actually it is returning true, if it is not the testUser
   if ($userid == 2) {    
     printConfirm($dbConnection, getLanguage($dbConnection,30), getLanguage($dbConnection,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,32).'</a>');
     return false;
@@ -249,7 +284,7 @@ function sessionAndCookieDelete () {
 }  
 
 // does the db operations to remove a certain user. Does some checks as well
-function deleteUser($dbConnection, $userid) {
+function deleteUser ($dbConnection, $userid) {
   if ($userid > 0) { // have a valid userid
     if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
       // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
@@ -290,7 +325,7 @@ function makeSafeInt ($unsafe, $length) {
 }
 
 // returns a 'safe' character-as-hex value
-function makeSafeHex($unsafe, $length) {
+function makeSafeHex ($unsafe, $length) {
   $safe = 0;
   $unsafe = substr($unsafe, 0, $length); // length-limited variable  
   if (ctype_xdigit($unsafe)) {
@@ -300,8 +335,8 @@ function makeSafeHex($unsafe, $length) {
 }
 
 // returns a 'safe' string. Not that much to do though for a string
-function makeSafeStr($unsafe, $length) {
-  return (htmlentities(substr($unsafe, 0, $length))); // length-limited variable, html encoded
+function makeSafeStr ($unsafe, $length) {
+  return (htmlentities(substr($unsafe, 0, $length))); // length-limited variable, HTML encoded
 }
 
 // does a (relative) redirect
@@ -313,15 +348,10 @@ function redirectRelative ($page) {
   exit;
 }
 
-// prints a horizontal ruler over twelve columns
-function printHr () {
-  echo '<div class="row twelve columns"><hr></div>';  
-}
-
 // prints static header information and sets title and description depending on the page
-function printStatic($dbConnection) {
+function printStatic ($dbConnection) {
   // description tag and title are different for every site  
-  $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a html site is generated
+  $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a HTML site is generated
   
   // TODO-language
   if ($siteSafe == 'about.php') {
@@ -415,9 +445,8 @@ function printStatic($dbConnection) {
   </head>';    
 }
 
-
 // defines all the styles with color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
-function printInlineCss() {   
+function printInlineCss () {   
   $lightMain = 'rgba(250, 255, 59, 0.85)'; // yellowish (works good on blue, works on gray as well) = #faff3b;
   $darkMain =  'rgba(182, 189, 0, 0.85)'; // darker version of above settings  
   
@@ -464,22 +493,8 @@ function printInlineCss() {
   </style>'; 
 }
 
-function setLnSession() {
-  // set the session var only if I did get the ln-variable
-  if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
-    $lang = 'en';
-  
-    $langDiv = makeSafeStr($_GET['ln'], 2);
-    if ($langDiv == 'de') { // otherwise it stays at 'en'
-      $lang = 'de';
-    }
-    $_SESSION['ln'] = $lang;
-    // TODO: might store it in a cookie and/or into user data base
-  }  
-}
-
 // returns various text in the session-stored language. language-db organized as follows: id(int_11) / en(text) / de(text)
-function getLanguage($dbConnection, $textId) { // NB: ln and id variables are safe
+function getLanguage ($dbConnection, $textId) { // NB: ln and id variables are safe
   $lang = 'en';
   if (isset($_SESSION['ln'])) {
     $lang = $_SESSION['ln'];

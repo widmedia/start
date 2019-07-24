@@ -2,7 +2,7 @@
   require_once('functions.php');
   $dbConnection = initialize();
   
-  function printUserEdit($dbConnection, $row) {    
+  function printUserEdit ($dbConnection, $row) {    
     $hasPwText       = '';
     $displayPwRows   = 'none';
     $pwFieldRequired = '';

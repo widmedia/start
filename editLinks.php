@@ -2,7 +2,7 @@
   require_once('functions.php');
   $dbConnection = initialize();
   
-  function printEntryPoint($dbConnection, $userid) {
+  function printEntryPoint ($dbConnection, $userid) {
     echo '
     <h3 class="section-heading">'.getLanguage($dbConnection,35).'</h3>
     <div class="row twelve columns">&nbsp;</div>
@@ -40,7 +40,7 @@
     </form>';   
   } // function
   
-  function printCategoryForm($dbConnection, $categorySafe, $heading) { 
+  function printCategoryForm ($dbConnection, $categorySafe, $heading) { 
     echo '<div class="row twelve columns">
     <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConnection,41).'"></form><div>';
@@ -93,7 +93,7 @@
     printCategoryForm($dbConnection, $categorySafe, $heading);
     echo '<div class="row twelve columns"><h3 class="section-heading">'.getLanguage($dbConnection,42).'</h3></div>';          
     printSingleLinkFields($dbConnection, true, $categorySafe, 0, 'https://', 'text');
-    printHr();
+    echo '<div class="row twelve columns"><hr></div>';
     // print one form per row, an edit form for every link
     if ($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
       while ($row = $result->fetch_assoc()) {        

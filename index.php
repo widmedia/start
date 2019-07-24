@@ -135,7 +135,7 @@
   }  
   
   // sends an email to the new user with a special link and updates the database with that email confirmation link
-  function newUserEmailConfirmation($dbConnection, $newUserid, $hasPw, $emailSqlSafe) {
+  function newUserEmailConfirmation ($dbConnection, $newUserid, $hasPw, $emailSqlSafe) {
     $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
     $emailBody = "Sali,\n\n".getLanguage($dbConnection,95)."\n\n".getLanguage($dbConnection,96)."\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
     if ($hasPw == 1) {
@@ -156,7 +156,7 @@
   }
   
   // prints some graph with the user statistics 
-  function printUserStat($dbConnection) {
+  function printUserStat ($dbConnection) {
     $currentTime = time();
     $year = date('Y', $currentTime); // TODO: provide option to select another year
     
@@ -174,7 +174,7 @@
     
     // print a table with the twelve months
     echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">&nbsp;</div>';
-    printHr();
+    echo '<div class="row twelve columns"><hr></div>';
     echo '<h3 class="section-heading">'.getLanguage($dbConnection,56).$year.'</h3><div class="row">';
     for ($i = 0; $i < 12; $i++) {       
       $height = round($userStatPerMonth[$i] / $maxVal * 100)+1; // maxVal corresponds to 100 px min-height
@@ -186,7 +186,7 @@
     
   
   // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
-  function printNewUserForm($dbConnection) {
+  function printNewUserForm ($dbConnection) {
     echo '<h3 class="section-heading"><span id="newUser">'.getLanguage($dbConnection,32).'</span></h3>
     <form action="index.php?do=3" method="post">
     <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> '.getLanguage($dbConnection,47).' <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConnection,48).'</div></div>
@@ -210,7 +210,7 @@
   function printTitle($dbConnection) {    
     echo '<h2 class="section-heading">widmedia.ch/start</h2>
     <div class="row twelve columns" style="font-weight: bold; font-size: larger; text-align: left">'.getLanguage($dbConnection,65).'</div>';
-    printHr();
+    echo '<div class="row twelve columns"><hr></div>';
     echo '
     <div class="row">
       <div class="eight columns">
@@ -256,12 +256,12 @@
         <li>'.getLanguage($dbConnection,70).'</li>
         <li>'.getLanguage($dbConnection,71).': <a href="index.php?userid=2">'.getLanguage($dbConnection,72).'</a> ... '.getLanguage($dbConnection,73).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,64).'</a></li>        
       </ul></div>
-    </div>';
-    printHr();
-    echo '<div class="row twelve columns">'.getLanguage($dbConnection,80).' <img src="images/icon_arrow_right.png" alt="pointing to the open free account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own free account" class="logoImg"> '.getLanguage($dbConnection,81).'</a></div>';
-    printHr();
-    echo '<div class="row twelve columns">'.getLanguage($dbConnection,82).' <img src="images/icon_arrow_right.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button">'.getLanguage($dbConnection,83).'</a></div>';
-    printHr();
+    </div>
+    <div class="row twelve columns"><hr></div>
+    <div class="row twelve columns">'.getLanguage($dbConnection,80).' <img src="images/icon_arrow_right.png" alt="pointing to the open free account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own free account" class="logoImg"> '.getLanguage($dbConnection,81).'</a></div>
+    <div class="row twelve columns"><hr></div>
+    <div class="row twelve columns">'.getLanguage($dbConnection,82).' <img src="images/icon_arrow_right.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button">'.getLanguage($dbConnection,83).'</a></div>
+    <div class="row twelve columns"><hr></div>';
   } // function
   
   function printEntryPoint($dbConnection) {    
