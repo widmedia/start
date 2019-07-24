@@ -146,11 +146,6 @@
   } else {
     $dispErrorMsg = 1;
   } // switch              
-  printError($dbConnection, $dispErrorMsg);        
-  echo '</div> <!-- /container -->';
+  printError($dbConnection, $dispErrorMsg);          
   printFooter($dbConnection);
-?>                
-  </div> <!-- /section categories -->
-<!-- End Document -->
-</body>
-</html>
+?>

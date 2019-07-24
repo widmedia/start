@@ -387,10 +387,5 @@
     $dispErrorMsg = 1;
   } // switch
   printError($dbConnection, $dispErrorMsg);
-  
-  echo '</div> <!-- /container -->';  
   printFooter($dbConnection); 
-?>     
-  </div> <!-- /section categories -->
-</body>
-</html>
+?>

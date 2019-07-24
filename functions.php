@@ -57,16 +57,6 @@ function printErrorAndDie($heading, $text) {
   die();  
 }
 
-// prints some disappearing message box. used on links.php and index.php
-function printMessage ($dbConnection, $messageNumber) {    
-  if (($messageNumber >= 1) and ($messageNumber <= 7)) { 
-    $message = getLanguage($dbConnection,($messageNumber+18)); 
-  } else { 
-    $message = getLanguage($dbConnection,26); 
-  }    
-  echo '<div id="overlay" class="overlayMessage" style="z-index: 2;">'.$message.'</div>';
-}  
-
 // checks whether the number is bigger than 0 and displays some very generic failure message
 function printError($dbConnection, $errorMsgNum) {
   $userid = getUserid();
@@ -92,20 +82,20 @@ function printStartOfHtml($dbConnection) {
   $msgSafe = makeSafeInt($_GET['msg'], 1);
   if ($msgSafe > 0) {
     echo '<body onLoad="overlayMsgFade();">'; 
-    printMessage($dbConnection, $msgSafe); 
+    printOverlayGeneric($dbConnection, $msgSafe); 
   } else {
     echo '<body>';
   }
   printNavMenu($dbConnection);
   $userid = getUserid();
-  printMsgTestUser($dbConnection, $userid);      
-  printMsgAccountVerify($dbConnection, $userid);  
+  if ($userid == 2) { overlayDiv(false, 3, getLanguage($dbConnection,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConnection,32).'</a>'); }  
+  printOverlayAccountVerify($dbConnection, $userid);  
   echo '<div class="section categories noBottom"><div class="container">';
 }
-
-  
+ 
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
-function printFooter($dbConnection) {  
+function printFooter($dbConnection) {
+  echo '</div>'; // close the container
   $siteSafe = getCurrentSite(); 
   $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> '.getLanguage($dbConnection,45).'</a>';
   $home   = '<a class="button differentColor" href="links.php"><img src="images/icon_home.png" class="logoImg"> Links</a>';
@@ -140,36 +130,45 @@ function printFooter($dbConnection) {
         <div class="four columns">'.$linkRight.'</div>
       </div>
     </div>
-  </div>'; 
+  </div>
+</div>
+</body>
+</html>'; 
 } // function
 
-// prints a message when logged in as a test user
-  function printMsgTestUser ($dbConnection, $userid) {
-    if ($userid == 2) { 
-      echo '<div class="overlayMessage" style="z-index: 3;">'.getLanguage($dbConnection,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConnection,32).'</a></div>'; 
-    }
-  } 
+// displays a red-colored div, either disappearing or not
+function overlayDiv($disappearing, $zIndex, $text) {
+  $divId = '';
+  if ($disappearing) { $divId = ' id="overlay" '; } // will disappear (using javascript) if the div gets an id
+  echo '<div '.$divId.'class="overlayMessage" style="z-index: '.$zIndex.';">'.$text.'</div>';  
+}
 
-  // prints a message when the email of this account has not been verified
-  function printMsgAccountVerify ($dbConnection, $userid) {
-    if ($userid > 0) {
-      $verified = false;
-      if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
-        $row = $result->fetch_row();
-        if ($row[0] == 1) {
-          $verified = true;
-        } // verified
-      } // select query
-      
-      if (!$verified) {
-        echo '<div class="overlayMessage" style="z-index: 4;">'.getLanguage($dbConnection,104).'</div>';
-      }
-    }
-  } // function
+// prints some disappearing message box. used on links.php and index.php
+function printOverlayGeneric ($dbConnection, $messageNumber) {    
+  if (($messageNumber >= 1) and ($messageNumber <= 7)) { 
+    $message = getLanguage($dbConnection,($messageNumber+18)); 
+  } else { 
+    $message = getLanguage($dbConnection,26); 
+  }  
+  overlayDiv(true, 2, $message);  
+}  
 
+// prints a message when the email of this account has not been verified
+function printOverlayAccountVerify ($dbConnection, $userid) {
+  if ($userid > 0) {
+    $verified = false;
+    if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
+      $row = $result->fetch_row();
+      if ($row[0] == 1) {
+        $verified = true;
+      } // verified
+    } // select query
+    
+    if (!$verified) { overlayDiv(false, 4, getLanguage($dbConnection,104)); }
+  }
+} // function
 
-
-// returns the current site in the format 'about.php' in a safe way
+// returns the current site in the format 'about.php' in a safe way. Any do=xy parameters are obmitted
 function getCurrentSite() {
   $siteSafe = '';
   $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER[...] is something like /start/links.php (without any parameters)   
@@ -233,7 +232,7 @@ function printNavMenu($dbConnection) {
 
   
 // checks whether userid is 2 (= test user)
-function testUserCheck($dbConnection, $userid) {
+function testUserCheck($dbConnection, $userid) { // actually it is returning true, if it is not the testUser
   if ($userid == 2) {    
     printConfirm($dbConnection, getLanguage($dbConnection,30), getLanguage($dbConnection,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,32).'</a>');
     return false;
@@ -243,7 +242,7 @@ function testUserCheck($dbConnection, $userid) {
 }
 
 // deletes the userid cookie and the userid session. 
-// NB: Leaves the ln-variables, otherwise I cannot print the 'logout-successful' message in German
+// NB: Leaves the ln-variables, otherwise I cannot print the 'logout-successful' message in non-default language
 function sessionAndCookieDelete () {
   $_SESSION['userid'] = 0; // the most important one, make sure it's really 0
   setcookie('userIdCookie', 0, (time() - 42000)); // some big enough value in the past to make sure things like summer time changes do not affect it
@@ -270,7 +269,6 @@ function deleteUser($dbConnection, $userid) {
   }
   return false; // should not reach this point
 }
-
 
 // returns the userid integer
 function getUserid () {
@@ -480,9 +478,8 @@ function setLnSession() {
   }  
 }
 
-function getLanguage($dbConnection, $textId) {
-  // db organized as follows: id(int_11) / en(text) / de(text)
-  
+// returns various text in the session-stored language. language-db organized as follows: id(int_11) / en(text) / de(text)
+function getLanguage($dbConnection, $textId) { // NB: ln and id variables are safe
   $lang = 'en';
   if (isset($_SESSION['ln'])) {
     $lang = $_SESSION['ln'];

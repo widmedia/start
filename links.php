@@ -44,10 +44,6 @@
   
   echo '</div><h3 class="section-heading">'.getCategory($dbConnection, $userid, 3).'</h3><div class="row">';
   printLinks($dbConnection, $userid, 3);
-  echo '</div>
-  </div> <!-- /container -->';
+  echo '</div>';
   printFooter($dbConnection);
-?>                
-  </div> <!-- /section categories -->
-</body>
-</html>
+?>
