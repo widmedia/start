@@ -29,13 +29,12 @@ function initialize () {
   return $dbConnection;
 }
 
-//prints the h4 title and one row. Assumes that the start of the html page is printed already
-function printConfirm($heading, $text) {
-  echo '
-<div class="row twelve columns textBox">
-  <h4>'.$heading.'</h4>
-  <p>'.$text.'</p>
-</div>';
+//prints the h4 title and one row
+function printConfirm($dbConnection, $heading, $text) {
+  if (!headers_sent()) {
+    printStartOfHtml($dbConnection);
+  } // headers
+  echo '<div class="row twelve columns textBox"><h4>'.$heading.'</h4><p>'.$text.'</p></div>';
 } 
 
 // prints a valid html error page and stops php execution
@@ -54,9 +53,7 @@ function printErrorAndDie($heading, $text) {
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
   printInlineCss();
-  echo '</head><body>';
-  printConfirm($heading, $text);
-  echo '</body></html>';
+  echo '</head><body><div class="row twelve columns textBox"><h4>'.$heading.'</h4><p>'.$text.'</p></div></body></html>';
   die();  
 }
 
@@ -73,14 +70,8 @@ function printMessage ($dbConnection, $messageNumber) {
 // checks whether the number is bigger than 0 and displays some very generic failure message
 function printError($dbConnection, $errorMsgNum) {
   $userid = getUserid();
-  if ($errorMsgNum > 0 and $userid != 2) { // no error is printed for the test user
-    if (!headers_sent()) {
-      printStatic($dbConnection);
-      echo '</head><body>';
-      printNavMenu($dbConnection);
-      echo '<div class="section categories noBottom"><div class="container">';
-    } // headers
-    printConfirm('Error', getLanguage($dbConnection,33).$errorMsgNum.getLanguage($dbConnection,34).' sali@widmedia.ch');
+  if ($errorMsgNum > 0 and $userid != 2) { // no error is printed for the test user    
+    printConfirm($dbConnection, 'Error', getLanguage($dbConnection,33).$errorMsgNum.getLanguage($dbConnection,34).' sali@widmedia.ch');
   }
 }
 
@@ -96,8 +87,7 @@ function getCategory($dbConnection, $userid, $category) {
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
 function printStartOfHtml($dbConnection) {
-  printStatic($dbConnection);
-  echo '<script type="text/javascript" src="js/scripts.js"></script></head>';
+  printStatic($dbConnection);  
   
   $msgSafe = makeSafeInt($_GET['msg'], 1);
   if ($msgSafe > 0) {
@@ -107,6 +97,9 @@ function printStartOfHtml($dbConnection) {
     echo '<body>';
   }
   printNavMenu($dbConnection);
+  $userid = getUserid();
+  printMsgTestUser($dbConnection, $userid);      
+  printMsgAccountVerify($dbConnection, $userid);  
   echo '<div class="section categories noBottom"><div class="container">';
 }
 
@@ -150,17 +143,44 @@ function printFooter($dbConnection) {
   </div>'; 
 } // function
 
+// prints a message when logged in as a test user
+  function printMsgTestUser ($dbConnection, $userid) {
+    if ($userid == 2) { 
+      echo '<div class="overlayMessage" style="z-index: 3;">'.getLanguage($dbConnection,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConnection,32).'</a></div>'; 
+    }
+  } 
+
+  // prints a message when the email of this account has not been verified
+  function printMsgAccountVerify ($dbConnection, $userid) {
+    if ($userid > 0) {
+      $verified = false;
+      if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
+        $row = $result->fetch_row();
+        if ($row[0] == 1) {
+          $verified = true;
+        } // verified
+      } // select query
+      
+      if (!$verified) {
+        echo '<div class="overlayMessage" style="z-index: 4;">'.getLanguage($dbConnection,104).'</div>';
+      }
+    }
+  } // function
+
+
+
 // returns the current site in the format 'about.php' in a safe way
 function getCurrentSite() {
   $siteSafe = '';
-  $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER[...] is something like /start/links.php (without any parameters) 
-  
-  if (($siteUnsafe == 'about.php') or
+  $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER[...] is something like /start/links.php (without any parameters)   
+  if (
+      ($siteUnsafe == 'about.php') or
       ($siteUnsafe == 'editLinks.php') or
       ($siteUnsafe == 'editUser.php') or
       ($siteUnsafe == 'index.php') or 
       ($siteUnsafe == 'link.php') or
-      ($siteUnsafe == 'links.php')) {
+      ($siteUnsafe == 'links.php')
+     ) {
         $siteSafe = $siteUnsafe;
       }
   return ($siteSafe); 
@@ -214,14 +234,8 @@ function printNavMenu($dbConnection) {
   
 // checks whether userid is 2 (= test user)
 function testUserCheck($dbConnection, $userid) {
-  if ($userid == 2) {
-    if (!headers_sent()) {
-      printStatic($dbConnection);
-      echo '</head><body>';
-      printNavMenu($dbConnection);
-      echo '<div class="section categories noBottom"><div class="container">';
-    } // headers
-    printConfirm(getLanguage($dbConnection,30), getLanguage($dbConnection,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,32).'</a>');
+  if ($userid == 2) {    
+    printConfirm($dbConnection, getLanguage($dbConnection,30), getLanguage($dbConnection,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,32).'</a>');
     return false;
   } else {
     return true;
@@ -306,7 +320,7 @@ function printHr () {
   echo '<div class="row twelve columns"><hr></div>';  
 }
 
-// prints static header information which is the same on all pages
+// prints static header information and sets title and description depending on the page
 function printStatic($dbConnection) {
   // description tag and title are different for every site  
   $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a html site is generated
@@ -332,9 +346,7 @@ function printStatic($dbConnection) {
     $description = 'page not found';    
   }
   
-  
   $url = 'https://widmedia.ch/start/'.$siteSafe;
-  
      
   echo '
 <!DOCTYPE html>
@@ -373,7 +385,36 @@ function printStatic($dbConnection) {
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
   printInlineCss();
-  // some sites include a js page as well before the header part is finished  
+  
+  echo '
+  <script type="text/javascript">
+  // changes the display property of the pw-text field (actually the whole row) and some warning message
+  function pwToggle() {
+    if (document.getElementById("pwCheckBox").checked == 1) {
+      document.getElementById("pwRow").style.display = "initial";
+      document.getElementById("noPwWarning").style.display = "none";
+    } else {
+      document.getElementById("pwRow").style.display = "none";
+      document.getElementById("noPwWarning").style.display = "block";
+    }
+  }
+
+  // fades out a message and does a display: none when it is fully faded out
+  function overlayMsgFade() {
+    element = document.getElementById("overlay");
+    var op = 0.8;  // initial opacity
+    var timer = setInterval(function () {
+      if (op <= 0.3){
+          clearInterval(timer);
+          element.style.display = "none";
+      }
+      element.style.opacity = op;
+      element.style.filter = "alpha(opacity=" + op * 100 + ")";
+      op -= op * 0.05;
+    }, 200);
+  }
+  </script>
+  </head>';    
 }
 
 

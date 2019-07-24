@@ -45,14 +45,7 @@
     <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConnection,41).'"></form><div>';
   }
-
-  //function printStartOfHtml($dbConnection) {  
-  //  printStatic($dbConnection);
-  //  echo '</head><body>';
-  //  printNavMenu($dbConnection);
-  //  echo '<div class="section categories"><div class="container">';
-  //}
-     
+  
   $userid = getUserid();      
   
   // possible actions: 
@@ -123,7 +116,7 @@
           } else { $dispErrorMsg = 22; } // insert query did work
         } // distinction between adding and editing
       } // testuser check
-    } else { $dispErrorMsg = 20; printConfirm(getLanguage($dbConnection,43), getLanguage($dbConnection,44)); } // have a validUrl
+    } else { $dispErrorMsg = 20; printConfirm($dbConnection, getLanguage($dbConnection,43), getLanguage($dbConnection,44)); } // have a validUrl
   } elseif ($doSafe == 3) { // I want to reset all the link counters to 0          
     if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
       redirectRelative('links.php?msg=4');            

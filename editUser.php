@@ -44,14 +44,6 @@
     </div>
     </form>';
   } // function
-
-  // required for most use cases but for some I cannot print any HTML output before redirecting
-  // function printStartOfHtml($dbConnection) {  
-  //   printStatic($dbConnection);
-  //   echo '<script defer type="text/javascript" src="js/scripts.js"></script></head><body>';
-  //   printNavMenu($dbConnection);
-  //   echo '<div class="section categories"><div class="container">';     
-  // }
   
   // possible actions: 
   // 0=> edit an existing user: present the form
@@ -78,7 +70,7 @@
     if (deleteUser($dbConnection, $userid)) {
       sessionAndCookieDelete();  //TODO: this resets all session vars and thus the language as well... Not what I want
       printStartOfHtml($dbConnection);
-      printConfirm(getLanguage($dbConnection,53), getLanguage($dbConnection,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConnection,55).' index.php</a>');
+      printConfirm($dbConnection, getLanguage($dbConnection,53), getLanguage($dbConnection,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConnection,55).' index.php</a>');
     } else { $dispErrorMsg = 20; } // deleteUser function did return false
   } elseif ($doSafe == 2) { // update an existing user: db operations
     if ($userid > 0) { // have a valid userid

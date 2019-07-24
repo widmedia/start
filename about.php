@@ -2,7 +2,7 @@
   require_once('functions.php');
   $dbConnection = initialize();
   printStatic($dbConnection);
-  echo '</head><body>';
+  echo '<body>';
   printNavMenu($dbConnection);
   echo '
   <div class="section categories noBottom">

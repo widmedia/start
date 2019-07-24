@@ -330,13 +330,13 @@
                   } else {
                     $loginText = 'login <a href="index.php?userid='.$newUserid.'">https://widmedia.ch/start/index.php?userid='.$newUserid.'</a>';
                   }                    
-                  printConfirm(getLanguage($dbConnection,89), getLanguage($dbConnection,90).$loginText.'
+                  printConfirm($dbConnection, getLanguage($dbConnection,89), getLanguage($dbConnection,90).$loginText.'
                   <br><br>'.getLanguage($dbConnection,86));
                 } else { $dispErrorMsg = 37; } // newUserEmail
               } else { $dispErrorMsg = 36; } // links, categories insert
             } else { $dispErrorMsg = 35; } // user insert                        
-          } else { $dispErrorMsg = 34; printConfirm('Error',getLanguage($dbConnection,91)); } // if password, then length ok
-        } else { $dispErrorMsg = 33; printConfirm('Error',getLanguage($dbConnection,92)); } // email does not exist
+          } else { $dispErrorMsg = 34; printConfirm($dbConnection, 'Error',getLanguage($dbConnection,91)); } // if password, then length ok
+        } else { $dispErrorMsg = 33; printConfirm($dbConnection, 'Error',getLanguage($dbConnection,92)); } // email does not exist
       } else { $dispErrorMsg = 32; } // query worked
     } else { $dispErrorMsg = 31; } // have a valid email 
   } elseif ($doSafe == 4) { // process the login data, maybe set a cookie
@@ -373,7 +373,7 @@
             } else {
               $loginLink = $loginLink.'?userid='.$useridGetSafe;  
             }
-            printConfirm(getLanguage($dbConnection,93), getLanguage($dbConnection,94).' <a href="'.$loginLink.'">log in</a>.');
+            printConfirm($dbConnection, getLanguage($dbConnection,93), getLanguage($dbConnection,94).' <a href="'.$loginLink.'">log in</a>.');
           } else { $dispErrorMsg = 53; } // update query
         } else { $dispErrorMsg = 52; } // 1 result
       } else { $dispErrorMsg = 51; } // select query

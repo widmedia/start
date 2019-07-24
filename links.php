@@ -2,27 +2,7 @@
   require_once('functions.php');
   $dbConnection = initialize();
   
-  // prints a message when logged in as a test user
-  function printMsgTestUser ($dbConnection, $userid) {
-    if ($userid == 2) { 
-      echo '<div class="overlayMessage" style="z-index: 3;">'.getLanguage($dbConnection,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConnection,32).'</a></div>'; 
-    }
-  } 
-
-  // prints a message when the email of this account has not been verified
-  function printMsgAccountVerify ($dbConnection, $userid) {
-    $verified = false;
-    if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
-      $row = $result->fetch_row();
-      if ($row[0] == 1) {
-        $verified = true;
-      } // verified
-    } // select query
-    
-    if (!$verified) {
-      echo '<div class="overlayMessage" style="z-index: 4;">'.getLanguage($dbConnection,104).'</div>';
-    }
-  } // function
+  
     
   // function to output several links in a formatted way
   // creating a div for every link and div-rows for every $module-th entry
@@ -53,24 +33,8 @@
     } // if  
   } // function   
 
-
-  printStatic($dbConnection);
-  echo '<script type="text/javascript" src="js/scripts.js"></script></head>';
-  
-  $msgSafe = makeSafeInt($_GET['msg'], 1);
-  if ($msgSafe > 0) {
-    echo '<body onLoad="overlayMsgFade();">'; 
-    printMessage($dbConnection, $msgSafe); 
-  } else {
-    echo '<body>';
-  }
   $userid = getUserid();
-  
-  printNavMenu($dbConnection);  
-  printMsgTestUser($dbConnection, $userid);      
-  printMsgAccountVerify($dbConnection, $userid);
-  
-  echo '<div class="section categories noBottom"><div class="container">';
+  printStartOfHtml($dbConnection);
   
   echo '<h3 class="section-heading">'.getCategory($dbConnection, $userid, 1).'</h3><div class="row">';
   printLinks($dbConnection, $userid, 1);

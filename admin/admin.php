@@ -63,7 +63,7 @@
       $row = $result->fetch_assoc();       
       if (mail($row['email'], 'widmedia.ch/start: your account will be deleted soon', $emailBody)) {
         
-        printConfirm('Email to '.htmlentities($row['email']).' sent', 'The '.$confirm.' email has been sent successfully.');
+        printConfirm($dbConnection, 'Email to '.htmlentities($row['email']).' sent', 'The '.$confirm.' email has been sent successfully.');
         return true;
       } // mail send
     }    
@@ -95,7 +95,7 @@
               $inactiveUsers++;
             }
           } // while
-          printConfirm('stats for '.$year.'-'.$month, $activeUsers.' have been active this month, '.$inactiveUsers.' users are inactive.');
+          printConfirm($dbConnection, 'stats for '.$year.'-'.$month, $activeUsers.' have been active this month, '.$inactiveUsers.' users are inactive.');
           $result = $dbConnection->query('INSERT INTO `userStat` (`year`, `month`, `numUser`) VALUES ("'.$year.'", "'.$month.'", "'.$activeUsers.'")');
         } // query
       } // have one result
@@ -176,7 +176,7 @@
     if (! reminderMail($dbConnection, $editUserId, 2)) { $dispErrorMsg = 30; }  
   } elseif ($doSafe == 4) { // delete the user
     if (deleteUser($dbConnection, $editUserId)) {
-      printConfirm('Deleted the account', 'Deleted userid: '.$editUserId.' <br/><br/>');
+      printConfirm($dbConnection, 'Deleted the account', 'Deleted userid: '.$editUserId.' <br/><br/>');
     } else {
       $dispErrorMsg = 40;
     }
