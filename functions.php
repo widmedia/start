@@ -232,6 +232,12 @@ function printNavMenu ($dbConnection) {
   if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">'.getLanguage($dbConnection,106).'</a></li>'; }
   
   // TODO: design of the language selection
+  if(isset($_GET['do'])) { // don't want to present the language sel on pages which are not default pages, where form entries are processed or similar
+    $languageSelection = ''; 
+  } else {
+    $languageSelection = '<li>&nbsp;</li><li style="font-size:smaller;"><a href="'.$siteSafe.'?ln=de">DE</a>&nbsp;&nbsp;&nbsp;<a href="'.$siteSafe.'?ln=en">EN</a></li>';
+  }
+  
   echo '
   <nav role="navigation" style="width:400px">
     <div id="menuToggle">
@@ -248,8 +254,7 @@ function printNavMenu ($dbConnection) {
         '.$editLinks.'
         '.$editUser.'
         '.$logOut.'
-        <li>&nbsp;</li>
-        <li style="font-size:smaller;"><a href="'.$siteSafe.'?ln=de">DE</a>&nbsp;&nbsp;&nbsp;<a href="'.$siteSafe.'?ln=en">EN</a></li>
+        '.$languageSelection.'
       </ul>
     </div>
   </nav>';
