@@ -175,28 +175,28 @@
     // print a table with the twelve months
     echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">&nbsp;</div>';
     echo '<div class="row twelve columns"><hr></div>';
-    echo '<h3 class="section-heading">'.getLanguage($dbConnection,56).$year.'</h3><div class="row">';
+    echo '<h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConnection,56).$year.'</span></h3><div class="row">';
     for ($i = 0; $i < 12; $i++) {       
       $height = round($userStatPerMonth[$i] / $maxVal * 100)+1; // maxVal corresponds to 100 px min-height
       echo '<div class="one columns" style="vertical-align: bottom;"><span style="font-weight: 600;">'.$months[$i].'</span><br><span class="userStatBar" style="min-height: '.$height.'px;">'.$userStatPerMonth[$i].'</span></div>';
     }
     echo '</div>
-    <div class="row twelve columns">'.getLanguage($dbConnection,57).'</div>';
+    <div class="row twelve columns"><span class="bgCol">'.getLanguage($dbConnection,57).'</span></div>';
   }
     
   
   // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
   function printNewUserForm ($dbConnection) {
-    echo '<h3 class="section-heading"><span id="newUser">'.getLanguage($dbConnection,32).'</span></h3>
+    echo '<h3 class="section-heading"><span id="newUser" class="bgCol">'.getLanguage($dbConnection,32).'</span></h3>
     <form action="index.php?do=3" method="post">
-    <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> '.getLanguage($dbConnection,47).' <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConnection,48).'</div></div>
+    <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> <span class="bgCol">'.getLanguage($dbConnection,47).'</span> <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConnection,48).'</div></div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="three columns">'.getLanguage($dbConnection,62).': </div>
+      <div class="three columns"><span class="bgCol">'.getLanguage($dbConnection,62).':</span> </div>
       <div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
     </div>    
     <div class="row" id="pwRow">
-      <div class="three columns">'.getLanguage($dbConnection,63).': </div>
+      <div class="three columns"><span class="bgCol">'.getLanguage($dbConnection,63).':</span> </div>
       <div class="nine columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>
@@ -264,19 +264,19 @@
     <div class="row twelve columns"><hr></div>';
   } // function
   
-  function printEntryPoint($dbConnection) {    
+  function printLogin($dbConnection) {    
     echo '
-    <h3 class="section-heading"><span id="login">Log in</span></h3>
+    <h3 class="section-heading"><span id="login" class="bgCol">Log in</span></h3>
     <form action="index.php?do=4" method="post">
     <div class="row">
-      <div class="three columns">Email: </div>
+      <div class="three columns"><span class="bgCol">Email:</span> </div>
       <div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
     </div>
     <div class="row">
-      <div class="three columns">'.getLanguage($dbConnection,84).': </div>
+      <div class="three columns"><span class="bgCol">'.getLanguage($dbConnection,84).':</span> </div>
       <div class="nine columns"><input name="password" type="password" maxlength="63" value="" required size="20"></div>
     </div>
-    <div class="row twelve columns" style="font-size: smaller;"><input type="checkbox" name="setCookie" value="1" checked>'.getLanguage($dbConnection,85).'</div>
+    <div class="row twelve columns" style="font-size: smaller;"><input type="checkbox" name="setCookie" value="1" checked><span class="bgCol">'.getLanguage($dbConnection,85).'</span></div>
     <div class="row twelve columns"><input name="login" type="submit" value="log in"></div>
     </form>
     <div class="row twelve columns">&nbsp;</div>
@@ -303,7 +303,7 @@
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printStartOfHtml($dbConnection);
     printTitle($dbConnection);
-    printEntryPoint($dbConnection);
+    printLogin($dbConnection);
     printUserStat($dbConnection);
   } elseif ($doSafe == 1) { // log out
     logOut();
@@ -381,7 +381,7 @@
   } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
     printStartOfHtml($dbConnection);
     printTitle($dbConnection);
-    printEntryPoint($dbConnection);
+    printLogin($dbConnection);
     printUserStat($dbConnection);
   } else {
     $dispErrorMsg = 1;

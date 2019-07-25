@@ -212,6 +212,17 @@ function getCurrentSite () {
 }
 
 function printNavMenu ($dbConnection) {
+  // set the session var only if I did get the ln-variable
+  if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
+    $lang = 'de';  
+    $langDiv = makeSafeStr($_GET['ln'], 2);
+    if ($langDiv == 'en') { // otherwise it stays
+      $lang = 'en';
+    }
+    $_SESSION['ln'] = $lang;
+    // TODO: might store it in a cookie and/or into user data base
+  }
+  
   $siteSafe = getCurrentSite();
   $notLoggedIn = (getUserid() == 0);
   
@@ -258,17 +269,6 @@ function printNavMenu ($dbConnection) {
       </ul>
     </div>
   </nav>';
-  
-  // set the session var only if I did get the ln-variable
-  if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
-    $lang = 'en';  
-    $langDiv = makeSafeStr($_GET['ln'], 2);
-    if ($langDiv == 'de') { // otherwise it stays at 'en'
-      $lang = 'de';
-    }
-    $_SESSION['ln'] = $lang;
-    // TODO: might store it in a cookie and/or into user data base
-  }
 }
 
 // checks whether userid is 2 (= test user)
@@ -501,7 +501,7 @@ function printInlineCss () {
 
 // returns various text in the session-stored language. language-db organized as follows: id(int_11) / en(text) / de(text)
 function getLanguage ($dbConnection, $textId) { // NB: ln and id variables are safe
-  $lang = 'en';
+  $lang = 'de';
   if (isset($_SESSION['ln'])) {
     $lang = $_SESSION['ln'];
   }
