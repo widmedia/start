@@ -409,6 +409,10 @@ hr {
   border: 1px solid #80b466;      
   box-sizing: border-box; 
 }
+.bgCol { 
+  padding: 2px 5px;
+  border-radius: 5px;  
+}
 .noPwWarning {
   display: block;
   min-height: 38px;

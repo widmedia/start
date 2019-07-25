@@ -208,8 +208,8 @@
   } // function
   
   function printTitle($dbConnection) {    
-    echo '<h2 class="section-heading">widmedia.ch/start</h2>
-    <div class="row twelve columns" style="font-weight: bold; font-size: larger; text-align: left">'.getLanguage($dbConnection,65).'</div>';
+    echo '<h2 class="section-heading"><span class="bgCol">widmedia.ch/start</span></h2>
+    <div class="row twelve columns" style="font-size: larger; text-align: left"><span class="bgCol">'.getLanguage($dbConnection,65).'</span></div>';
     echo '<div class="row twelve columns"><hr></div>';
     echo '
     <div class="row">

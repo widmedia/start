@@ -494,7 +494,8 @@ function printInlineCss () {
     #menu { background-color: '.$bg_norm2.'; border-color: '.$darkMain.'; }
     #menu a { color: '.$lightMain.'; }
     #menu a:hover, #menu a:focus { color: '.$darkMain.'; }
-    .menuCurrentPage { color: '.$darkMain.'; }  
+    .menuCurrentPage { color: '.$darkMain.'; }
+    .bgCol { background-color: '.$bg_norm.'; }
   </style>'; 
 }
 
