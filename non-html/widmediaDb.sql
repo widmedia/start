@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 26. Jul 2019 um 08:34
+-- Erstellungszeit: 26. Jul 2019 um 14:56
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -157,7 +157,12 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (103, 'Your new account on widmedia.ch/start', 'Dein neuer Account auf widmedia.ch/start'),
 (104, 'Your email address has not yet been verified. Please do so within 24 hours, otherwise this account will be deleted.', 'Deine Emailadresse wurde noch nicht verifiziert. Bitte mach das innerhalb von 24 Stunden, ansonsten wird dieser Account wieder gelöscht.'),
 (105, 'This is the (somewhat limited) test account. Get your own account?', 'Das ist der (bisschen eingeschränkte) Testaccount. Willst du einen eigenen Account?'),
-(106, 'log out', 'abmelden');
+(106, 'log out', 'abmelden'),
+(107, 'Some background info about the widmedia.ch/start project', 'Hintergrundinfos und Kontaktdaten zum widmedia.ch/start-Projekt'),
+(108, 'Page to add, edit or delete links', 'Neue Links hinzufügen oder bestehende anpassen und löschen'),
+(109, 'page to edit or delete the user account', 'Nutzereinstellungen anpassen oder Nutzer löschen'),
+(110, 'the main page with all your links, your personal start page', 'Hauptseite mit all deinen Link, deine persönliche Startseite'),
+(111, 'en', 'de');
 
 -- --------------------------------------------------------
 
@@ -253,7 +258,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

@@ -68,7 +68,7 @@
   } elseif ($doSafe == 1) { // delete an existing user
     // TODO: might want to verify the pw before deleting an account? (if there is a pw set)
     if (deleteUser($dbConnection, $userid)) {
-      sessionAndCookieDelete();  //TODO: this resets all session vars and thus the language as well... Not what I want
+      sessionAndCookieDelete();
       printStartOfHtml($dbConnection);
       printConfirm($dbConnection, getLanguage($dbConnection,53), getLanguage($dbConnection,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConnection,55).' index.php</a>');
     } else { $dispErrorMsg = 20; } // deleteUser function did return false
@@ -86,7 +86,7 @@
           } else { // not an error
             $pwCheck = true;
           }
-          // TODO: merge some of this stuff with the functionality on index.php...addNewUser
+          // could maybe merge some of this stuff with the functionality on index.php...addNewUser
           if ($pwCheck) {
             $hasPwCheckBox = makeSafeInt($_POST['hasPw'],1);
             if ($hasPwCheckBox == 1) { // if hasPw-checkbox, the newPw must be at least 4 chars long

@@ -46,22 +46,27 @@
     } 
     echo '</table></div>';    
   }
-  
-  
+    
   // sends an email to the user
   function reminderMail($dbConnection, $editUserId, $reason) { 
-    if ($reason == 1) {
-      $emailBody = "Hello,\n\nYour account on widmedia.ch/start has been inactive for quite some time (no login for at least one month).\n\n- If you like to keep your account, please login within the next 24 hours (login information have been sent at account opening).\n";
+    if ($reason == 1) { 
+      $emailBodyDe = "(English below)\n\nSalü,\n\nDein Account auf widmedia.ch/start ist seit einiger Zeit inaktiv (kein Login während mindestens einem Monat).\n\n- Falls du deinen Account behalten möchtest, log dich bitte innerhalb von 24 Stunden wieder ein (Logininfos wurden dir bei der Accounteröffnung zugeschickt).\n";
+      $emailBodyEn = "Hello,\n\nYour account on widmedia.ch/start has been inactive for quite some time (no login for at least one month).\n\n- If you like to keep your account, please login within the next 24 hours (login information have been sent at account opening).\n";
       $confirm = 'inactivity';
     } elseif ($reason == 2) {
-      $emailBody = "Hello,\n\nYour email address on widmedia.ch/start has not yet been verified.\n\n- If you like to keep your account, please verify the email within the next 24 hours (email verification information has been sent at account opening).\n";
+      $emailBodyDe = "(English below)\n\nSalü,\n\nDeine Emailadresse auf widmedia.ch/start wurde noch nicht verifiziert.\n\n- Falls du deinen Account behalten möchtest, bestätige bitte deine Emailadresse innerhalb der nächsten 24 Stunden (Link zur Emailverifizierung wurde dir bei der Accounteröffnung zugeschickt).\n";
+      $emailBodyEn = "Hello,\n\nYour email address on widmedia.ch/start has not yet been verified.\n\n- If you like to keep your account, please verify the email within the next 24 hours (email verification information has been sent at account opening).\n";
       $confirm = 'verification';
     }
-    $emailBody = $emailBody . "- If you don't need the account anymore, you don't need to do anything, it will be deleted and you will not receive any more messages.\n\nHave fun and best regards,\nDaniel from widmedia\n\n--\nContact (English or German): sali@widmedia.ch\n";
+    
+    $emailBodyDe = $emailBodyDe . "- Falls du den Account nicht mehr benötigst, musst du nichts weiter tun, er wird gelöscht und du bekommst keine weiteren Nachrichten.\n\nViel Spass und Gruss,\nDaniel von widmedia\n\n--\nKontakt (Deutsch oder Englisch): sali@widmedia.ch\n\n";
+    $emailBodyEn = $emailBodyEn . "- If you don't need the account anymore, you don't need to do anything, it will be deleted and you will not receive any more messages.\n\nHave fun and best regards,\nDaniel from widmedia\n\n--\nContact (English or German): sali@widmedia.ch\n";
+    
+    $emailBody = $emailBodyDe.$emailBodyEn;
     
     if ($result = $dbConnection->query('SELECT `email` FROM `user` WHERE `id` = "'.$editUserId.'"')) {
       $row = $result->fetch_assoc();       
-      if (mail($row['email'], 'widmedia.ch/start: your account will be deleted soon', $emailBody)) {
+      if (mail($row['email'], 'widmedia.ch/start: dein Account wird nächstens gelöscht / your account will be deleted soon', $emailBody)) {
         
         printConfirm($dbConnection, 'Email to '.htmlentities($row['email']).' sent', 'The '.$confirm.' email has been sent successfully.');
         return true;
@@ -82,7 +87,7 @@
     if ($result = $dbConnection->query('SELECT `numUser` FROM `userStat` WHERE `year` = "'.$year.'" AND `month` = "'.$month.'" LIMIT 1')) {
       if ($result->num_rows == 1) { // stats for this month have already been done
         $row = $result->fetch_assoc();
-        echo '<div class="row twelve columns textBox">stats for '.$year.'-'.$month.' are already existing, '.$row['numUser'].' have been active this month</div>';
+        echo '<div class="row twelve columns textBox">stats for '.$year.'-'.$month.' are already existing, '.$row['numUser'].' have been active this month</div>';        
       } else { // need to do the statistics
         $activeUsers = 0;
         $inactiveUsers = 0;
@@ -132,8 +137,13 @@
     die('sorry, only the admin may visit this site</body></html>');    
   }
   
+  $num = 0;
+  if($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE 1')) {
+    $num = $result->num_rows;
+  }
+  
   echo '<div class="section categories noBottom"><div class="container">'; 
-  echo '<h3 class="section-heading">Accounts</h3>';
+  echo '<h3 class="section-heading"><span class="bgCol">'.$num.' Accounts</span></h3>';
   echo '<div class="row twelve columns" style="background-color: rgba(0, 113, 255, 0.3);">';
   printUserTable($dbConnection);
   echo '</div>';
