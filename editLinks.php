@@ -4,7 +4,7 @@
   
   function printEntryPoint ($dbConnection, $userid) {
     echo '
-    <h3 class="section-heading">'.getLanguage($dbConnection,35).'</h3>
+    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConnection,35).'</span></h3>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
@@ -91,7 +91,7 @@
   } elseif ($doSafe == 1) { // present links of one category, have category name as text field
     printStartOfHtml($dbConnection);
     printCategoryForm($dbConnection, $categorySafe, $heading);
-    echo '<div class="row twelve columns"><h3 class="section-heading">'.getLanguage($dbConnection,42).'</h3></div>';          
+    echo '<div class="row twelve columns"><h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConnection,42).'</span></h3></div>';          
     printSingleLinkFields($dbConnection, true, $categorySafe, 0, 'https://', 'text');
     echo '<div class="row twelve columns"><hr></div>';
     // print one form per row, an edit form for every link

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 22. Jul 2019 um 16:49
+-- Erstellungszeit: 26. Jul 2019 um 08:34
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -52,24 +52,24 @@ CREATE TABLE `language` (
 --
 
 INSERT INTO `language` (`id`, `en`, `de`) VALUES
-(1, 'About', 'Über'),
+(1, 'About', 'Info'),
 (2, 'some picture of', 'ein Foto von'),
 (3, 'Contact', 'Kontakt'),
 (4, 'is developed by Daniel Widmer. Please find the complete code at', 'wird durch Daniel Widmer entwickelt. Den gesamten source code findet man unter'),
 (5, 'Contact (German, English)', 'Kontakt (Deutsch, Englisch)'),
 (6, 'Data privacy', 'Datenschutz'),
-(7, 'Be aware: without password protection for your account, all your user data are openly visible and may be edited. When using the password protection, widmedia tries to secure your data as good as possible, however, widmedia cannot guarantee full protection.', 'Achtung: ohne Passwortschutz sind all Ihre Daten öffentlich zugänglich und können editiert oder gelöscht werden. Mit Passwortschutz versucht widmedia diese Daten so gut es geht vor unberechtigten Zugriffen zu schützen. Leider kann widmedia darauf keine Garantie erteilen.'),
+(7, 'Be aware: without password protection for your account, all your user data are openly visible and may be edited. When using the password protection, widmedia tries to secure your data as good as possible, however, widmedia cannot guarantee full protection.', 'Achtung: ohne Passwortschutz sind all deine Daten öffentlich zugänglich und können editiert oder gelöscht werden. Mit Passwortschutz versucht widmedia diese Daten so gut es geht vor unberechtigten Zugriffen zu schützen. Leider kann widmedia darauf keine Garantie erteilen.'),
 (8, 'Only data required for the functionality of this website is stored. The data base layout and structure as well as the underlying code is available for inspection on the open source', 'Gespeichert werden nur Daten, die für diese Website nötig sind. Sowohl das Datenbanklayout und die Struktur als auch der verwendete Code sind öffentlich zugänglich als open source'),
 (9, 'project', 'Projekt'),
-(10, 'The data will not be sold or transferred otherwise to any external party.', 'Ihre Daten werden nicht verkauft oder andersweitig an Drittpersonen weitergegeben.'),
-(11, 'On the other hand, widmedia cannot guarantee regular backups of your data, your data might be deleted or get lost in a different way.', 'Andererseits kann widmedia keine regelmässigen Backups garantieren. Ihre Daten können gelöscht werden oder verloren gehen.'),
-(12, 'Do not rely on', 'Verlassen Sie sich nicht auf '),
-(13, 'as your only data source and do not store any sensitive information on this site.', 'als einzige Datenquelle und speichern Sie keine kritischen Daten auf dieser Seite.'),
+(10, 'The data will not be sold or transferred otherwise to any external party.', 'Deine Daten werden nicht verkauft oder andersweitig an Drittpersonen weitergegeben.'),
+(11, 'On the other hand, widmedia cannot guarantee regular backups of your data, your data might be deleted or get lost in a different way.', 'Andererseits kann widmedia keine regelmässigen Backups garantieren. Deine Daten können gelöscht werden oder verloren gehen.'),
+(12, 'Do not rely on', 'Verlass dich nicht auf '),
+(13, 'as your only data source and do not store any sensitive information on this site.', 'als einzige Datenquelle und speicher keine kritischen Daten auf dieser Seite.'),
 (14, 'will not be held accountable for the material created, stored or available on this site, especially the links to external sites.', 'ist nicht zuständig für irgendwelche Nutzerdaten auf dieser Seite, insbesondere die Links auf externe Seiten.'),
 (15, 'External sources', 'Externe Quellen'),
 (16, 'No external sources are used.', 'Es werden keine externen Quellen verwendet.'),
 (17, 'Financing', 'Finanzierung'),
-(18, '...well, there is none. If you like to contribute, please contact me:', '...hmm, gibt es nicht wirklich. Wenn Sie etwas beitragen möchten, können Sie mich hier erreichen:'),
+(18, '...well, there is none. If you like to contribute, please contact me:', '...hmm, gibt es nicht wirklich. Wenn du etwas beitragen möchtest, kann man mich hier erreichen:'),
 (19, 'link has been updated', 'Link wurde aktualisiert'),
 (20, 'category has been updated', 'Kategoriename wurde aktualisiert'),
 (21, 'link has been deleted', 'Link wurde gelöscht'),
@@ -85,7 +85,7 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (31, 'I am sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account?', 'Sorry aber als Testuser darf man nichts anpassen. Könnte ich dich eventuell für einen eigenen Account begeistern?'),
 (32, 'open account', 'Account eröffnen'),
 (33, '\"Something\" at step ', '\"Irgend etwas\" während Schritt '),
-(34, ' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br>If you think you did everything right, please send me an email:', ' lief falsch beim Verarbeiten der input Daten (Extrem hilfreiche Fehlermeldung, ich weiss...). Vielleicht probierst dus nochmals? <br>Falls du das Gefühl hast, dass du alles richtig gemacht hast, schreib mir doch bitte eine Email:'),
+(34, ' went wrong when processing user input data (very helpful error message, I know...). Might try again? <br>If you think you did everything right, please send me an email:', ' lief falsch beim Verarbeiten der input Daten (extrem hilfreiche Fehlermeldung, ich weiss...). Vielleicht probierst dus nochmals? <br>Falls du das Gefühl hast, dass du alles richtig gemacht hast, schreib mir doch bitte eine Email:'),
 (35, 'What would you like to edit?', 'Was möchtest du anpassen?'),
 (36, 'Category ', 'Kategorie '),
 (37, 'set all link counters to zero', 'alle Links-Zähler auf 0 setzen'),
@@ -107,7 +107,7 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (53, 'Deleted the account', 'Account gelöscht'),
 (54, 'Deleted userid: ', 'Gelöschte Userid: '),
 (55, 'go back to', 'zurück zu'),
-(56, 'User statistics ', 'User Statistik '),
+(56, 'User statistics ', 'Nutzerstatistik '),
 (57, 'number of active users (last login is less than 1 month old)', 'Anzahl aktiver User (letzer Login ist nicht älter als 1 Monat)'),
 (58, 'Mar', 'Mär'),
 (59, 'May', 'Mai'),
@@ -156,7 +156,8 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (102, 'from', 'von'),
 (103, 'Your new account on widmedia.ch/start', 'Dein neuer Account auf widmedia.ch/start'),
 (104, 'Your email address has not yet been verified. Please do so within 24 hours, otherwise this account will be deleted.', 'Deine Emailadresse wurde noch nicht verifiziert. Bitte mach das innerhalb von 24 Stunden, ansonsten wird dieser Account wieder gelöscht.'),
-(105, 'This is the (somewhat limited) test account. Get your own account?', 'Das ist der (bisschen eingeschränkte) Testaccount. Willst du einen eigenen Account?');
+(105, 'This is the (somewhat limited) test account. Get your own account?', 'Das ist der (bisschen eingeschränkte) Testaccount. Willst du einen eigenen Account?'),
+(106, 'log out', 'abmelden');
 
 -- --------------------------------------------------------
 
@@ -252,7 +253,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

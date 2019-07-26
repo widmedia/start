@@ -12,25 +12,25 @@
       $pwFieldRequired = 'required';
     }
     echo '
-    <h3 class="section-heading">Userid: '.$row['id'].'</h3>
+    <h3 class="section-heading"><span class="bgCol">Userid: '.$row['id'].'</span></h3>
     <form action="editUser.php?do=2" method="post">
     <div class="row">
-      <div class="twelve columns">'.getLanguage($dbConnection,46).$row['lastLogin'].'</div>
+      <div class="twelve columns"><span class="bgCol">'.getLanguage($dbConnection,46).$row['lastLogin'].'</span></div>
     </div>
     <div class="row">
-      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();"> '.getLanguage($dbConnection,47).' <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConnection,48).'</div></div>
+      <div class="twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();"> <span class="bgCol">'.getLanguage($dbConnection,47).'</span> <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConnection,48).'</div></div>
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
-      <div class="two columns">email: </div>
+      <div class="two columns"><span class="bgCol">Email:</span> </div>
       <div class="ten columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20"></div>
     </div>
     <div class="row" id="pwOldRow" style="display: '.$displayPwRows.';">
-      <div class="two columns">'.getLanguage($dbConnection,49).': </div>
+      <div class="two columns"><span class="bgCol">'.getLanguage($dbConnection,49).':</span></div>
       <div class="ten columns"><input name="password" type="password" maxlength="63" value="" '.$pwFieldRequired.' size="20"></div>
     </div>
     <div class="row" id="pwRow" style="display: '.$displayPwRows.';">
-      <div class="two columns">'.getLanguage($dbConnection,50).': </div>
+      <div class="two columns"><span class="bgCol">'.getLanguage($dbConnection,50).':</span></div>
       <div class="ten columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20"></div>
     </div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
