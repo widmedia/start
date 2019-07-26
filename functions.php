@@ -357,25 +357,24 @@ function redirectRelative ($page) {
 function printStatic ($dbConnection) {
   // description tag and title are different for every site  
   $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a HTML site is generated
-  
-  // TODO-language
+    
   if ($siteSafe == 'about.php') {
     $title = getLanguage($dbConnection,1);
-    $description = 'Some background info about the widmedia.ch/start project';    
+    $description = getLanguage($dbConnection,107);    
   } elseif ($siteSafe == 'editLinks.php') {
-    $title   = 'Edit my links';
-    $description = 'page to add, edit or delete links';
+    $title = getLanguage($dbConnection,27);
+    $description = getLanguage($dbConnection,108);
   } elseif ($siteSafe == 'editUser.php') {
-    $title   = 'Edit or delete your user account';
-    $description = 'page to edit or delete the user account';    
+    $title = getLanguage($dbConnection,28);
+    $description = getLanguage($dbConnection,109);    
   } elseif ($siteSafe == 'index.php') {  
-    $title   = 'Startpage';
-    $description = 'your new personal start page, a modifiable page with all your links';    
+    $title = 'Startpage';
+    $description = getLanguage($dbConnection,65);    
   } elseif ($siteSafe == 'links.php') {  
-    $title   = 'Links';
-    $description = 'the main page with all your links, your personal start page';    
+    $title = 'Links';
+    $description = getLanguage($dbConnection,110);    
   } else {
-    $title   = 'Error page';
+    $title = 'Error page';
     $description = 'page not found';    
   }
   
@@ -383,7 +382,7 @@ function printStatic ($dbConnection) {
      
   echo '
 <!DOCTYPE html>
-<html>
+<html lang="'.getLanguage($dbConnection,111).'">
 <head>
   <meta charset="utf-8">
   <title>'.$title.'</title>
@@ -393,8 +392,6 @@ function printStatic ($dbConnection) {
   <link rel="canonical" href="'.$url.'" />
   
   <meta name="robots" content="index, follow">    
-  <meta name="content-language" content="en">
-  <meta name="language" content="english, en"> 
 
   <meta property="og:description" content="'.$description.'" />
   <meta property="og:url" content="'.$url.'" />
