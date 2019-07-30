@@ -264,14 +264,27 @@
     <div class="row twelve columns"><hr></div>';
   } // function
   
-  function printLogin($dbConnection) {    
+  function printLogin($dbConnection, $forgotPw) {
+    if ($forgotPw) {
+      $title = getLanguage($dbConnection,87);
+      $doAction = '8';
+    } else {
+      $title = 'Log in';
+      $doAction = '4';
+    }
+    
     echo '
-    <h3 class="section-heading"><span id="login" class="bgCol">Log in</span></h3>
-    <form action="index.php?do=4" method="post">
+    <h3 class="section-heading"><span id="login" class="bgCol">'.$title.'</span></h3>
+    <form action="index.php?do='.$doAction.'" method="post">
     <div class="row">
       <div class="three columns"><span class="bgCol">Email:</span> </div>
       <div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
-    </div>
+    </div>';
+    
+    if ($forgotPw) {      
+      echo '<div class="row twelve columns"><input name="login" type="submit" value="'.getLanguage($dbConnection,112).'"></div></form>';
+    } else {
+    echo '
     <div class="row">
       <div class="three columns"><span class="bgCol">'.getLanguage($dbConnection,84).':</span> </div>
       <div class="nine columns"><input name="password" type="password" maxlength="63" value="" required size="20"></div>
@@ -282,9 +295,10 @@
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
       <div class="six columns"><a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> '.getLanguage($dbConnection,81).'</a></div>
-      <div class="six columns"><a href="index.php?do=9" class="button"><img src="images/icon_question.png" alt="get an email with your new password" class="logoImg"> '.getLanguage($dbConnection,87).'</a></div>
-    </div>
-    <div class="row twelve columns">&nbsp;</div>';    
+      <div class="six columns"><a href="index.php?do=7#login" class="button"><img src="images/icon_question.png" alt="get an email with your new password" class="logoImg"> '.getLanguage($dbConnection,87).'</a></div>
+    </div>';        
+    }
+    echo '<div class="row twelve columns">&nbsp;</div>';
   } // function  
   
   // possible actions: 
@@ -294,8 +308,12 @@
   // 3=> process adding new user
   // 4=> process login form (email/pw/setCookie)
   // 5=> do the email verification
+  // 6=> print standard index, without forwarding to links.php
+  // 7=> forgot password
+  // 8=> process forgot password 
   
   $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
+  $emailSqlSafe   = mysqli_real_escape_string($dbConnection, $emailUnsafe);
   $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
   $setCookieSafe  = makeSafeInt($_POST['setCookie'], 1);
   $hasPw          = makeSafeInt($_POST['hasPw'], 1);
@@ -303,7 +321,7 @@
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printStartOfHtml($dbConnection);
     printTitle($dbConnection);
-    printLogin($dbConnection);
+    printLogin($dbConnection, false);
     printUserStat($dbConnection);
   } elseif ($doSafe == 1) { // log out
     logOut();
@@ -316,8 +334,7 @@
     printStartOfHtml($dbConnection);
     // step 1: user data need to make sense: email-addr valid           
     if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
-      // check whether email already exists
-      $emailSqlSafe = mysqli_real_escape_string($dbConnection, $emailUnsafe);
+      // check whether email already exists      
       if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
         if ($result->num_rows == 0) {
           if (($hasPw == 0) or (($hasPw == 1) and (strlen($passwordUnsafe) > 3))) {                    
@@ -381,8 +398,30 @@
   } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
     printStartOfHtml($dbConnection);
     printTitle($dbConnection);
-    printLogin($dbConnection);
+    printLogin($dbConnection, false);
     printUserStat($dbConnection);
+  } elseif ($doSafe == 7) {  // forgot pw, present a form with the email field and a forgot PW title
+    printStartOfHtml($dbConnection);    
+    printLogin($dbConnection, true);
+  } elseif ($doSafe == 8) {  // process the data from step 7    
+    $pwForgotUserid = mail2userid($dbConnection, $emailUnsafe);
+    if ($pwForgotUserid > 0) { // pwForgot-db stores a completely unrelated hexval which is valid for only 4 hours. DB-layout: id / userid / hexval / validUntil
+      // TODO text language
+      $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database
+      $validUntil = date('Y-m-d H:i:s', time() + 3600*4);
+      
+      if ($result = $dbConnection->query('INSERT INTO `pwForgot` (`userid`, `hexval`, `validUntil`) VALUES ("'.$pwForgotUserid.'", "'.$hexStr64.'", "'.$validUntil.'")')) {
+        $emailBody = "Sali,\n\nDein Passwortwiederherstellungs-Link (gültig für 4 Stunden): \nhttps://widmedia.ch/start/index.php?do=9&userid=".$pwForgotUserid."&ver=".$hexStr64."\n";
+        $emailBody = $emailBody."\n\nMerci und Gruess,\nDaniel von widmedia\n\n--\nKontakt: sali@widmedia.ch\n";
+        if (mail($emailUnsafe, 'Passwortwiederherstellung auf widmedia.ch/start', $emailBody)) {
+          printStartOfHtml($dbConnection);    
+          printConfirm($dbConnection, 'Email verschickt', 'Das Email zur Passwortwiederherstellung wurde verschickt (an '.htmlentities($emailUnsafe).').<br>Die Wiederherstellung ist nun für 4 Stunden aktiv...<br><br><a href="index.php?do=6">zur Startseite</a>');
+        } // mail send
+      } // insert query
+    } else { $dispErrorMsg = 80; } // email exists
+  } elseif ($doSafe == 9) {  // process the pwRecover link from the email
+    printStartOfHtml($dbConnection);    
+    printConfirm($dbConnection, 'TODO', 'Passwortwiederherstellung noch nicht implementiert...');
   } else {
     $dispErrorMsg = 1;
   } // switch
