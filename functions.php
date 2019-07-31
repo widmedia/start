@@ -25,7 +25,7 @@
 // - printStatic ($dbConnection)
 // - printInlineCss ()
 // - getLanguage ($dbConnection, $textId)
-// - updateUser ($dbConnection, $userid)
+// - updateUser ($dbConnection, $userid, $forgotPw)
 
   
 // this function is called on every (user related) page on the very start  
@@ -511,7 +511,7 @@ function getLanguage ($dbConnection, $textId) { // NB: ln and id variables are s
 }
 
 // used in editUser to update email and password and in index to set a new pw when it has been forgotten.
-function updateUser ($dbConnection, $userid) {
+function updateUser ($dbConnection, $userid, $forgotPw) {
   $dispErrorMsg = 0;
   if (testUserCheck($dbConnection, $userid)) {
     if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
@@ -522,18 +522,21 @@ function updateUser ($dbConnection, $userid) {
         if (password_verify($passwordUnsafe, $row['pwHash'])) {        
           $pwCheck = true;
         } // else, $pwCheck stays at false
-      } else { // not an error
-        $pwCheck = true;
+        if ($forgotPw) { $pwCheck = true; } // not verifying the old password
+      } else { 
+        $pwCheck = true; // not an error
+        if ($forgotPw) { $pwCheck = false; } // an error
       }
       // could maybe merge some of this stuff with the functionality on index.php...addNewUser
       if ($pwCheck) {
         $hasPwCheckBox = makeSafeInt($_POST['hasPw'],1);
+        if ($forgotPw) { $hasPwCheckBox = 1; }
         if ($hasPwCheckBox == 1) { // if hasPw-checkbox, the newPw must be at least 4 chars long
           $pwHash = 0;
-          if (strlen($passwordUnsafe) > 3) {  
+          if (strlen($_POST['passwordNew']) > 3) {  
             $passwordUnsafe = filter_var(substr($_POST['passwordNew'], 0, 63), FILTER_SANITIZE_STRING);
             $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
-          } else { $dispErrorMsg = 34; }
+          } else { printError($dbConnection, 11); return false; }
         } // else, not an error
         
         $emailOk = false;
@@ -552,14 +555,19 @@ function updateUser ($dbConnection, $userid) {
         }
         
         if ($emailOk) {
-          if ($result = $dbConnection->query('UPDATE `user` SET `hasPw` = "'.$hasPwCheckBox.'", `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {
-            redirectRelative('links.php?msg=6');
-          } else { $dispErrorMsg = 35; } // update query
-        } else { $dispErrorMsg = 34; } // emailCheck
-      } else { $dispErrorMsg = 33; } // pwCheck ok                
-    } else { $dispErrorMsg = 32; } // select query did work
+          if ($result = $dbConnection->query('UPDATE `user` SET `hasPw` = "'.$hasPwCheckBox.'", `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {            
+            return true;
+          } else { printError($dbConnection, 12); return false; } // update query
+        } else { 
+          if ($forgotPw) { 
+            if ($result = $dbConnection->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'" WHERE `id` = "'.$userid.'"')) {              
+              return true;
+            } else { printError($dbConnection, 13); return false; } // update query
+          } // forgotPW
+        } // emailOK-else
+      } else { printError($dbConnection, 14); return false; } // pwCheck ok                
+    } else { printError($dbConnection, 15); return false; } // select query did work
   } // testUserCheck
-  printError($dbConnection, $dispErrorMsg);  
 }
 
 

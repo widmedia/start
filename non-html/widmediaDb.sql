@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 30. Jul 2019 um 11:08
+-- Erstellungszeit: 31. Jul 2019 um 17:46
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -164,13 +164,15 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (110, 'the main page with all your links, your personal start page', 'Hauptseite mit all deinen Link, deine persönliche Startseite'),
 (111, 'en', 'de'),
 (112, 'Send password recovery email', 'Passwortwiederherstellungs-Email verschicken'),
-(113, 'Your password recovery link (valid for 4 hours)', 'Dein Passwortwiederherstellungs-Link (gültig für 4 Stunden)'),
+(113, 'Your password recovery link (valid for one hour)', 'Dein Passwortwiederherstellungs-Link (gültig für eine Stunde)'),
 (114, 'Thanks and regards', 'Merci und Gruess'),
 (115, 'Password recovery at', 'Passwortwiederherstellung auf'),
 (116, 'sent', 'verschickt'),
 (117, 'The email for your password recovery has been sent (to ', 'Das Email zur Passwortwiederherstellung wurde verschickt (an '),
-(118, 'Recovery is now active for 4 hours...', 'Die Wiederherstellung ist nun für 4 Stunden aktiv...'),
-(119, 'to the start page', 'zur Startseite');
+(118, 'Recovery is now active for one hour...', 'Die Wiederherstellung ist nun für eine Stunde aktiv...'),
+(119, 'to the start page', 'zur Startseite'),
+(120, 'Reset password', 'Passwort zurücksetzen'),
+(121, 'Your password has been updated. You may log in again', 'Dein Passwort wurde aktualisiert, du kannst dich neu einloggen');
 
 -- --------------------------------------------------------
 
@@ -285,7 +287,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

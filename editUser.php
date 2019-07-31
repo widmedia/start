@@ -74,7 +74,9 @@
     } else { $dispErrorMsg = 20; } // deleteUser function did return false
   } elseif ($doSafe == 2) { // update an existing user: db operations
     if ($userid > 0) { // have a valid userid
-      updateUser($dbConnection, $userid);
+      if (updateUser($dbConnection, $userid, false)) { 
+        redirectRelative('links.php?msg=6');
+      } else { $dispErrorMsg = 31; }
     } else { $dispErrorMsg = 30; } // have a valid userid         
   } else { 
     $dispErrorMsg = 1;

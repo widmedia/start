@@ -299,7 +299,22 @@
     </div>';        
     }
     echo '<div class="row twelve columns">&nbsp;</div>';
-  } // function  
+  } // function 
+
+  // checks whether there is (at least) one entry in the data base and it's not yet expired
+  function checkPwForgot($dbConnection, $useridGetSafe, $verSqlSafe) {
+    if ($result = $dbConnection->query('SELECT `validUntil` FROM `pwForgot` WHERE `userid` = "'.$useridGetSafe.'" AND `hexval` = "'.$verSqlSafe.'" ORDER BY `id` DESC')) {
+      if ($result->num_rows >= 1) { // there might be more than one because user might have pressed the send email button several times
+        $row = $result->fetch_row(); // interested only in the last one, so no for loop
+        $validUntil = $row[0];
+        if (time() < (strtotime($validUntil))) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
   
   // possible actions: 
   // 0/non-existing: normal case
@@ -417,37 +432,32 @@
       } else { $dispErrorMsg = 81; }// insert query
     } else { $dispErrorMsg = 80; } // email exists
   } elseif ($doSafe == 9) {  // process the pwRecovery link from the email
-    // $useridGetSafe, $verSqlSafe
-    // there might be more than one because user might have pressed the send email button several times
-    if ($result = $dbConnection->query('SELECT `validUntil` FROM `pwForgot` WHERE `userid` = "'.$useridGetSafe.'" AND `hexval` = "'.$verSqlSafe.'" ORDER BY `id` DESC')) {
-      if ($result->num_rows >= 1) {
-        $row = $result->fetch_row(); // interested only in the last one, so no for loop
-        $validUntil = $row[0];
-        if (time() < (strtotime($validUntil))) {
-          printStartOfHtml($dbConnection);
-          echo '
-          <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConnection,120).'</span></h3>
-          <form action="index.php?do=10" method="post">
-          <div class="row" id="pwRow">
-            <div class="three columns"><span class="bgCol">'.getLanguage($dbConnection,50).':</span> </div>
-            <div class="nine columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
-          </div>
-          <div class="row twelve columns">&nbsp;<input name="userid" type="hidden" value="'.$useridGetSafe.'"><input name="ver" type="hidden" value="'.$verGet.'"></div>
-          <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConnection,39).'"></div>
-          <div class="row twelve columns">&nbsp;</div>
-          <div class="row twelve columns">&nbsp;</div>
-          </form>';   
-        } else { $dispErrorMsg = 92; printConfirm($dbConnection, 'Error', 'Recovery link expired');}
-      } else { $dispErrorMsg = 91; }// at least one row exists
-    } else { $dispErrorMsg = 90; }// select query
+    if (checkPwForgot($dbConnection, $useridGetSafe, $verSqlSafe)) {    
+      printStartOfHtml($dbConnection);
+      echo '
+      <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConnection,120).'</span></h3>
+      <form action="index.php?do=10" method="post">
+      <div class="row" id="pwRow">
+        <div class="three columns"><span class="bgCol">'.getLanguage($dbConnection,50).':</span> </div>
+        <div class="nine columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20"></div>
+      </div>
+      <div class="row twelve columns">&nbsp;<input name="userid" type="hidden" value="'.$useridGetSafe.'"><input name="ver" type="hidden" value="'.$verGet.'"></div>
+      <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConnection,39).'"></div>
+      <div class="row twelve columns">&nbsp;</div>
+      <div class="row twelve columns">&nbsp;</div>
+      </form>';   
+    } else { $dispErrorMsg = 90; printConfirm($dbConnection, 'Error', 'Recovery link expired');}    
   } elseif ($doSafe == 10) {  // process the newly set password
-    // $useridGetSafe / $verGet / $verSqlSafe
-    // TODO: process that one, update user with it. Have this func in editUser.php...
-    // TODO: need to delete the db-entries in the end again. Or delete all that have expired (in admin tool?)
-    // TODO: might need to verify that hasPw is set? Otherwise I'm setting a pw for a non-pw account
-    // ...use updateUser function to process the new password. Security risk, need to think that through...
-    printStartOfHtml($dbConnection);
-    printConfirm($dbConnection, 'TODO', 'Funktion noch nicht implementiert');    
+    $useridPostSafe = makeSafeInt($_POST['userid'], 11);
+    $verPost = makeSafeHex($_POST['ver'], 64);
+    
+    if (checkPwForgot($dbConnection, $useridPostSafe, mysqli_real_escape_string($dbConnection, $verPost))) { // check whether this account is really in the pwRecovery data base
+      if (updateUser ($dbConnection, $useridPostSafe, true)) {
+        printStartOfHtml($dbConnection);
+        printConfirm($dbConnection, getLanguage($dbConnection,24), getLanguage($dbConnection,121).': <a href="index.php#login">index.php#login</a>');
+        // TODO: need to delete the db-entries in the end again
+      } else { $dispErrorMsg = 101; }            
+    }  else { $dispErrorMsg = 100; }             
   } else {
     $dispErrorMsg = 1;
   } // switch
