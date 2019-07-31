@@ -2,7 +2,7 @@
   require_once('functions.php');
   $dbConnection = initialize();
   
-  $doSafe           = makeSafeInt($_GET['do'], 1);
+  $doSafe           = makeSafeInt($_GET['do'], 2); // need two digits here
   $useridGetSafe    = makeSafeInt($_GET['userid'], 11);
   $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
   $randCookieSafe   = makeSafeHex($_COOKIE['randCookie'], 64);
@@ -310,7 +310,9 @@
   // 5=> do the email verification
   // 6=> print standard index, without forwarding to links.php
   // 7=> forgot password
-  // 8=> process forgot password 
+  // 8=> process forgot password
+  // 9=> process the pwRecovery link from the email
+  //10=> process the new password
   
   $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
   $emailSqlSafe   = mysqli_real_escape_string($dbConnection, $emailUnsafe);
@@ -421,16 +423,31 @@
       if ($result->num_rows >= 1) {
         $row = $result->fetch_row(); // interested only in the last one, so no for loop
         $validUntil = $row[0];
-        if (time() < (strtotime($validUntil))) {          
-          // TODO: need to display a field for the new pw (that's easy) and then process that one, update user with it. Have this func in editUser.php...
-          // TODO: need to delete the db-entries in the end again. Or delete all that have expired (in admin tool?)
-          // TODO: might need to verify that hasPw is set? Otherwise I'm setting a pw for a non-pw account
-          // ...use updateUser function to process the new password. Security risk, need to think that through...
+        if (time() < (strtotime($validUntil))) {
           printStartOfHtml($dbConnection);
-          printConfirm($dbConnection, 'TODO', 'Passwortwiederherstellung noch nicht implementiert...');
+          echo '
+          <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConnection,120).'</span></h3>
+          <form action="index.php?do=10" method="post">
+          <div class="row" id="pwRow">
+            <div class="three columns"><span class="bgCol">'.getLanguage($dbConnection,50).':</span> </div>
+            <div class="nine columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
+          </div>
+          <div class="row twelve columns">&nbsp;<input name="userid" type="hidden" value="'.$useridGetSafe.'"><input name="ver" type="hidden" value="'.$verGet.'"></div>
+          <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConnection,39).'"></div>
+          <div class="row twelve columns">&nbsp;</div>
+          <div class="row twelve columns">&nbsp;</div>
+          </form>';   
         } else { $dispErrorMsg = 92; printConfirm($dbConnection, 'Error', 'Recovery link expired');}
       } else { $dispErrorMsg = 91; }// at least one row exists
     } else { $dispErrorMsg = 90; }// select query
+  } elseif ($doSafe == 10) {  // process the newly set password
+    // $useridGetSafe / $verGet / $verSqlSafe
+    // TODO: process that one, update user with it. Have this func in editUser.php...
+    // TODO: need to delete the db-entries in the end again. Or delete all that have expired (in admin tool?)
+    // TODO: might need to verify that hasPw is set? Otherwise I'm setting a pw for a non-pw account
+    // ...use updateUser function to process the new password. Security risk, need to think that through...
+    printStartOfHtml($dbConnection);
+    printConfirm($dbConnection, 'TODO', 'Funktion noch nicht implementiert');    
   } else {
     $dispErrorMsg = 1;
   } // switch
