@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 26. Jul 2019 um 14:56
+-- Erstellungszeit: 30. Jul 2019 um 11:08
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -138,7 +138,7 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (84, 'Password', 'Passwort'),
 (85, 'save log in information for 4 weeks in a cookie', 'Login Infos während 4 Wochen in einem Cookie speichern'),
 (86, '(This might me a good moment to store this page as your browser starting page. Unfortunately I cannot provide you a link to do so. Modern browsers will not allow it.)', '(Das wäre jetzt ein guter Moment um diese Seite als deine Browser-Startseite zu setzen. Leider kann ich das nicht automatisch, kein halbwegs moderner Browser erlaubt das.)'),
-(87, '(TODO) forgot my password', '(TODO) Passwort vergessen'),
+(87, 'Forgot my password', 'Passwort vergessen'),
 (88, 'go to login page', ' Zur Loginseite'),
 (89, 'Your account has been created', 'Dein Account wurde erstellt'),
 (90, 'Congratulations and thanks. Your account is now ready. Please ', 'Merci und Gratulation. Dein Account wurde erstellt.'),
@@ -162,7 +162,15 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (108, 'Page to add, edit or delete links', 'Neue Links hinzufügen oder bestehende anpassen und löschen'),
 (109, 'page to edit or delete the user account', 'Nutzereinstellungen anpassen oder Nutzer löschen'),
 (110, 'the main page with all your links, your personal start page', 'Hauptseite mit all deinen Link, deine persönliche Startseite'),
-(111, 'en', 'de');
+(111, 'en', 'de'),
+(112, 'Send password recovery email', 'Passwortwiederherstellungs-Email verschicken'),
+(113, 'Your password recovery link (valid for 4 hours)', 'Dein Passwortwiederherstellungs-Link (gültig für 4 Stunden)'),
+(114, 'Thanks and regards', 'Merci und Gruess'),
+(115, 'Password recovery at', 'Passwortwiederherstellung auf'),
+(116, 'sent', 'verschickt'),
+(117, 'The email for your password recovery has been sent (to ', 'Das Email zur Passwortwiederherstellung wurde verschickt (an '),
+(118, 'Recovery is now active for 4 hours...', 'Die Wiederherstellung ist nun für 4 Stunden aktiv...'),
+(119, 'to the start page', 'zur Startseite');
 
 -- --------------------------------------------------------
 
@@ -177,6 +185,19 @@ CREATE TABLE `links` (
   `text` text NOT NULL,
   `link` text NOT NULL,
   `cntTot` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `pwForgot`
+--
+
+CREATE TABLE `pwForgot` (
+  `id` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  `hexval` char(64) NOT NULL,
+  `validUntil` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -233,6 +254,12 @@ ALTER TABLE `links`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `pwForgot`
+--
+ALTER TABLE `pwForgot`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indizes für die Tabelle `user`
 --
 ALTER TABLE `user`
@@ -258,12 +285,18 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`
 --
 ALTER TABLE `links`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `pwForgot`
+--
+ALTER TABLE `pwForgot`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

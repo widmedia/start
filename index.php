@@ -317,6 +317,8 @@
   $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
   $setCookieSafe  = makeSafeInt($_POST['setCookie'], 1);
   $hasPw          = makeSafeInt($_POST['hasPw'], 1);
+  $verGet         = makeSafeHex($_GET['ver'], 64);
+  $verSqlSafe     = mysqli_real_escape_string($dbConnection, $verGet);
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printStartOfHtml($dbConnection);
@@ -376,20 +378,15 @@
   } elseif ($doSafe == 5) { // confirm the email address
     printStartOfHtml($dbConnection);
     if ($useridGetSafe > 2) {
-      // NB: I'm not even looking at the date (mentioned a 24 hour limit in the email). That's fine. I'll just delete accounts which have not been verified after some days...
-      $verGet = makeSafeHex($_GET['ver'], 64);
-      $verSqlSafe = mysqli_real_escape_string($dbConnection, $verGet);
+      // NB: I'm not even looking at the date (mentioned a 24 hour limit in the email). That's fine. I'll just delete accounts which have not been verified after some days...      
       if ($result = $dbConnection->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$useridGetSafe.'" AND `verCode` = "'.$verSqlSafe.'"')) {
         if ($result->num_rows == 1) {
           $row = $result->fetch_row();
           $hasPw = $row[0];
           if ($result = $dbConnection->query('UPDATE `user` SET `verified` = "1" WHERE `id` = "'.$useridGetSafe.'"')) {   
             $loginLink = 'https://widmedia.ch/start/index.php';
-            if ($hasPw == 1) {
-              $loginLink = $loginLink.'#login';  
-            } else {
-              $loginLink = $loginLink.'?userid='.$useridGetSafe;  
-            }
+            if ($hasPw == 1) { $loginLink = $loginLink.'#login'; } 
+            else { $loginLink = $loginLink.'?userid='.$useridGetSafe; }
             printConfirm($dbConnection, getLanguage($dbConnection,93), getLanguage($dbConnection,94).' <a href="'.$loginLink.'">log in</a>.');
           } else { $dispErrorMsg = 53; } // update query
         } else { $dispErrorMsg = 52; } // 1 result
@@ -405,23 +402,35 @@
     printLogin($dbConnection, true);
   } elseif ($doSafe == 8) {  // process the data from step 7    
     $pwForgotUserid = mail2userid($dbConnection, $emailUnsafe);
-    if ($pwForgotUserid > 0) { // pwForgot-db stores a completely unrelated hexval which is valid for only 4 hours. DB-layout: id / userid / hexval / validUntil
-      // TODO text language
+    if ($pwForgotUserid > 0) { // pwForgot-db stores a completely unrelated hexval which is valid for only 4 hours. DB-layout: id / userid / hexval / validUntil      
       $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database
-      $validUntil = date('Y-m-d H:i:s', time() + 3600*4);
-      
+      $validUntil = date('Y-m-d H:i:s', time() + 3600);      
       if ($result = $dbConnection->query('INSERT INTO `pwForgot` (`userid`, `hexval`, `validUntil`) VALUES ("'.$pwForgotUserid.'", "'.$hexStr64.'", "'.$validUntil.'")')) {
-        $emailBody = "Sali,\n\nDein Passwortwiederherstellungs-Link (gültig für 4 Stunden): \nhttps://widmedia.ch/start/index.php?do=9&userid=".$pwForgotUserid."&ver=".$hexStr64."\n";
-        $emailBody = $emailBody."\n\nMerci und Gruess,\nDaniel von widmedia\n\n--\nKontakt: sali@widmedia.ch\n";
-        if (mail($emailUnsafe, 'Passwortwiederherstellung auf widmedia.ch/start', $emailBody)) {
+        $emailBody = "Sali,\n\n".getLanguage($dbConnection,113).":\nhttps://widmedia.ch/start/index.php?do=9&userid=".$pwForgotUserid."&ver=".$hexStr64."\n";
+        $emailBody = $emailBody."\n\n".getLanguage($dbConnection,114).",\nDaniel ".getLanguage($dbConnection,102)." widmedia\n\n--\n".getLanguage($dbConnection,3).": sali@widmedia.ch\n";
+        if (mail($emailUnsafe, getLanguage($dbConnection,115).' widmedia.ch/start', $emailBody)) {
           printStartOfHtml($dbConnection);    
-          printConfirm($dbConnection, 'Email verschickt', 'Das Email zur Passwortwiederherstellung wurde verschickt (an '.htmlentities($emailUnsafe).').<br>Die Wiederherstellung ist nun für 4 Stunden aktiv...<br><br><a href="index.php?do=6">zur Startseite</a>');
-        } // mail send
-      } // insert query
+          printConfirm($dbConnection, 'Email '.getLanguage($dbConnection,116), getLanguage($dbConnection,117).htmlentities($emailUnsafe).').<br>'.getLanguage($dbConnection,118).'<br><br><a href="index.php?do=6">'.getLanguage($dbConnection,119).'</a>');
+        } else { $dispErrorMsg = 82; }// mail send
+      } else { $dispErrorMsg = 81; }// insert query
     } else { $dispErrorMsg = 80; } // email exists
-  } elseif ($doSafe == 9) {  // process the pwRecover link from the email
-    printStartOfHtml($dbConnection);    
-    printConfirm($dbConnection, 'TODO', 'Passwortwiederherstellung noch nicht implementiert...');
+  } elseif ($doSafe == 9) {  // process the pwRecovery link from the email
+    // $useridGetSafe, $verSqlSafe
+    // there might be more than one because user might have pressed the send email button several times
+    if ($result = $dbConnection->query('SELECT `validUntil` FROM `pwForgot` WHERE `userid` = "'.$useridGetSafe.'" AND `hexval` = "'.$verSqlSafe.'" ORDER BY `id` DESC')) {
+      if ($result->num_rows >= 1) {
+        $row = $result->fetch_row(); // interested only in the last one, so no for loop
+        $validUntil = $row[0];
+        if (time() < (strtotime($validUntil))) {          
+          // TODO: need to display a field for the new pw (that's easy) and then process that one, update user with it. Have this func in editUser.php...
+          // TODO: need to delete the db-entries in the end again. Or delete all that have expired (in admin tool?)
+          // TODO: might need to verify that hasPw is set? Otherwise I'm setting a pw for a non-pw account
+          // ...use updateUser function to process the new password. Security risk, need to think that through...
+          printStartOfHtml($dbConnection);
+          printConfirm($dbConnection, 'TODO', 'Passwortwiederherstellung noch nicht implementiert...');
+        } else { $dispErrorMsg = 92; printConfirm($dbConnection, 'Error', 'Recovery link expired');}
+      } else { $dispErrorMsg = 91; }// at least one row exists
+    } else { $dispErrorMsg = 90; }// select query
   } else {
     $dispErrorMsg = 1;
   } // switch

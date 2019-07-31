@@ -25,6 +25,7 @@
 // - printStatic ($dbConnection)
 // - printInlineCss ()
 // - getLanguage ($dbConnection, $textId)
+// - updateUser ($dbConnection, $userid)
 
   
 // this function is called on every (user related) page on the very start  
@@ -508,3 +509,62 @@ function getLanguage ($dbConnection, $textId) { // NB: ln and id variables are s
     return $row[0];
   } // no else case because can't do that much otherwise
 }
+
+// used in editUser to update email and password and in index to set a new pw when it has been forgotten.
+function updateUser ($dbConnection, $userid) {
+  $dispErrorMsg = 0;
+  if (testUserCheck($dbConnection, $userid)) {
+    if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
+      $row = $result->fetch_assoc(); // guaranteed to get only one row
+      $pwCheck = false;
+      if ($row['hasPw'] == 1) { // if there has been a hasPw, then I need to check whether the oldPw matches the stored one (without looking at hasPw-checkbox)
+        $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING);
+        if (password_verify($passwordUnsafe, $row['pwHash'])) {        
+          $pwCheck = true;
+        } // else, $pwCheck stays at false
+      } else { // not an error
+        $pwCheck = true;
+      }
+      // could maybe merge some of this stuff with the functionality on index.php...addNewUser
+      if ($pwCheck) {
+        $hasPwCheckBox = makeSafeInt($_POST['hasPw'],1);
+        if ($hasPwCheckBox == 1) { // if hasPw-checkbox, the newPw must be at least 4 chars long
+          $pwHash = 0;
+          if (strlen($passwordUnsafe) > 3) {  
+            $passwordUnsafe = filter_var(substr($_POST['passwordNew'], 0, 63), FILTER_SANITIZE_STRING);
+            $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
+          } else { $dispErrorMsg = 34; }
+        } // else, not an error
+        
+        $emailOk = false;
+        $emailUnsafe = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);
+        // newEmail must not exist in the db (exclude current user itself)
+        if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
+          // check whether email already exists
+          $emailSqlSafe = mysqli_real_escape_string($dbConnection, $emailUnsafe);
+          if (strcasecmp($emailSqlSafe, $row['email'])  != 0) { // 0 means they are equal
+            if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
+              if ($result->num_rows == 0) {
+                $emailOk = true; 
+              }
+            }
+          } else { $emailOk = true; }; // no need to check again if the email did not change
+        }
+        
+        if ($emailOk) {
+          if ($result = $dbConnection->query('UPDATE `user` SET `hasPw` = "'.$hasPwCheckBox.'", `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {
+            redirectRelative('links.php?msg=6');
+          } else { $dispErrorMsg = 35; } // update query
+        } else { $dispErrorMsg = 34; } // emailCheck
+      } else { $dispErrorMsg = 33; } // pwCheck ok                
+    } else { $dispErrorMsg = 32; } // select query did work
+  } // testUserCheck
+  printError($dbConnection, $dispErrorMsg);  
+}
+
+
+
+
+
+
+
