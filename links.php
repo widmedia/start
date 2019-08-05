@@ -1,13 +1,13 @@
 <?php
   require_once('functions.php');
-  $dbConnection = initialize();
+  $dbConn = initialize();
   
   
     
   // function to output several links in a formatted way
   // creating a div for every link and div-rows for every $module-th entry
   // has a limit of 100 links per category
-  function printLinks($dbConnection, $userid, $category) {
+  function printLinks($dbConn, $userid, $category) {
       
     // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
     $modulo = 3;
@@ -17,7 +17,7 @@
       $divClass = '<div class="halbeReihe three columns linktext">';      
     }
 
-    if ($result = $dbConnection->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
+    if ($result = $dbConn->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
       $counter = 0;        
       while ($row = $result->fetch_assoc()) {
         $link = $row['link'];
@@ -34,16 +34,16 @@
   } // function   
 
   $userid = getUserid();
-  printStartOfHtml($dbConnection);
+  printStartOfHtml($dbConn);
   
-  echo '<h3 class="section-heading">'.getCategory($dbConnection, $userid, 1).'</h3><div class="row">';
-  printLinks($dbConnection, $userid, 1);
+  echo '<h3 class="section-heading">'.getCategory($dbConn, $userid, 1).'</h3><div class="row">';
+  printLinks($dbConn, $userid, 1);
   
-  echo '</div><h3 class="section-heading">'.getCategory($dbConnection, $userid, 2).'</h3><div class="row">';
-  printLinks($dbConnection, $userid, 2);
+  echo '</div><h3 class="section-heading">'.getCategory($dbConn, $userid, 2).'</h3><div class="row">';
+  printLinks($dbConn, $userid, 2);
   
-  echo '</div><h3 class="section-heading">'.getCategory($dbConnection, $userid, 3).'</h3><div class="row">';
-  printLinks($dbConnection, $userid, 3);
+  echo '</div><h3 class="section-heading">'.getCategory($dbConn, $userid, 3).'</h3><div class="row">';
+  printLinks($dbConn, $userid, 3);
   echo '</div>';
-  printFooter($dbConnection);
+  printFooter($dbConn);
 ?>

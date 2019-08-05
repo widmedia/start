@@ -1,14 +1,14 @@
 <?php
   require_once('../functions.php');
-  $dbConnection = initialize();
+  $dbConn = initialize();
   
   
   // prints all the users (limit 100) in the database, sorted by id
-  function printUserTable ($dbConnection) {
+  function printUserTable ($dbConn) {
     $currentTime = time();
     
     echo '<table><tr><th>id</th><th>email</th><th>login</th><th>Pw/verified</th><th>verDate</th><th>select</th></tr>';
-    if ($result = $dbConnection->query('SELECT `id`, `email`, `lastLogin`, `hasPw`, `verified`, `verDate` FROM `user` WHERE 1 ORDER BY `lastLogin` ASC LIMIT 100')) {
+    if ($result = $dbConn->query('SELECT `id`, `email`, `lastLogin`, `hasPw`, `verified`, `verDate` FROM `user` WHERE 1 ORDER BY `lastLogin` ASC LIMIT 100')) {
       while ($row = $result->fetch_assoc()) {
         $selectTemplate = '<a href="admin.php?do=1&editUserId='.$row['id'].'" class="button differentColor">select</a>';
         
@@ -48,7 +48,7 @@
   }
     
   // sends an email to the user
-  function reminderMail($dbConnection, $editUserId, $reason) { 
+  function reminderMail($dbConn, $editUserId, $reason) { 
     if ($reason == 1) { 
       $emailBodyDe = "(English below)\n\nSalü,\n\nDein Account auf widmedia.ch/start ist seit einiger Zeit inaktiv (kein Login während mindestens einem Monat).\n\n- Falls du deinen Account behalten möchtest, log dich bitte innerhalb von 24 Stunden wieder ein (Logininfos wurden dir bei der Accounteröffnung zugeschickt).\n";
       $emailBodyEn = "Hello,\n\nYour account on widmedia.ch/start has been inactive for quite some time (no login for at least one month).\n\n- If you like to keep your account, please login within the next 24 hours (login information have been sent at account opening).\n";
@@ -64,11 +64,11 @@
     
     $emailBody = $emailBodyDe.$emailBodyEn;
     
-    if ($result = $dbConnection->query('SELECT `email` FROM `user` WHERE `id` = "'.$editUserId.'"')) {
+    if ($result = $dbConn->query('SELECT `email` FROM `user` WHERE `id` = "'.$editUserId.'"')) {
       $row = $result->fetch_assoc();       
       if (mail($row['email'], 'widmedia.ch/start: dein Account wird nächstens gelöscht / your account will be deleted soon', $emailBody)) {
         
-        printConfirm($dbConnection, 'Email to '.htmlentities($row['email']).' sent', 'The '.$confirm.' email has been sent successfully.');
+        printConfirm($dbConn, 'Email to '.htmlentities($row['email']).' sent', 'The '.$confirm.' email has been sent successfully.');
         return true;
       } // mail send
     }    
@@ -78,20 +78,20 @@
   
   // reads the user db, checks how many users have been active in this month and updates the statistics database (userStat)
   // userStat structure: id (int 11) / year (format 2019) int4 / month (format 07) int 2 / numUser (int 11)
-  function doUserStatistics($dbConnection) {
+  function doUserStatistics($dbConn) {
     // find current year and month
     $currentTime = time();
     $year = date('Y', $currentTime);
     $month = date('m', $currentTime);
     
-    if ($result = $dbConnection->query('SELECT `numUser` FROM `userStat` WHERE `year` = "'.$year.'" AND `month` = "'.$month.'" LIMIT 1')) {
+    if ($result = $dbConn->query('SELECT `numUser` FROM `userStat` WHERE `year` = "'.$year.'" AND `month` = "'.$month.'" LIMIT 1')) {
       if ($result->num_rows == 1) { // stats for this month have already been done
         $row = $result->fetch_assoc();
         echo '<div class="row twelve columns textBox">stats for '.$year.'-'.$month.' are already existing, '.$row['numUser'].' have been active this month</div>';        
       } else { // need to do the statistics
         $activeUsers = 0;
         $inactiveUsers = 0;
-        if($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE 1 ORDER BY `lastLogin` ASC')) {
+        if($result = $dbConn->query('SELECT `lastLogin` FROM `user` WHERE 1 ORDER BY `lastLogin` ASC')) {
           while ($row = $result->fetch_assoc()) {            
             $sinceLast_h = ($currentTime - strtotime($row['lastLogin'])) / 3600; // difference, in hours
             if ($sinceLast_h < 24*31) { 
@@ -100,8 +100,8 @@
               $inactiveUsers++;
             }
           } // while
-          printConfirm($dbConnection, 'stats for '.$year.'-'.$month, $activeUsers.' have been active this month, '.$inactiveUsers.' users are inactive.');
-          $result = $dbConnection->query('INSERT INTO `userStat` (`year`, `month`, `numUser`) VALUES ("'.$year.'", "'.$month.'", "'.$activeUsers.'")');
+          printConfirm($dbConn, 'stats for '.$year.'-'.$month, $activeUsers.' have been active this month, '.$inactiveUsers.' users are inactive.');
+          $result = $dbConn->query('INSERT INTO `userStat` (`year`, `month`, `numUser`) VALUES ("'.$year.'", "'.$month.'", "'.$activeUsers.'")');
         } // query
       } // have one result
     } // query    
@@ -138,18 +138,18 @@
   }
   
   $num = 0;
-  if($result = $dbConnection->query('SELECT `lastLogin` FROM `user` WHERE 1')) {
+  if($result = $dbConn->query('SELECT `lastLogin` FROM `user` WHERE 1')) {
     $num = $result->num_rows;
   }
   
   echo '<div class="section categories noBottom"><div class="container">'; 
   echo '<h3 class="section-heading"><span class="bgCol">'.$num.' Accounts</span></h3>';
   echo '<div class="row twelve columns" style="background-color: rgba(0, 113, 255, 0.3);">';
-  printUserTable($dbConnection);
+  printUserTable($dbConn);
   echo '</div>';
   
   echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">';
-  doUserStatistics($dbConnection);
+  doUserStatistics($dbConn);
   echo '</div>';  
   
   $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 1 to 3)
@@ -159,9 +159,9 @@
   
   if ($doSafe == 1) { // display all the infos related to to current user
     if ($editUserId) { // have a valid userid      
-      $result_categories = $dbConnection->query('SELECT * FROM `categories` WHERE `userid` = "'.$editUserId.'"');
-      $result_links = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$editUserId.'"');
-      $result_user = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$editUserId.'"');
+      $result_categories = $dbConn->query('SELECT * FROM `categories` WHERE `userid` = "'.$editUserId.'"');
+      $result_links = $dbConn->query('SELECT * FROM `links` WHERE `userid` = "'.$editUserId.'"');
+      $result_user = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$editUserId.'"');
       
       if ($result_categories and $result_links and $result_user) {        
         echo '<div class="row twelve columns">&nbsp;</div><h3 class="section-heading">User details userid '.$editUserId.'</h3>';
@@ -181,17 +181,17 @@
       } else { $dispErrorMsg = 11; } // select queries did work
     } else { $dispErrorMsg = 10; } // have a valid userid
   } elseif ($doSafe == 2) { // send an email
-    if (! reminderMail($dbConnection, $editUserId, 1)) { $dispErrorMsg = 20; }
+    if (! reminderMail($dbConn, $editUserId, 1)) { $dispErrorMsg = 20; }
   } elseif ($doSafe == 3) { // send an email
-    if (! reminderMail($dbConnection, $editUserId, 2)) { $dispErrorMsg = 30; }  
+    if (! reminderMail($dbConn, $editUserId, 2)) { $dispErrorMsg = 30; }  
   } elseif ($doSafe == 4) { // delete the user
-    if (deleteUser($dbConnection, $editUserId)) {
-      printConfirm($dbConnection, 'Deleted the account', 'Deleted userid: '.$editUserId.' <br/><br/>');
+    if (deleteUser($dbConn, $editUserId)) {
+      printConfirm($dbConn, 'Deleted the account', 'Deleted userid: '.$editUserId.' <br/><br/>');
     } else {
       $dispErrorMsg = 40;
     }
   } 
-  printError($dbConnection, $dispErrorMsg);
+  printError($dbConn, $dispErrorMsg);
   
 ?>
   </div> <!-- /container -->

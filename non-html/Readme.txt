@@ -4,12 +4,12 @@ README
 1) missing files:
 -----------------------
 To get a working setup, you need an additional file with data base connection information. File is called:
-<root folder>/php/dbConnection.php
+<root folder>/php/dbConn.php
 
-and needs to open a dbConnection like this:
+and needs to open a dbConn like this:
 <?php    
     // this file will be included in other files
-    $dbConnection = new mysqli("localhost", <your data base login information>); // Create connection
+    $dbConn = new mysqli("localhost", <your data base login information>); // Create connection
 ?> 
 
 

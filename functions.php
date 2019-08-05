@@ -3,33 +3,33 @@
 
 // function list:
 // - initialize ()
-// - printConfirm ($dbConnection, $heading, $text)
+// - printConfirm ($dbConn, $heading, $text)
 // - printErrorAndDie ($heading, $text)
-// - printError ($dbConnection, $errorMsgNum)
-// - getCategory ($dbConnection, $userid, $category)
-// - printStartOfHtml ($dbConnection)
-// - printFooter ($dbConnection)
+// - printError ($dbConn, $errorMsgNum)
+// - getCategory ($dbConn, $userid, $category)
+// - printStartOfHtml ($dbConn)
+// - printFooter ($dbConn)
 // - overlayDiv ($disappearing, $zIndex, $text)
-// - printOverlayGeneric ($dbConnection, $messageNumber)    
-// - printOverlayAccountVerify ($dbConnection, $userid)
+// - printOverlayGeneric ($dbConn, $messageNumber)    
+// - printOverlayAccountVerify ($dbConn, $userid)
 // - getCurrentSite ()
-// - printNavMenu ($dbConnection)
-// - testUserCheck ($dbConnection, $userid)
+// - printNavMenu ($dbConn)
+// - testUserCheck ($dbConn, $userid)
 // - sessionAndCookieDelete ()
-// - deleteUser ($dbConnection, $userid)
+// - deleteUser ($dbConn, $userid)
 // - getUserid ()
 // - makeSafeInt ($unsafe, $length)
 // - makeSafeHex ($unsafe, $length)
 // - makeSafeStr ($unsafe, $length)
 // - redirectRelative ($page)
-// - printStatic ($dbConnection)
+// - printStatic ($dbConn)
 // - printInlineCss ()
-// - getLanguage ($dbConnection, $textId)
-// - updateUser ($dbConnection, $userid, $forgotPw)
+// - getLanguage ($dbConn, $textId)
+// - updateUser ($dbConn, $userid, $forgotPw)
 
   
 // this function is called on every (user related) page on the very start  
-// it does the session start and opens connection to the data base. Returns the dbConnection variable
+// it does the session start and opens connection to the data base. Returns the dbConn variable
 function initialize () {
   session_start(); // this code must precede any HTML output
   
@@ -48,25 +48,25 @@ function initialize () {
       }
     }
   }  
-  require_once('php/dbConnection.php'); // this will return the $dbConnection variable as 'new mysqli'
-  if ($dbConnection->connect_error) {
+  require_once('php/dbConn.php'); // this will return the $dbConn variable as 'new mysqli'
+  if ($dbConn->connect_error) {
     printErrorAndDie('Connection to the data base failed', 'Please try again later and/or send me an email: sali@widmedia.ch');
   }
-  $dbConnection->set_charset('utf8');
-  return $dbConnection;
+  $dbConn->set_charset('utf8');
+  return $dbConn;
 }
 
 //prints the h4 title and one row
-function printConfirm ($dbConnection, $heading, $text) {
+function printConfirm ($dbConn, $heading, $text) {
   if (!headers_sent()) {
-    printStartOfHtml($dbConnection);
+    printStartOfHtml($dbConn);
   } // headers
   echo '<div class="row twelve columns textBox"><h4>'.$heading.'</h4><p>'.$text.'</p></div>';
 } 
 
 // prints a valid html error page and stops php execution
 function printErrorAndDie ($heading, $text) {
-  // cannot use printStatic as I don't yet have a dbConnection
+  // cannot use printStatic as I don't yet have a dbConn
   echo '
 <!DOCTYPE html>
 <html>
@@ -85,16 +85,23 @@ function printErrorAndDie ($heading, $text) {
 }
 
 // checks whether the number is bigger than 0 and displays some very generic failure message
-function printError ($dbConnection, $errorMsgNum) {
+function printError ($dbConn, $errorMsgNum) {
   $userid = getUserid();
   if ($errorMsgNum > 0 and $userid != 2) { // no error is printed for the test user    
-    printConfirm($dbConnection, 'Error', getLanguage($dbConnection,33).$errorMsgNum.getLanguage($dbConnection,34).' sali@widmedia.ch');
+    printConfirm($dbConn, 'Error', getLanguage($dbConn,33).$errorMsgNum.getLanguage($dbConn,34).' sali@widmedia.ch');
+  }
+}
+
+// checks whether not the test user and displays some very generic failure message
+function error ($dbConn, $errorMsgNum) {  
+  if (getUserid() != 2) { // no error is printed for the test user    
+    printConfirm($dbConn, 'Error', getLanguage($dbConn,33).$errorMsgNum.getLanguage($dbConn,34).' sali@widmedia.ch');
   }
 }
 
 // function returns the text of the category. If something does not work as expected, 0 is returned
-function getCategory ($dbConnection, $userid, $category) {
-  if ($result = $dbConnection->query('SELECT `text` FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1')) {
+function getCategory ($dbConn, $userid, $category) {
+  if ($result = $dbConn->query('SELECT `text` FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1')) {
     $row = $result->fetch_assoc();
     return $row['text'];
   } else { 
@@ -103,30 +110,30 @@ function getCategory ($dbConnection, $userid, $category) {
 } // function
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
-function printStartOfHtml ($dbConnection) {
-  printStatic($dbConnection);  
+function printStartOfHtml ($dbConn) {
+  printStatic($dbConn);  
   
   $msgSafe = makeSafeInt($_GET['msg'], 1);
   if ($msgSafe > 0) {
     echo '<body onLoad="overlayMsgFade();">'; 
-    printOverlayGeneric($dbConnection, $msgSafe); 
+    printOverlayGeneric($dbConn, $msgSafe); 
   } else {
     echo '<body>';
   }
-  printNavMenu($dbConnection);
+  printNavMenu($dbConn);
   $userid = getUserid();
-  if ($userid == 2) { overlayDiv(false, 3, getLanguage($dbConnection,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConnection,32).'</a>'); }  
-  printOverlayAccountVerify($dbConnection, $userid);  
+  if ($userid == 2) { overlayDiv(false, 3, getLanguage($dbConn,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConn,32).'</a>'); }  
+  printOverlayAccountVerify($dbConn, $userid);  
   echo '<div class="section categories noBottom"><div class="container">';
 }
  
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
-function printFooter ($dbConnection) {
+function printFooter ($dbConn) {
   echo '</div>'; // close the container
   $siteSafe = getCurrentSite(); 
-  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> '.getLanguage($dbConnection,45).'</a>';
+  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> '.getLanguage($dbConn,45).'</a>';
   $home   = '<a class="button differentColor" href="links.php"><img src="images/icon_home.png" class="logoImg"> Links</a>';
-  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> '.getLanguage($dbConnection,1).'</a>'; 
+  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> '.getLanguage($dbConn,1).'</a>'; 
   $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon_logout.png" class="logoImg"> Log out</a>';
   
   // default values. For links.php as current site   
@@ -171,27 +178,27 @@ function overlayDiv ($disappearing, $zIndex, $text) {
 }
 
 // prints some disappearing message box. used on links.php and index.php
-function printOverlayGeneric ($dbConnection, $messageNumber) {    
+function printOverlayGeneric ($dbConn, $messageNumber) {    
   if (($messageNumber >= 1) and ($messageNumber <= 7)) { 
-    $message = getLanguage($dbConnection,($messageNumber+18)); 
+    $message = getLanguage($dbConn,($messageNumber+18)); 
   } else { 
-    $message = getLanguage($dbConnection,26); 
+    $message = getLanguage($dbConn,26); 
   }  
   overlayDiv(true, 2, $message);  
 }  
 
 // prints a message when the email of this account has not been verified
-function printOverlayAccountVerify ($dbConnection, $userid) {
+function printOverlayAccountVerify ($dbConn, $userid) {
   if ($userid > 0) {
     $verified = false;
-    if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
+    if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
       $row = $result->fetch_row();
       if ($row[0] == 1) {
         $verified = true;
       } // verified
     } // select query
     
-    if (!$verified) { overlayDiv(false, 4, getLanguage($dbConnection,104)); }
+    if (!$verified) { overlayDiv(false, 4, getLanguage($dbConn,104)); }
   }
 } // function
 
@@ -212,7 +219,7 @@ function getCurrentSite () {
   return ($siteSafe); 
 }
 
-function printNavMenu ($dbConnection) {
+function printNavMenu ($dbConn) {
   // set the session var only if I did get the ln-variable
   if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
     $lang = 'de';  
@@ -229,19 +236,19 @@ function printNavMenu ($dbConnection) {
   
   if ($siteSafe == 'index.php') { $home = '<li class="menuCurrentPage">Home</li>'; } else { $home = '<li><a href="index.php?do=6">Home</a></li>'; }
   if ($notLoggedIn) { $login = '<li><a href="index.php#login">- log in</a></li>'; } else { $login = ''; }
-  if ($notLoggedIn) { $newAcc = '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConnection,29).'</a></li>'; } else { $newAcc = ''; }
-  if ($siteSafe == 'about.php') { $about = '<li class="menuCurrentPage">'.getLanguage($dbConnection,1).'</li>'; }  else { $about = '<li><a href="about.php">'.getLanguage($dbConnection,1).'</a></li>'; } 
+  if ($notLoggedIn) { $newAcc = '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConn,29).'</a></li>'; } else { $newAcc = ''; }
+  if ($siteSafe == 'about.php') { $about = '<li class="menuCurrentPage">'.getLanguage($dbConn,1).'</li>'; }  else { $about = '<li><a href="about.php">'.getLanguage($dbConn,1).'</a></li>'; } 
   if ($siteSafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; } else { $links = '<li><a href="links.php">Links</a></li>'; }
-  if ($siteSafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,27).'</li>'; } else { $editLinks = '<li><a href="editLinks.php">- '.getLanguage($dbConnection,27).'</a></li>'; }
-  if ($siteSafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConnection,28).'</li>'; } else { $editUser = '<li><a href="editUser.php">- '.getLanguage($dbConnection,28).'</a></li>'; }
+  if ($siteSafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConn,27).'</li>'; } else { $editLinks = '<li><a href="editLinks.php">- '.getLanguage($dbConn,27).'</a></li>'; }
+  if ($siteSafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConn,28).'</li>'; } else { $editUser = '<li><a href="editUser.php">- '.getLanguage($dbConn,28).'</a></li>'; }
   
   if ($notLoggedIn) { // remove the link, replace it with a strikethrough for those site where a login is a must
     $strikeThrough = ' style="text-decoration: line-through;"';
     $links     = '<li'.$strikeThrough.'>Links</li>';
-    $editLinks = '<li'.$strikeThrough.'>- '.getLanguage($dbConnection,27).'</li>';
-    $editUser  = '<li'.$strikeThrough.'>- '.getLanguage($dbConnection,28).'</li>';    
+    $editLinks = '<li'.$strikeThrough.'>- '.getLanguage($dbConn,27).'</li>';
+    $editUser  = '<li'.$strikeThrough.'>- '.getLanguage($dbConn,28).'</li>';    
   } 
-  if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">'.getLanguage($dbConnection,106).'</a></li>'; }
+  if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">'.getLanguage($dbConn,106).'</a></li>'; }
   
   // TODO: design of the language selection
   if(isset($_GET['do'])) { // don't want to present the language sel on pages which are not default pages, where form entries are processed or similar
@@ -273,9 +280,9 @@ function printNavMenu ($dbConnection) {
 }
 
 // checks whether userid is 2 (= test user)
-function testUserCheck ($dbConnection, $userid) { // actually it is returning true, if it is not the testUser
+function testUserCheck ($dbConn, $userid) { // actually it is returning true, if it is not the testUser
   if ($userid == 2) {    
-    printConfirm($dbConnection, getLanguage($dbConnection,30), getLanguage($dbConnection,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConnection,32).'</a>');
+    printConfirm($dbConn, getLanguage($dbConn,30), getLanguage($dbConn,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConn,32).'</a>');
     return false;
   } else {
     return true;
@@ -290,16 +297,16 @@ function sessionAndCookieDelete () {
 }  
 
 // does the db operations to remove a certain user. Does some checks as well
-function deleteUser ($dbConnection, $userid) {
+function deleteUser ($dbConn, $userid) {
   if ($userid > 0) { // have a valid userid
-    if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
+    if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
       // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
       $rowCnt = $result->num_rows;
-      if (testUserCheck($dbConnection, $userid) and ($userid != 1)) { // admin has userid 1, test user has userid 2
+      if (testUserCheck($dbConn, $userid) and ($userid != 1)) { // admin has userid 1, test user has userid 2
         if ($rowCnt == 1) {                
-          $result_delLinks = $dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
-          $result_delCategories = $dbConnection->query('DELETE FROM `categories` WHERE `userid` = "'.$userid.'"');                  
-          $result_delUser = $dbConnection->query('DELETE FROM `user` WHERE `id` = "'.$userid.'"');
+          $result_delLinks = $dbConn->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
+          $result_delCategories = $dbConn->query('DELETE FROM `categories` WHERE `userid` = "'.$userid.'"');                  
+          $result_delUser = $dbConn->query('DELETE FROM `user` WHERE `id` = "'.$userid.'"');
           
           if ($result_delLinks and $result_delCategories and $result_delUser) {
             return true;
@@ -355,25 +362,25 @@ function redirectRelative ($page) {
 }
 
 // prints static header information and sets title and description depending on the page
-function printStatic ($dbConnection) {
+function printStatic ($dbConn) {
   // description tag and title are different for every site  
   $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a HTML site is generated
     
   if ($siteSafe == 'about.php') {
-    $title = getLanguage($dbConnection,1);
-    $description = getLanguage($dbConnection,107);    
+    $title = getLanguage($dbConn,1);
+    $description = getLanguage($dbConn,107);    
   } elseif ($siteSafe == 'editLinks.php') {
-    $title = getLanguage($dbConnection,27);
-    $description = getLanguage($dbConnection,108);
+    $title = getLanguage($dbConn,27);
+    $description = getLanguage($dbConn,108);
   } elseif ($siteSafe == 'editUser.php') {
-    $title = getLanguage($dbConnection,28);
-    $description = getLanguage($dbConnection,109);    
+    $title = getLanguage($dbConn,28);
+    $description = getLanguage($dbConn,109);    
   } elseif ($siteSafe == 'index.php') {  
     $title = 'Startpage';
-    $description = getLanguage($dbConnection,65);    
+    $description = getLanguage($dbConn,65);    
   } elseif ($siteSafe == 'links.php') {  
     $title = 'Links';
-    $description = getLanguage($dbConnection,110);    
+    $description = getLanguage($dbConn,110);    
   } else {
     $title = 'Error page';
     $description = 'page not found';    
@@ -383,7 +390,7 @@ function printStatic ($dbConnection) {
      
   echo '
 <!DOCTYPE html>
-<html lang="'.getLanguage($dbConnection,111).'">
+<html lang="'.getLanguage($dbConn,111).'">
 <head>
   <meta charset="utf-8">
   <title>'.$title.'</title>
@@ -498,23 +505,23 @@ function printInlineCss () {
 }
 
 // returns various text in the session-stored language. language-db organized as follows: id(int_11) / en(text) / de(text)
-function getLanguage ($dbConnection, $textId) { // NB: ln and id variables are safe
+function getLanguage ($dbConn, $textId) { // NB: ln and id variables are safe
   $lang = 'de';
   if (isset($_SESSION['ln'])) {
     $lang = $_SESSION['ln'];
   }
   
-  if ($result = $dbConnection->query('SELECT `'.$lang.'` FROM `language` WHERE `id` = "'.$textId.'"')) {
+  if ($result = $dbConn->query('SELECT `'.$lang.'` FROM `language` WHERE `id` = "'.$textId.'"')) {
     $row = $result->fetch_row();    
     return $row[0];
   } // no else case because can't do that much otherwise
 }
 
 // used in editUser to update email and password and in index to set a new pw when it has been forgotten.
-function updateUser ($dbConnection, $userid, $forgotPw) {
+function updateUser ($dbConn, $userid, $forgotPw) {
   $dispErrorMsg = 0;
-  if (testUserCheck($dbConnection, $userid)) {
-    if ($result = $dbConnection->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
+  if (testUserCheck($dbConn, $userid)) {
+    if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
       $row = $result->fetch_assoc(); // guaranteed to get only one row
       $pwCheck = false;
       if ($row['hasPw'] == 1) { // if there has been a hasPw, then I need to check whether the oldPw matches the stored one (without looking at hasPw-checkbox)
@@ -536,7 +543,7 @@ function updateUser ($dbConnection, $userid, $forgotPw) {
           if (strlen($_POST['passwordNew']) > 3) {  
             $passwordUnsafe = filter_var(substr($_POST['passwordNew'], 0, 63), FILTER_SANITIZE_STRING);
             $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
-          } else { printError($dbConnection, 11); return false; }
+          } else { printError($dbConn, 11); return false; }
         } // else, not an error
         
         $emailOk = false;
@@ -544,9 +551,9 @@ function updateUser ($dbConnection, $userid, $forgotPw) {
         // newEmail must not exist in the db (exclude current user itself)
         if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
           // check whether email already exists
-          $emailSqlSafe = mysqli_real_escape_string($dbConnection, $emailUnsafe);
+          $emailSqlSafe = mysqli_real_escape_string($dbConn, $emailUnsafe);
           if (strcasecmp($emailSqlSafe, $row['email'])  != 0) { // 0 means they are equal
-            if ($result = $dbConnection->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
+            if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
               if ($result->num_rows == 0) {
                 $emailOk = true; 
               }
@@ -555,18 +562,18 @@ function updateUser ($dbConnection, $userid, $forgotPw) {
         }
         
         if ($emailOk) {
-          if ($result = $dbConnection->query('UPDATE `user` SET `hasPw` = "'.$hasPwCheckBox.'", `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {            
+          if ($result = $dbConn->query('UPDATE `user` SET `hasPw` = "'.$hasPwCheckBox.'", `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {            
             return true;
-          } else { printError($dbConnection, 12); return false; } // update query
+          } else { printError($dbConn, 12); return false; } // update query
         } else { 
           if ($forgotPw) { 
-            if ($result = $dbConnection->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'" WHERE `id` = "'.$userid.'"')) {              
+            if ($result = $dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'" WHERE `id` = "'.$userid.'"')) {              
               return true;
-            } else { printError($dbConnection, 13); return false; } // update query
+            } else { printError($dbConn, 13); return false; } // update query
           } // forgotPW
         } // emailOK-else
-      } else { printError($dbConnection, 14); return false; } // pwCheck ok                
-    } else { printError($dbConnection, 15); return false; } // select query did work
+      } else { printError($dbConn, 14); return false; } // pwCheck ok                
+    } else { printError($dbConn, 15); return false; } // select query did work
   } // testUserCheck
 }
 

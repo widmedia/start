@@ -1,34 +1,34 @@
 <?php
   require_once('functions.php');
-  $dbConnection = initialize();
+  $dbConn = initialize();
   
-  function printEntryPoint ($dbConnection, $userid) {
+  function printEntryPoint ($dbConn, $userid) {
     echo '
-    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConnection,35).'</span></h3>
+    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,35).'</span></h3>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
       echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
       <input name="categoryInput" type="hidden" value="'.$i.'">
-      <input name="submit" type="submit" value="'.getLanguage($dbConnection,36).getCategory($dbConnection, $userid, $i).'"></form></div>';         
+      <input name="submit" type="submit" value="'.getLanguage($dbConn,36).getCategory($dbConn, $userid, $i).'"></form></div>';         
     }                
     echo '</div><div class="row twelve columns">&nbsp;</div>';                    
     echo '
     <div class="row">
-      <div class="six columns"><a class="button differentColor" href="editUser.php"><img src="images/icon_db.png" class="logoImg"> '.getLanguage($dbConnection,28).'</a></div>
-      <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon_zero.png" class="logoImg"> '.getLanguage($dbConnection,37).'</a></div>
+      <div class="six columns"><a class="button differentColor" href="editUser.php"><img src="images/icon_db.png" class="logoImg"> '.getLanguage($dbConn,28).'</a></div>
+      <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon_zero.png" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
     </div>';    
   } // function 
 
   
   // prints 1 row to either add a new link or edit an existing one  
-  function printSingleLinkFields ($dbConnection, $doAdd, $category, $linkId, $link, $text) {
+  function printSingleLinkFields ($dbConn, $doAdd, $category, $linkId, $link, $text) {
     if ($doAdd) { // this means I edit a link
-      $submitText = getLanguage($dbConnection,38);      
+      $submitText = getLanguage($dbConn,38);      
       $deleteText = '';
     } else {
-      $submitText = getLanguage($dbConnection,39);
-      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/icon_delete.png" class="logoImg"> '.getLanguage($dbConnection,40).'</a>';
+      $submitText = getLanguage($dbConn,39);
+      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/icon_delete.png" class="logoImg"> '.getLanguage($dbConn,40).'</a>';
     }
     echo '
     <form action="editLinks.php?do=2&id='.$linkId.'" method="post">      
@@ -40,10 +40,10 @@
     </form>';   
   } // function
   
-  function printCategoryForm ($dbConnection, $categorySafe, $heading) { 
+  function printCategoryForm ($dbConn, $categorySafe, $heading) { 
     echo '<div class="row twelve columns">
     <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
-    <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConnection,41).'"></form><div>';
+    <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConn,41).'"></form><div>';
   }
   
   $userid = getUserid();      
@@ -74,59 +74,59 @@
   
   // sanity checking: I check get or post parameters (which may not always evaluate true even for valid use cases)
   if ($categorySafe) {           
-    $heading = htmlspecialchars(getCategory($dbConnection, $userid, $categorySafe));
+    $heading = htmlspecialchars(getCategory($dbConn, $userid, $categorySafe));
   } // have an integer on category
   if (filter_var($linkUnsafe, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) { // have a validUrl. require the http(s)://-part as well.
     $linkOk = true;
-    $linkSqlSafe = mysqli_real_escape_string($dbConnection, $linkUnsafe); // filtering it for sqli insertion
+    $linkSqlSafe = mysqli_real_escape_string($dbConn, $linkUnsafe); // filtering it for sqli insertion
     $linkHtmlSafe = htmlspecialchars($linkUnsafe);
     // assuming that having a link always goes together with having a text. Cannot verify anything for the text itself (just cut it to 63 characters)
-    $textSqlSafe = mysqli_real_escape_string($dbConnection, $textUnsafe);
+    $textSqlSafe = mysqli_real_escape_string($dbConn, $textUnsafe);
     $textHtmlSafe = htmlspecialchars($textUnsafe);
   } // link
 
   if ($doSafe == 0) { // entry point of this site
-    printStartOfHtml($dbConnection);
-    printEntryPoint($dbConnection, $userid);        
+    printStartOfHtml($dbConn);
+    printEntryPoint($dbConn, $userid);        
   } elseif ($doSafe == 1) { // present links of one category, have category name as text field
-    printStartOfHtml($dbConnection);
-    printCategoryForm($dbConnection, $categorySafe, $heading);
-    echo '<div class="row twelve columns"><h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConnection,42).'</span></h3></div>';          
-    printSingleLinkFields($dbConnection, true, $categorySafe, 0, 'https://', 'text');
+    printStartOfHtml($dbConn);
+    printCategoryForm($dbConn, $categorySafe, $heading);
+    echo '<div class="row twelve columns"><h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,42).'</span></h3></div>';          
+    printSingleLinkFields($dbConn, true, $categorySafe, 0, 'https://', 'text');
     echo '<div class="row twelve columns"><hr></div>';
     // print one form per row, an edit form for every link
-    if ($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
+    if ($result = $dbConn->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
       while ($row = $result->fetch_assoc()) {        
-        printSingleLinkFields($dbConnection, false, 0, $row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
+        printSingleLinkFields($dbConn, false, 0, $row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
       } // while
     } // query ok
   } elseif ($doSafe == 2) { // add or edit a link
     // distinction between adding or editing is done by the category: category = 0 means I'm editing a link
     if ($linkOk) { // have a validUrl
-      if (testUserCheck($dbConnection, $userid)) {
+      if (testUserCheck($dbConn, $userid)) {
         if ($categorySafe == 0) { // means I update one link
           if ($idSafe > 0) { // this means I need a link id
-            if ($result = $dbConnection->query('UPDATE `links` SET `text` = "'.$textSqlSafe.'", `link` = "'.$linkSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'" LIMIT 1')) {
+            if ($result = $dbConn->query('UPDATE `links` SET `text` = "'.$textSqlSafe.'", `link` = "'.$linkSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'" LIMIT 1')) {
               redirectRelative('links.php?msg=1');
             } else { $dispErrorMsg = 24; } // update sql did work out
           } else { $dispErrorMsg = 23; } // id check did work out
         } else { // I'm adding a new link
-          if ($result = $dbConnection->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`) VALUES ("'.$userid.'", "'.$categorySafe.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'")')) {
+          if ($result = $dbConn->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`) VALUES ("'.$userid.'", "'.$categorySafe.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'")')) {
             redirectRelative('links.php?msg=5');
           } else { $dispErrorMsg = 22; } // insert query did work
         } // distinction between adding and editing
       } // testuser check
-    } else { $dispErrorMsg = 20; printConfirm($dbConnection, getLanguage($dbConnection,43), getLanguage($dbConnection,44)); } // have a validUrl
+    } else { $dispErrorMsg = 20; printConfirm($dbConn, getLanguage($dbConn,43), getLanguage($dbConn,44)); } // have a validUrl
   } elseif ($doSafe == 3) { // I want to reset all the link counters to 0          
-    if ($dbConnection->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
+    if ($dbConn->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
       redirectRelative('links.php?msg=4');            
     } else { $dispErrorMsg = 30; } // update query did work        
   } elseif ($doSafe == 4) { // delete a link. Displaying a confirmation message                 
     if ($idSafe > 0) {
-      if (testUserCheck($dbConnection, $userid)) {
-        if($result = $dbConnection->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) {
+      if (testUserCheck($dbConn, $userid)) {
+        if($result = $dbConn->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) {
           if ($result->num_rows == 1) {
-            if ($dbConnection->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) { // should return true
+            if ($dbConn->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) { // should return true
               redirectRelative('links.php?msg=3');
             } else { $dispErrorMsg = 44; } // delete sql did work out
           } else { $dispErrorMsg = 43; } // did get one result
@@ -134,10 +134,10 @@
       } // testuser check
     } else { $dispErrorMsg = 40; } // integer check did work out          
   } elseif ($doSafe == 5) { // update a category name
-    $textSqlSafe = mysqli_real_escape_string($dbConnection, $textUnsafe);
-    if (testUserCheck($dbConnection, $userid)) { 
+    $textSqlSafe = mysqli_real_escape_string($dbConn, $textUnsafe);
+    if (testUserCheck($dbConn, $userid)) { 
       if ($categorySafe > 0) {            
-        if ($result = $dbConnection->query('UPDATE `categories` SET `text` = "'.$textSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe .'" LIMIT 1')) {
+        if ($result = $dbConn->query('UPDATE `categories` SET `text` = "'.$textSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe .'" LIMIT 1')) {
           $textHtmlSafe = htmlspecialchars($textUnsafe);          
           redirectRelative('links.php?msg=2');
         } else { $dispErrorMsg = 52; } // update sql did work out                        
@@ -146,6 +146,6 @@
   } else {
     $dispErrorMsg = 1;
   } // switch              
-  printError($dbConnection, $dispErrorMsg);          
-  printFooter($dbConnection);
+  printError($dbConn, $dispErrorMsg);          
+  printFooter($dbConn);
 ?>
