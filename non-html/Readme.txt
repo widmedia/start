@@ -22,15 +22,17 @@ the admin of the site must have userid = 1, the test user must have userid = 2 (
 Notes: 
 -----------------------
 following files do NOT require a logged-in user:
-- index.php
-- about.php
+11 - index.php
+12 - about.php
 
 following files do require a logged-in user:
-- links.php
-- link.php
-- editUser.php
-- editLink.php
-- admin/admin.php (logged-in user must have userid 1)
+13 - links.php
+14 - link.php
+15 - editUser.php
+16 - editLink.php
+17 - admin/admin.php (logged-in user must have userid 1)
+
+10 - functions.php: pure function definition file
 
 icons are from iconsdb.com
 icon_db: https://www.iconsdb.com/custom-color/data-configuration-icon.html

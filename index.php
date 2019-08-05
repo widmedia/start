@@ -1,8 +1,6 @@
 <?php
   require_once('functions.php');
-  $dbConn = initialize();
-  // errorCode: 10'000
-
+  $dbConn = initialize();  
   // this page has several entry points
   // a: unsecured
   // a1: first visit, direct visit (people typing widmedia.ch/start)
@@ -14,18 +12,34 @@
   // b2: direct visit (do=0), cookie is set
   // b3: login form done, do=4, (email/pw as POST). setCookie is checked or not
   
+  // page number for errorCode: 11
   // possible actions: 
-  // 0/non-existing: normal case
-  // 1=> logout
-  // 2=> add new user
-  // 3=> process adding new user
-  // 4=> process login form (email/pw/setCookie)
-  // 5=> do the email verification
-  // 6=> print standard index, without forwarding to links.php
-  // 7=> forgot password
-  // 8=> process forgot password
-  // 9=> process the pwRecovery link from the email
-  //10=> process the new password
+  //  0/non-existing: normal case
+  //  1 - logout
+  //  2 - add new user
+  //  3 - process adding new user
+  //  4 - process login form (email/pw/setCookie)
+  //  5 - do the email verification
+  //  6 - print standard index, without forwarding to links.php
+  //  7 - forgot password
+  //  8 - process forgot password
+  //  9 - process the pwRecovery link from the email
+  // 10 - process the new password
+  
+  // function list:
+  // 20 - function logOut ()
+  // 21 - function verifyCredentials ($dbConn, $authMethod, $userid, $passwordUnsafe, $randCookieInput)
+  // 22 - function newUserLinks ($dbConn, $newUserid)
+  // 23 - function newUserLoginAndLinks ($dbConn, $newUserid, $hasPw, $pw)
+  // 24 - function mail2userid ($dbConn, $emailSafe)
+  // 25 - function newUserEmailConfirmation ($dbConn, $newUserid, $hasPw, $emailSqlSafe)
+  // 26 - function printUserStat ($dbConn)
+  // 27 - function printNewUserForm ($dbConn)
+  // 28 - function printTitle($dbConn)
+  // 29 - function printLogin($dbConn, $forgotPw)
+  // 30 - function checkPwForgot($dbConn, $useridGetSafe, $verSqlSafe)
+
+  
 
   // deletes both the cookie and the session
   function logOut () {
@@ -46,24 +60,20 @@
         $randCookie = $row['randCookie'];
 
         if ($authMethod == 1) { // with a pw
-          if ($hasPw == 1) {
-            if (password_verify($passwordUnsafe, $pwHash)) {
-              $loginOk = true;
-            } else { error($dbConn, 11); } // password was verified
-          } else { error($dbConn, 10); } // hasPw == 1
+          if (($hasPw == 1) and (password_verify($passwordUnsafe, $pwHash))) {
+            $loginOk = true;            
+          } else { error($dbConn, 112000); } // hasPw == 1 and password was verified
         } elseif ($authMethod == 2) { // with a Cookie
-          if ($randCookie) { // new user has a zero
-            if ($randCookie == $randCookieInput) {
-              $loginOk = true;
-            } else { error($dbConn, 21); } // 64hex value is correct
-          } else { error($dbConn, 20); }  // there is no zero in the data base
+          if (($randCookie) and ($randCookie == $randCookieInput)) {
+            $loginOk = true;            
+          } else { error($dbConn, 112001); }  // there is no zero in the data base and 64hex value is correct
         } elseif ($authMethod == 3) { // id only. the most unsafe one
           if ($hasPw == 0) {
             $loginOk = true;
-          } else { error($dbConn, 30); } // hasPw == 0
+          } else { error($dbConn, 112002); } // hasPw == 0
         } // authMethod
-      } else { error($dbConn, 2); } // numRows == 1
-    } else { error($dbConn, 1); } // select query did work    
+      } else { error($dbConn, 112003); } // numRows == 1
+    } else { error($dbConn, 112004); } // select query did work    
 
     if ($loginOk) {
       if ($result = $dbConn->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"')) {
@@ -105,9 +115,8 @@
   
     // NB: set a cookie for some random big number. Not the password itself and not the pwHash!
     // NB: will use this number on every cookie for this user, to login on several devices. One cannot guess other users random number                  
-    $hexStr64 = bin2hex(random_bytes(32)); // some random value, used for cookie 
-    $result = $dbConn->query('UPDATE `user` SET `hasPw` = "'.$hasPw.'", `pwHash` = "'.$pwHash.'", `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"');
-    if ($result) { 
+    $hexStr64 = bin2hex(random_bytes(32)); // some random value, used for cookie     
+    if ($result = $dbConn->query('UPDATE `user` SET `hasPw` = "'.$hasPw.'", `pwHash` = "'.$pwHash.'", `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) { 
       return newUserLinks($dbConn, $newUserid); // Adding 1 user, 3 categories, 4 links
     } else {
       return false;
@@ -307,7 +316,7 @@
     return false;
   }
 
-  
+  // normal page code starting here
   $doSafe           = makeSafeInt($_GET['do'], 2); // need two digits here
   $useridGetSafe    = makeSafeInt($_GET['userid'], 11);
   $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
@@ -323,8 +332,7 @@
         redirectRelative('links.php');
       }
     }
-  }
-  
+  }  
   
   $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
   $emailSqlSafe   = mysqli_real_escape_string($dbConn, $emailUnsafe);
@@ -365,13 +373,13 @@
                   }                    
                   printConfirm($dbConn, getLanguage($dbConn,89), getLanguage($dbConn,90).$loginText.'
                   <br><br>'.getLanguage($dbConn,86));
-                } else { error($dbConn, 37); } // newUserEmail
-              } else { error($dbConn, 36); } // links, categories insert
-            } else { error($dbConn, 35); } // user insert                        
-          } else { error($dbConn, 34); printConfirm($dbConn, 'Error',getLanguage($dbConn,91)); } // if password, then length ok
-        } else { error($dbConn, 33); printConfirm($dbConn, 'Error',getLanguage($dbConn,92)); } // email does not exist
-      } else { error($dbConn, 32); } // query worked
-    } else { error($dbConn, 31); } // have a valid email 
+                } else { error($dbConn, 110300); } // newUserEmail
+              } else { error($dbConn, 110301); } // links, categories insert
+            } else { error($dbConn, 110302); } // user insert                        
+          } else { error($dbConn, 110303); printConfirm($dbConn, 'Error',getLanguage($dbConn,91)); } // if password, then length ok
+        } else { error($dbConn, 110304); printConfirm($dbConn, 'Error',getLanguage($dbConn,92)); } // email does not exist
+      } else { error($dbConn, 110305); } // query worked
+    } else { error($dbConn, 110306); } // have a valid email 
   } elseif ($doSafe == 4) { // process the login data, maybe set a cookie
     if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email
       $userid = mail2userid($dbConn, $emailUnsafe);
@@ -383,12 +391,12 @@
             if ($result = $dbConn->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' )) { // this is just a random number which has been set at user creation
               $row = $result->fetch_row();
               setcookie('randCookie', $row[0], $expire);
-            } else { error($dbConn, 43); } // select query
+            } else { error($dbConn, 110400); } // select query
           } // setCookie is selected
           redirectRelative('links.php');
-        } else { error($dbConn, 42); } // verification ok
-      } else { error($dbConn, 41); } // email found in db
-    } else { error($dbConn, 40); } // valid email          
+        } else { error($dbConn, 110401); } // verification ok
+      } else { error($dbConn, 110402); } // email found in db
+    } else { error($dbConn, 110403); } // valid email          
   } elseif ($doSafe == 5) { // confirm the email address
     printStartOfHtml($dbConn);
     if ($useridGetSafe > 2) {
@@ -402,10 +410,10 @@
             if ($hasPw == 1) { $loginLink = $loginLink.'#login'; } 
             else { $loginLink = $loginLink.'?userid='.$useridGetSafe; }
             printConfirm($dbConn, getLanguage($dbConn,93), getLanguage($dbConn,94).' <a href="'.$loginLink.'">log in</a>.');
-          } else { error($dbConn, 53); } // update query
-        } else { error($dbConn, 52); } // 1 result
-      } else { error($dbConn, 51); } // select query
-    } else { error($dbConn, 50); } // valid userid
+          } else { error($dbConn, 110500); } // update query
+        } else { error($dbConn, 110501); } // 1 result
+      } else { error($dbConn, 110502); } // select query
+    } else { error($dbConn, 110503); } // valid userid
   } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
     printStartOfHtml($dbConn);
     printTitle($dbConn);
@@ -425,9 +433,9 @@
         if (mail($emailUnsafe, getLanguage($dbConn,115).' widmedia.ch/start', $emailBody)) {
           printStartOfHtml($dbConn);    
           printConfirm($dbConn, 'Email '.getLanguage($dbConn,116), getLanguage($dbConn,117).htmlentities($emailUnsafe).').<br>'.getLanguage($dbConn,118).'<br><br><a href="index.php?do=6">'.getLanguage($dbConn,119).'</a>');
-        } else { error($dbConn, 82); }// mail send
-      } else { error($dbConn, 81); }// insert query
-    } else { error($dbConn, 80); } // email exists
+        } else { error($dbConn, 110800); }// mail send
+      } else { error($dbConn, 110801); }// insert query
+    } else { error($dbConn, 110802); } // email exists
   } elseif ($doSafe == 9) {  // process the pwRecovery link from the email
     if (checkPwForgot($dbConn, $useridGetSafe, $verSqlSafe)) {    
       printStartOfHtml($dbConn);
@@ -443,7 +451,7 @@
       <div class="row twelve columns">&nbsp;</div>
       <div class="row twelve columns">&nbsp;</div>
       </form>';   
-    } else { error($dbConn, 90); printConfirm($dbConn, 'Error', 'Recovery link expired');}    
+    } else { error($dbConn, 110900); printConfirm($dbConn, 'Error', 'Recovery link expired');}    
   } elseif ($doSafe == 10) {  // process the newly set password
     $useridPostSafe = makeSafeInt($_POST['userid'], 11);
     $verPost = makeSafeHex($_POST['ver'], 64);
@@ -453,11 +461,11 @@
         if ($result = $dbConn->query('DELETE FROM `pwForgot` WHERE `userid` = "'.$useridPostSafe.'"')) {
           printStartOfHtml($dbConn);
           printConfirm($dbConn, getLanguage($dbConn,24), getLanguage($dbConn,121).': <a href="index.php#login">index.php#login</a>');      
-        } else { error($dbConn, 102); }
-      } else { error($dbConn, 101); }            
-    }  else { error($dbConn, 100); }             
+        } else { error($dbConn, 111000); }
+      } else { error($dbConn, 111001); }            
+    }  else { error($dbConn, 111002); }             
   } else {
-    error($dbConn, 1);
+    error($dbConn, 110000);
   } // switch  
   printFooter($dbConn); 
 ?>
