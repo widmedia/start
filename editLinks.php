@@ -68,8 +68,7 @@
   $linkSqlSafe  = '';
   $linkHtmlSafe = '';
   $textSqlSafe  = '';
-  $textHtmlSafe = '';      
-  $dispErrorMsg = 0;
+  $textHtmlSafe = '';        
   $heading = ''; // default value, stays empty if some error happens
   
   // sanity checking: I check get or post parameters (which may not always evaluate true even for valid use cases)
@@ -108,19 +107,19 @@
           if ($idSafe > 0) { // this means I need a link id
             if ($result = $dbConn->query('UPDATE `links` SET `text` = "'.$textSqlSafe.'", `link` = "'.$linkSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'" LIMIT 1')) {
               redirectRelative('links.php?msg=1');
-            } else { $dispErrorMsg = 24; } // update sql did work out
-          } else { $dispErrorMsg = 23; } // id check did work out
+            } else { error($dbConn, 160200); } // update sql did work out
+          } else { error($dbConn, 160201); } // id check did work out
         } else { // I'm adding a new link
           if ($result = $dbConn->query('INSERT INTO `links` (`userid`, `category`, `text`, `link`) VALUES ("'.$userid.'", "'.$categorySafe.'", "'.$textSqlSafe.'", "'.$linkSqlSafe.'")')) {
             redirectRelative('links.php?msg=5');
-          } else { $dispErrorMsg = 22; } // insert query did work
+          } else { error($dbConn, 160202); } // insert query did work
         } // distinction between adding and editing
       } // testuser check
-    } else { $dispErrorMsg = 20; printConfirm($dbConn, getLanguage($dbConn,43), getLanguage($dbConn,44)); } // have a validUrl
+    } else { $error($dbConn, 160203); printConfirm($dbConn, getLanguage($dbConn,43), getLanguage($dbConn,44)); } // have a validUrl
   } elseif ($doSafe == 3) { // I want to reset all the link counters to 0          
     if ($dbConn->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
       redirectRelative('links.php?msg=4');            
-    } else { $dispErrorMsg = 30; } // update query did work        
+    } else { error($dbConn, 160300); } // update query did work        
   } elseif ($doSafe == 4) { // delete a link. Displaying a confirmation message                 
     if ($idSafe > 0) {
       if (testUserCheck($dbConn, $userid)) {
@@ -128,24 +127,23 @@
           if ($result->num_rows == 1) {
             if ($dbConn->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"')) { // should return true
               redirectRelative('links.php?msg=3');
-            } else { $dispErrorMsg = 44; } // delete sql did work out
-          } else { $dispErrorMsg = 43; } // did get one result
-        } else { $dispErrorMsg = 42; } // select sql did work out
+            } else { error($dbConn, 160400); } // delete sql did work out
+          } else { error($dbConn, 160401); } // did get one result
+        } else { error($dbConn, 160402); } // select sql did work out
       } // testuser check
-    } else { $dispErrorMsg = 40; } // integer check did work out          
+    } else { error($dbConn, 160403); } // integer check did work out
   } elseif ($doSafe == 5) { // update a category name
     $textSqlSafe = mysqli_real_escape_string($dbConn, $textUnsafe);
-    if (testUserCheck($dbConn, $userid)) { 
-      if ($categorySafe > 0) {            
+    if (testUserCheck($dbConn, $userid)) {
+      if ($categorySafe > 0) {
         if ($result = $dbConn->query('UPDATE `categories` SET `text` = "'.$textSqlSafe.'" WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe .'" LIMIT 1')) {
-          $textHtmlSafe = htmlspecialchars($textUnsafe);          
+          $textHtmlSafe = htmlspecialchars($textUnsafe);
           redirectRelative('links.php?msg=2');
-        } else { $dispErrorMsg = 52; } // update sql did work out                        
-      } else { $dispErrorMsg = 51; } // category check did work out
-    } // testuser check    
+        } else { error($dbConn, 160500); } // update sql did work out
+      } else { error($dbConn, 160501); } // category check did work out
+    } // testuser check
   } else {
-    $dispErrorMsg = 1;
-  } // switch              
-  printError($dbConn, $dispErrorMsg);          
+    error($dbConn, 160000);
+  } // switch
   printFooter($dbConn);
 ?>

@@ -2,30 +2,31 @@
 // This file is a pure function definition file. It is included in other sites
 
 // function list:
-// - initialize ()
-// - printConfirm ($dbConn, $heading, $text)
-// - printErrorAndDie ($heading, $text)
-// - printError ($dbConn, $errorMsgNum)
-// - getCategory ($dbConn, $userid, $category)
-// - printStartOfHtml ($dbConn)
-// - printFooter ($dbConn)
-// - overlayDiv ($disappearing, $zIndex, $text)
-// - printOverlayGeneric ($dbConn, $messageNumber)    
-// - printOverlayAccountVerify ($dbConn, $userid)
-// - getCurrentSite ()
-// - printNavMenu ($dbConn)
-// - testUserCheck ($dbConn, $userid)
-// - sessionAndCookieDelete ()
-// - deleteUser ($dbConn, $userid)
-// - getUserid ()
-// - makeSafeInt ($unsafe, $length)
-// - makeSafeHex ($unsafe, $length)
-// - makeSafeStr ($unsafe, $length)
-// - redirectRelative ($page)
-// - printStatic ($dbConn)
-// - printInlineCss ()
-// - getLanguage ($dbConn, $textId)
-// - updateUser ($dbConn, $userid, $forgotPw)
+// 20 - initialize ()
+// 21 - printConfirm ($dbConn, $heading, $text)
+// 22 - printErrorAndDie ($heading, $text)
+// 23 - 
+// 24 - error ($dbConn, $errorMsgNum)
+// 25 - getCategory ($dbConn, $userid, $category)
+// 26 - printStartOfHtml ($dbConn)
+// 27 - printFooter ($dbConn)
+// 28 - overlayDiv ($disappearing, $zIndex, $text)
+// 29 - printOverlayGeneric ($dbConn, $messageNumber)    
+// 30 - printOverlayAccountVerify ($dbConn, $userid)
+// 31 - getCurrentSite ()
+// 32 - printNavMenu ($dbConn)
+// 33 - testUserCheck ($dbConn, $userid)
+// 34 - sessionAndCookieDelete ()
+// 35 - deleteUser ($dbConn, $userid)
+// 36 - getUserid ()
+// 37 - makeSafeInt ($unsafe, $length)
+// 38 - makeSafeHex ($unsafe, $length)
+// 39 - makeSafeStr ($unsafe, $length)
+// 40 - redirectRelative ($page)
+// 41 - printStatic ($dbConn)
+// 42 - printInlineCss ()
+// 43 - getLanguage ($dbConn, $textId)
+// 44 - updateUser ($dbConn, $userid, $forgotPw)
 
   
 // this function is called on every (user related) page on the very start  
@@ -66,11 +67,9 @@ function printConfirm ($dbConn, $heading, $text) {
 
 // prints a valid html error page and stops php execution
 function printErrorAndDie ($heading, $text) {
-  // cannot use printStatic as I don't yet have a dbConn
+  // cannot use printStatic as I don't have a dbConn
   echo '
-<!DOCTYPE html>
-<html>
-<head>
+<!DOCTYPE html><html><head>
   <meta charset="utf-8">
   <title>Error page</title>
   <meta name="description" content="a generic error page">  
@@ -82,14 +81,6 @@ function printErrorAndDie ($heading, $text) {
   printInlineCss();
   echo '</head><body><div class="row twelve columns textBox"><h4>'.$heading.'</h4><p>'.$text.'</p></div></body></html>';
   die();  
-}
-
-// checks whether the number is bigger than 0 and displays some very generic failure message
-function printError ($dbConn, $errorMsgNum) {
-  $userid = getUserid();
-  if ($errorMsgNum > 0 and $userid != 2) { // no error is printed for the test user    
-    printConfirm($dbConn, 'Error', getLanguage($dbConn,33).$errorMsgNum.getLanguage($dbConn,34).' sali@widmedia.ch');
-  }
 }
 
 // checks whether not the test user and displays some very generic failure message
@@ -397,10 +388,8 @@ function printStatic ($dbConn) {
   <meta property="og:title" content="'.$title.'" />
   <meta name="author" content="Daniel Widmer">
   <meta name="description" content="'.$description.'">  
-  <link rel="canonical" href="'.$url.'" />
-  
+  <link rel="canonical" href="'.$url.'" />  
   <meta name="robots" content="index, follow">    
-
   <meta property="og:description" content="'.$description.'" />
   <meta property="og:url" content="'.$url.'" />
   <meta property="og:type" content="website" />  
@@ -412,13 +401,8 @@ function printStatic ($dbConn) {
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="800" />
   <meta property="og:image:height" content="800" />
-
-  <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png">
-  
-  <!-- CSS -->
+  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png">    
   <link rel="stylesheet" href="css/font.css" type="text/css">
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
@@ -517,9 +501,8 @@ function getLanguage ($dbConn, $textId) { // NB: ln and id variables are safe
   } // no else case because can't do that much otherwise
 }
 
-// used in editUser to update email and password and in index to set a new pw when it has been forgotten.
-function updateUser ($dbConn, $userid, $forgotPw) {
-  $dispErrorMsg = 0;
+// 44. used in editUser to update email and password and in index to set a new pw when it has been forgotten.
+function updateUser ($dbConn, $userid, $forgotPw) {  
   if (testUserCheck($dbConn, $userid)) {
     if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
       $row = $result->fetch_assoc(); // guaranteed to get only one row
@@ -543,7 +526,7 @@ function updateUser ($dbConn, $userid, $forgotPw) {
           if (strlen($_POST['passwordNew']) > 3) {  
             $passwordUnsafe = filter_var(substr($_POST['passwordNew'], 0, 63), FILTER_SANITIZE_STRING);
             $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
-          } else { printError($dbConn, 11); return false; }
+          } else { error($dbConn, 104400); return false; }
         } // else, not an error
         
         $emailOk = false;
@@ -564,16 +547,16 @@ function updateUser ($dbConn, $userid, $forgotPw) {
         if ($emailOk) {
           if ($result = $dbConn->query('UPDATE `user` SET `hasPw` = "'.$hasPwCheckBox.'", `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {            
             return true;
-          } else { printError($dbConn, 12); return false; } // update query
+          } else { error($dbConn, 104401); return false; } // update query
         } else { 
           if ($forgotPw) { 
             if ($result = $dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'" WHERE `id` = "'.$userid.'"')) {              
               return true;
-            } else { printError($dbConn, 13); return false; } // update query
+            } else { error($dbConn, 104402); return false; } // update query
           } // forgotPW
         } // emailOK-else
-      } else { printError($dbConn, 14); return false; } // pwCheck ok                
-    } else { printError($dbConn, 15); return false; } // select query did work
+      } else { error($dbConn, 104403); return false; } // pwCheck ok                
+    } else { error($dbConn, 104404); return false; } // select query did work
   } // testUserCheck
 }
 

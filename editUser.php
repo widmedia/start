@@ -52,10 +52,7 @@
   
   // Form processing
   $userid = getUserid();
-  $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 0 to 2)
-  
-  $dispErrorMsg = 0;
-  $heading = ''; // default value, stays empty if some error happens
+  $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 0 to 2)      
 
   if ($doSafe == 0) { // edit an existing user: present the form
     if ($userid) { // have a valid userid
@@ -63,24 +60,23 @@
         $row = $result->fetch_assoc(); // guaranteed to get only one row
         printStartOfHtml($dbConn);
         printUserEdit($dbConn, $row);              
-      } else { $dispErrorMsg = 11; } // select query did work
-    } else { $dispErrorMsg = 10; } // have a valid userid
+      } else { error($dbConn, 150000); } // select query did work
+    } else { error($dbConn, 150001); } // have a valid userid
   } elseif ($doSafe == 1) { // delete an existing user
     // TODO: might want to verify the pw before deleting an account? (if there is a pw set)
     if (deleteUser($dbConn, $userid)) {
       sessionAndCookieDelete();
       printStartOfHtml($dbConn);
       printConfirm($dbConn, getLanguage($dbConn,53), getLanguage($dbConn,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConn,55).' index.php</a>');
-    } else { $dispErrorMsg = 20; } // deleteUser function did return false
+    } else { error($dbConn, 150100); } // deleteUser function did return false
   } elseif ($doSafe == 2) { // update an existing user: db operations
     if ($userid > 0) { // have a valid userid
       if (updateUser($dbConn, $userid, false)) { 
         redirectRelative('links.php?msg=6');
-      } else { $dispErrorMsg = 31; }
-    } else { $dispErrorMsg = 30; } // have a valid userid         
+      } else { error($dbConn, 150200); }
+    } else { error($dbConn, 150201); } // have a valid userid         
   } else { 
-    $dispErrorMsg = 1;
-  } // switch
-  printError($dbConn, $dispErrorMsg);  
+    error($dbConn, 150002);
+  } // switch  
   printFooter($dbConn);
 ?>

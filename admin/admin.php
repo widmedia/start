@@ -153,9 +153,7 @@
   echo '</div>';  
   
   $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 1 to 3)
-  $editUserId = makeSafeInt($_GET['editUserId'], 11); // this is an integer
-  $dispErrorMsg = 0;
-  
+  $editUserId = makeSafeInt($_GET['editUserId'], 11); // this is an integer    
   
   if ($doSafe == 1) { // display all the infos related to to current user
     if ($editUserId) { // have a valid userid      
@@ -178,20 +176,19 @@
           <div class="four columns"><a href="admin.php?do=3&editUserId='.$editUserId.'" class="button differentColor">send address verification email</a></div>
           <div class="four columns"><a href="admin.php?do=4&editUserId='.$editUserId.'" class="button differentColor">delete this user</a></div>
         </div>';
-      } else { $dispErrorMsg = 11; } // select queries did work
-    } else { $dispErrorMsg = 10; } // have a valid userid
+      } else { error($dbConn, 170100); } // select queries did work
+    } else { error($dbConn, 170101); } // have a valid userid
   } elseif ($doSafe == 2) { // send an email
-    if (! reminderMail($dbConn, $editUserId, 1)) { $dispErrorMsg = 20; }
+    if (! reminderMail($dbConn, $editUserId, 1)) { error($dbConn, 170200); }
   } elseif ($doSafe == 3) { // send an email
-    if (! reminderMail($dbConn, $editUserId, 2)) { $dispErrorMsg = 30; }  
+    if (! reminderMail($dbConn, $editUserId, 2)) { error($dbConn, 170300); }  
   } elseif ($doSafe == 4) { // delete the user
     if (deleteUser($dbConn, $editUserId)) {
       printConfirm($dbConn, 'Deleted the account', 'Deleted userid: '.$editUserId.' <br/><br/>');
     } else {
-      $dispErrorMsg = 40;
+      error($dbConn, 170400);
     }
-  } 
-  printError($dbConn, $dispErrorMsg);
+  }   
   
 ?>
   </div> <!-- /container -->
