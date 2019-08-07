@@ -1,4 +1,4 @@
-<?php
+<?php // declare(strict_types=1);
   require_once('functions.php');
   $dbConn = initialize();  
   // this page has several entry points
@@ -48,7 +48,7 @@
   }
  
   // function to do the login. Several options are available to log in
-  function verifyCredentials ($dbConn, $authMethod, $userid, $passwordUnsafe, $randCookieInput) {
+  function verifyCredentials ($dbConn, int $authMethod, int $userid, $passwordUnsafe, $randCookieInput) : boolean {
     $loginOk = false;
     $_SESSION['userid'] = 0; // clear it just to make sure    
     
