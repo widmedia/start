@@ -1,7 +1,7 @@
 <?php
 // This file is a pure function definition file. It is included in other sites
 
-// function list:
+// function list: (TODO: update with input data types and return types)
 // 20 - initialize ()
 // 21 - printConfirm ($dbConn, $heading, $text)
 // 22 - printErrorAndDie ($heading, $text)
@@ -58,7 +58,7 @@ function initialize () {
 }
 
 //prints the h4 title and one row
-function printConfirm ($dbConn, $heading, $text) {
+function printConfirm ($dbConn, $heading, $text): void {
   if (!headers_sent()) {
     printStartOfHtml($dbConn);
   } // headers
@@ -66,7 +66,7 @@ function printConfirm ($dbConn, $heading, $text) {
 } 
 
 // prints a valid html error page and stops php execution
-function printErrorAndDie ($heading, $text) {
+function printErrorAndDie ($heading, $text): void {
   // cannot use printStatic as I don't have a dbConn
   echo '
 <!DOCTYPE html><html><head>
@@ -84,7 +84,7 @@ function printErrorAndDie ($heading, $text) {
 }
 
 // checks whether not the test user and displays some very generic failure message
-function error ($dbConn, $errorMsgNum) {  
+function error ($dbConn, $errorMsgNum): void {  
   if (getUserid() != 2) { // no error is printed for the test user    
     printConfirm($dbConn, 'Error', getLanguage($dbConn,33).$errorMsgNum.getLanguage($dbConn,34).' sali@widmedia.ch');
   }
@@ -101,7 +101,7 @@ function getCategory ($dbConn, $userid, $category) {
 } // function
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
-function printStartOfHtml ($dbConn) {
+function printStartOfHtml ($dbConn): void {
   printStatic($dbConn);  
   
   $msgSafe = makeSafeInt($_GET['msg'], 1);
@@ -119,7 +119,7 @@ function printStartOfHtml ($dbConn) {
 }
  
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
-function printFooter ($dbConn) {
+function printFooter ($dbConn): void {
   echo '</div>'; // close the container
   $siteSafe = getCurrentSite(); 
   $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> '.getLanguage($dbConn,45).'</a>';
@@ -169,7 +169,7 @@ function overlayDiv ($disappearing, $zIndex, $text) {
 }
 
 // prints some disappearing message box. used on links.php and index.php
-function printOverlayGeneric ($dbConn, $messageNumber) {    
+function printOverlayGeneric ($dbConn, $messageNumber): void {    
   if (($messageNumber >= 1) and ($messageNumber <= 7)) { 
     $message = getLanguage($dbConn,($messageNumber+18)); 
   } else { 
@@ -179,7 +179,7 @@ function printOverlayGeneric ($dbConn, $messageNumber) {
 }  
 
 // prints a message when the email of this account has not been verified
-function printOverlayAccountVerify ($dbConn, $userid) {
+function printOverlayAccountVerify ($dbConn, $userid): void {
   if ($userid > 0) {
     $verified = false;
     if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
@@ -210,7 +210,7 @@ function getCurrentSite () {
   return ($siteSafe); 
 }
 
-function printNavMenu ($dbConn) {
+function printNavMenu ($dbConn): void {
   // set the session var only if I did get the ln-variable
   if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
     $lang = 'de';  
@@ -309,17 +309,17 @@ function deleteUser ($dbConn, $userid) {
   return false; // should not reach this point
 }
 
-// returns the userid integer
-function getUserid () {
+// returns the userid integer from the session variable
+function getUserid (): int {
   if (isset($_SESSION)) {
-    return $_SESSION['userid'];
+    return (int)$_SESSION['userid'];
   } else {
     return 0;  // rather return 0 (means userid is not valid) than false
   }
 }
 
 // returns a 'safe' integer. Return value is 0 if the checks did not work out
-function makeSafeInt ($unsafe, int $length) : int {
+function makeSafeInt ($unsafe, int $length): int {
   $safe = 0;
   $unsafe = filter_var(substr($unsafe, 0, $length), FILTER_SANITIZE_NUMBER_INT); // sanitize a length-limited variable  
   if (filter_var($unsafe, FILTER_VALIDATE_INT)) { 
@@ -329,7 +329,7 @@ function makeSafeInt ($unsafe, int $length) : int {
 }
 
 // returns a 'safe' character-as-hex value
-function makeSafeHex ($unsafe, int $length) : string {
+function makeSafeHex ($unsafe, int $length): string {
   $safe = '0';
   $unsafe = substr($unsafe, 0, $length); // length-limited variable  
   if (ctype_xdigit($unsafe)) {
@@ -353,7 +353,7 @@ function redirectRelative ($page) {
 }
 
 // prints static header information and sets title and description depending on the page
-function printStatic ($dbConn) {
+function printStatic ($dbConn): void {
   // description tag and title are different for every site  
   $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a HTML site is generated
     
@@ -440,7 +440,7 @@ function printStatic ($dbConn) {
 }
 
 // defines all the styles with color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
-function printInlineCss () {   
+function printInlineCss (): void {   
   $lightMain = 'rgba(250, 255, 59, 0.85)'; // yellowish (works good on blue, works on gray as well) = #faff3b;
   $darkMain =  'rgba(182, 189, 0, 0.85)'; // darker version of above settings  
   

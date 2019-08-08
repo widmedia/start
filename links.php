@@ -1,14 +1,13 @@
-<?php
+<?php declare(strict_types=1);
   require_once('functions.php');
   $dbConn = initialize();
   
-  
-    
   // function to output several links in a formatted way
   // creating a div for every link and div-rows for every $module-th entry
   // has a limit of 100 links per category
-  function printLinks($dbConn, $userid, $category) {
-      
+  function printLinks($dbConn, int $userid, int $category): void {
+    echo '<div class="row">';
+    
     // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
     $modulo = 3;
     $divClass = '<div class="halbeReihe four columns linktext">';
@@ -30,20 +29,17 @@
         }
       } // while    
       $result->close(); // free result set
-    } // if  
+    } // if 
+    echo '</div>'; // class row
   } // function   
 
   $userid = getUserid();
   printStartOfHtml($dbConn);
   
-  echo '<h3 class="section-heading">'.getCategory($dbConn, $userid, 1).'</h3><div class="row">';
-  printLinks($dbConn, $userid, 1);
+  for ($category = 1; $category <= 3; $category++) {
+    echo '<h3 class="section-heading">'.getCategory($dbConn, $userid, $category).'</h3>';
+    printLinks($dbConn, $userid, $category);    
+  }
   
-  echo '</div><h3 class="section-heading">'.getCategory($dbConn, $userid, 2).'</h3><div class="row">';
-  printLinks($dbConn, $userid, 2);
-  
-  echo '</div><h3 class="section-heading">'.getCategory($dbConn, $userid, 3).'</h3><div class="row">';
-  printLinks($dbConn, $userid, 3);
-  echo '</div>';
   printFooter($dbConn);
 ?>
