@@ -319,7 +319,7 @@ function getUserid () {
 }
 
 // returns a 'safe' integer. Return value is 0 if the checks did not work out
-function makeSafeInt ($unsafe, $length) : int {
+function makeSafeInt ($unsafe, int $length) : int {
   $safe = 0;
   $unsafe = filter_var(substr($unsafe, 0, $length), FILTER_SANITIZE_NUMBER_INT); // sanitize a length-limited variable  
   if (filter_var($unsafe, FILTER_VALIDATE_INT)) { 
@@ -329,17 +329,17 @@ function makeSafeInt ($unsafe, $length) : int {
 }
 
 // returns a 'safe' character-as-hex value
-function makeSafeHex ($unsafe, $length) {
-  $safe = 0;
+function makeSafeHex ($unsafe, int $length) : string {
+  $safe = '0';
   $unsafe = substr($unsafe, 0, $length); // length-limited variable  
   if (ctype_xdigit($unsafe)) {
-    $safe = $unsafe;
+    $safe = (string)$unsafe;
   }
   return $safe;
 }
 
 // returns a 'safe' string. Not that much to do though for a string
-function makeSafeStr ($unsafe, $length) {
+function makeSafeStr ($unsafe, int $length) {
   return (htmlentities(substr($unsafe, 0, $length))); // length-limited variable, HTML encoded
 }
 
@@ -560,15 +560,18 @@ function updateUser ($dbConn, $userid, $forgotPw) {
   } // testUserCheck
 }
 
-// checks whether a post variable exists and makes it safe if it does. If not, returns 0.
-function safePostInt (string $postVar, int $length) : int {
-  if (isset($_POST[$postVar])) {
-    return makeSafeInt($_POST[$postVar], $length);
+// checks whether a get/post/cookie variable exists and makes it safe if it does. If not, returns 0
+function safeIntFromExt (string $type, string $varName, int $length) : int {
+  if ($type === 'GET') {
+    return makeSafeInt($_GET[$varName], $length);
+  } elseif ($type === 'POST') {
+    return makeSafeInt($_POST[$varName], $length);
+  } elseif ($type === 'COOKIE') {
+    return makeSafeInt($_COOKIE[$varName], $length);
   } else {
     return 0;
-  }  
+  }
 }
-
 
 
 

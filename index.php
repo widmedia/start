@@ -87,7 +87,7 @@
   
   
   // inserts some example values into `links` and `categories` tables
-  function newUserLinks ($dbConn, $newUserid) {
+  function newUserLinks ($dbConn, $newUserid) : bool {
     $result0 = $dbConn->query('INSERT INTO `categories` (`userid`, `category`, `text`) VALUES ("'.$newUserid.'", "1", "News")');
     $result1 = $dbConn->query('INSERT INTO `categories` (`userid`, `category`, `text`) VALUES ("'.$newUserid.'", "2", "Work")');
     $result2 = $dbConn->query('INSERT INTO `categories` (`userid`, `category`, `text`) VALUES ("'.$newUserid.'", "3", "Div")');
@@ -105,7 +105,7 @@
   }
   
   // sets the value in the `user` table as well as the `links` table
-  function newUserLoginAndLinks ($dbConn, $newUserid, $hasPw, $pw) {       
+  function newUserLoginAndLinks ($dbConn, $newUserid, $hasPw, $pw) : bool {       
     // password_hash("testUserPassword", PASSWORD_DEFAULT) returns '$2y$10$3qc.gl4eDPpXDqM7hDssquu4ThnJ9rbH7wrEkdTZd0Cg0NAjAzm.2';
     if ($hasPw == 1) {
       $pwHash = password_hash($pw, PASSWORD_DEFAULT); // $pw is potentially unsafe. Shouldn't be an issue as I store the hash
@@ -136,7 +136,7 @@
   }  
   
   // sends an email to the new user with a special link and updates the database with that email confirmation link
-  function newUserEmailConfirmation ($dbConn, $newUserid, $hasPw, $emailSqlSafe) {
+  function newUserEmailConfirmation ($dbConn, $newUserid, $hasPw, $emailSqlSafe) : bool {
     $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
     $emailBody = "Sali,\n\n".getLanguage($dbConn,95)."\n\n".getLanguage($dbConn,96)."\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
     if ($hasPw == 1) {
@@ -303,7 +303,7 @@
   } // function 
 
   // checks whether there is (at least) one entry in the data base and it's not yet expired
-  function checkPwForgot($dbConn, $useridGetSafe, $verSqlSafe) {
+  function checkPwForgot($dbConn, $useridGetSafe, $verSqlSafe) : bool {
     if ($result = $dbConn->query('SELECT `validUntil` FROM `pwForgot` WHERE `userid` = "'.$useridGetSafe.'" AND `hexval` = "'.$verSqlSafe.'" ORDER BY `id` DESC')) {
       if ($result->num_rows >= 1) { // there might be more than one because user might have pressed the send email button several times
         $row = $result->fetch_row(); // interested only in the last one, so no for loop
@@ -317,9 +317,9 @@
   }
 
   // normal page code starting here
-  $doSafe           = makeSafeInt($_GET['do'], 2); // need two digits here
-  $useridGetSafe    = makeSafeInt($_GET['userid'], 11);
-  $useridCookieSafe = makeSafeInt($_COOKIE['userIdCookie'], 11);
+  $doSafe           = safeIntFromExt('GET', 'do', 2); // need two digits here
+  $useridGetSafe    = safeIntFromExt('GET', 'userid', 11);
+  $useridCookieSafe = safeIntFromExt('COOKIE', 'userIdCookie', 11);
   $randCookieSafe   = makeSafeHex($_COOKIE['randCookie'], 64); 
 
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
@@ -349,8 +349,8 @@
     $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
   }
   
-  $setCookieSafe = safePostInt('setCookie', 1);
-  $hasPw = safePostInt('hasPw', 1);
+  $setCookieSafe = safeIntFromExt('POST', 'setCookie', 1);
+  $hasPw = safeIntFromExt('POST', 'hasPw', 1);
   
   if (isset($_GET['ver'])) {
     $verGet = makeSafeHex($_GET['ver'], 64);
