@@ -1,4 +1,4 @@
-<?php // declare(strict_types=1);
+<?php declare(strict_types=1);
   require_once('functions.php');
   $dbConn = initialize();  
   // this page has several entry points
@@ -124,12 +124,12 @@
   } 
 
   // returns the userid which matches to the email given. Returns 0 if something went wrong
-  function mail2userid ($dbConn, $emailSafe) {
+  function mail2userid ($dbConn, $emailSafe) : int {
     $userid = 0;
     if ($result = $dbConn->query('SELECT `id` FROM `user` WHERE `email` = "'.mysqli_real_escape_string($dbConn, $emailSafe).'"')) {
       if ($result->num_rows == 1) {
         $row = $result->fetch_row();
-        $userid = $row[0];        
+        $userid = (int)$row[0];        
       }
     }
     return $userid;
@@ -337,9 +337,7 @@
   // default values
   $emailUnsafe = ''; 
   $emailSqlSafe = '';
-  $passwordUnsafe = '';
-  $setCookieSafe = 0;
-  $hasPw = 0;
+  $passwordUnsafe = '';  
   $verGet = '';
   $verSqlSafe = '';
   
@@ -350,12 +348,10 @@
   if (isset($_POST['password'])) {
     $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
   }
-  if (isset($_POST['setCookie'])) {
-    $setCookieSafe  = makeSafeInt($_POST['setCookie'], 1);
-  }
-  if (isset($_POST['hasPw'])) {
-    $hasPw = makeSafeInt($_POST['hasPw'], 1);
-  }
+  
+  $setCookieSafe = safePostInt('setCookie', 1);
+  $hasPw = safePostInt('hasPw', 1);
+  
   if (isset($_GET['ver'])) {
     $verGet = makeSafeHex($_GET['ver'], 64);
     $verSqlSafe = mysqli_real_escape_string($dbConn, $verGet);
@@ -406,7 +402,7 @@
         if (verifyCredentials($dbConn, 1, $userid, $passwordUnsafe, '')) {                
           if ($setCookieSafe == 1) {
             $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
-            setcookie('userIdCookie', $userid, $expire); 
+            setcookie('userIdCookie', (string)$userid, $expire); 
             if ($result = $dbConn->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' )) { // this is just a random number which has been set at user creation
               $row = $result->fetch_row();
               setcookie('randCookie', $row[0], $expire);

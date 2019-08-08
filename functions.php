@@ -560,6 +560,14 @@ function updateUser ($dbConn, $userid, $forgotPw) {
   } // testUserCheck
 }
 
+// checks whether a post variable exists and makes it safe if it does. If not, returns 0.
+function safePostInt (string $postVar, int $length) : int {
+  if (isset($_POST[$postVar])) {
+    return makeSafeInt($_POST[$postVar], $length);
+  } else {
+    return 0;
+  }  
+}
 
 
 
