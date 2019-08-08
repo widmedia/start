@@ -319,11 +319,11 @@ function getUserid () {
 }
 
 // returns a 'safe' integer. Return value is 0 if the checks did not work out
-function makeSafeInt ($unsafe, $length) {
+function makeSafeInt ($unsafe, $length) : int {
   $safe = 0;
   $unsafe = filter_var(substr($unsafe, 0, $length), FILTER_SANITIZE_NUMBER_INT); // sanitize a length-limited variable  
   if (filter_var($unsafe, FILTER_VALIDATE_INT)) { 
-    $safe = $unsafe;
+    $safe = (int)$unsafe;
   }
   return $safe;
 }

@@ -48,7 +48,7 @@
   }
  
   // function to do the login. Several options are available to log in
-  function verifyCredentials ($dbConn, int $authMethod, int $userid, $passwordUnsafe, $randCookieInput) : boolean {
+  function verifyCredentials ($dbConn, int $authMethod, int $userid, $passwordUnsafe, $randCookieInput) : bool {
     $loginOk = false;
     $_SESSION['userid'] = 0; // clear it just to make sure    
     
@@ -334,13 +334,32 @@
     }
   }  
   
-  $emailUnsafe    = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
-  $emailSqlSafe   = mysqli_real_escape_string($dbConn, $emailUnsafe);
-  $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
-  $setCookieSafe  = makeSafeInt($_POST['setCookie'], 1);
-  $hasPw          = makeSafeInt($_POST['hasPw'], 1);
-  $verGet         = makeSafeHex($_GET['ver'], 64);
-  $verSqlSafe     = mysqli_real_escape_string($dbConn, $verGet);
+  // default values
+  $emailUnsafe = ''; 
+  $emailSqlSafe = '';
+  $passwordUnsafe = '';
+  $setCookieSafe = 0;
+  $hasPw = 0;
+  $verGet = '';
+  $verSqlSafe = '';
+  
+  if (isset($_POST['email'])) { 
+    $emailUnsafe = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
+    $emailSqlSafe   = mysqli_real_escape_string($dbConn, $emailUnsafe);
+  }
+  if (isset($_POST['password'])) {
+    $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
+  }
+  if (isset($_POST['setCookie'])) {
+    $setCookieSafe  = makeSafeInt($_POST['setCookie'], 1);
+  }
+  if (isset($_POST['hasPw'])) {
+    $hasPw = makeSafeInt($_POST['hasPw'], 1);
+  }
+  if (isset($_GET['ver'])) {
+    $verGet = makeSafeHex($_GET['ver'], 64);
+    $verSqlSafe = mysqli_real_escape_string($dbConn, $verGet);
+  }
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printStartOfHtml($dbConn);
