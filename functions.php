@@ -561,18 +561,30 @@ function updateUser ($dbConn, $userid, $forgotPw) {
 }
 
 // checks whether a get/post/cookie variable exists and makes it safe if it does. If not, returns 0
-function safeIntFromExt (string $type, string $varName, int $length) : int {
-  if ($type === 'GET') {
+function safeIntFromExt (string $source, string $varName, int $length) : int {
+  if ($source === 'GET') {
     return makeSafeInt($_GET[$varName], $length);
-  } elseif ($type === 'POST') {
+  } elseif ($source === 'POST') {
     return makeSafeInt($_POST[$varName], $length);
-  } elseif ($type === 'COOKIE') {
+  } elseif ($source === 'COOKIE') {
     return makeSafeInt($_COOKIE[$varName], $length);
   } else {
     return 0;
   }
 }
 
+// same as int above...
+function safeHexFromExt (string $source, string $varName, int $length) : string {
+ if ($source === 'GET') {
+    return makeSafeHex($_GET[$varName], $length);
+  } elseif ($source === 'POST') {
+    return makeSafeHex($_POST[$varName], $length);
+  } elseif ($source === 'COOKIE') {
+    return makeSafeHex($_COOKIE[$varName], $length);
+  } else {
+    return '0';
+  }
+}
 
 
 

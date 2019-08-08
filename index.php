@@ -124,7 +124,7 @@
   } 
 
   // returns the userid which matches to the email given. Returns 0 if something went wrong
-  function mail2userid ($dbConn, $emailSafe) : int {
+  function mail2userid ($dbConn, string $emailSafe) : int {
     $userid = 0;
     if ($result = $dbConn->query('SELECT `id` FROM `user` WHERE `email` = "'.mysqli_real_escape_string($dbConn, $emailSafe).'"')) {
       if ($result->num_rows == 1) {
@@ -315,12 +315,13 @@
     }
     return false;
   }
-
+  
+  // -------------------------------------------------------------- //
   // normal page code starting here
   $doSafe           = safeIntFromExt('GET', 'do', 2); // need two digits here
   $useridGetSafe    = safeIntFromExt('GET', 'userid', 11);
   $useridCookieSafe = safeIntFromExt('COOKIE', 'userIdCookie', 11);
-  $randCookieSafe   = makeSafeHex($_COOKIE['randCookie'], 64); 
+  $randCookieSafe   = safeHexFromExt('COOKIE', 'randCookie', 64); 
 
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
     if ($useridGetSafe > 0) { // login like index.php?userid=2 the $_GET-userid has higher priority than the cookie userid
@@ -332,30 +333,26 @@
         redirectRelative('links.php');
       }
     }
-  }  
-  
-  // default values
-  $emailUnsafe = ''; 
-  $emailSqlSafe = '';
-  $passwordUnsafe = '';  
-  $verGet = '';
-  $verSqlSafe = '';
+  }    
   
   if (isset($_POST['email'])) { 
     $emailUnsafe = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
     $emailSqlSafe   = mysqli_real_escape_string($dbConn, $emailUnsafe);
+  } else {
+    $emailUnsafe = ''; 
+    $emailSqlSafe = '';
   }
   if (isset($_POST['password'])) {
     $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
+  } else {
+    $passwordUnsafe = '';
   }
   
   $setCookieSafe = safeIntFromExt('POST', 'setCookie', 1);
-  $hasPw = safeIntFromExt('POST', 'hasPw', 1);
+  $hasPw = safeIntFromExt('POST', 'hasPw', 1);  
+  $verGet = safeHexFromExt('GET', 'ver', 64);
+  $verSqlSafe = mysqli_real_escape_string($dbConn, $verGet);
   
-  if (isset($_GET['ver'])) {
-    $verGet = makeSafeHex($_GET['ver'], 64);
-    $verSqlSafe = mysqli_real_escape_string($dbConn, $verGet);
-  }
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printStartOfHtml($dbConn);
