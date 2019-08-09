@@ -19,7 +19,6 @@
       <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon_zero.png" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
     </div>';    
   } // function 
-
   
   // prints 1 row to either add a new link or edit an existing one  
   function printSingleLinkFields ($dbConn, bool $doAdd, int $category, int $linkId, string $link, string $text): void {
@@ -45,20 +44,26 @@
     <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConn,41).'"></form><div>';
   }
+  // page number for errorCode: 16
+  // possible actions:
+  // 0 - entry point: present category selection
+  // 1 - present links of one category + text field for category + add-Link option
+  // 2 - add one link to db or edit one link (of action 1)
+  // 3 - reset all cnt to 0
+  // 4 - delete one link
+  // 5 - do the update of a category (of action 1)
+
+  // function list:
+  // 20 - printEntryPoint ($dbConn, int $userid): void
+  // 21 - printSingleLinkFields ($dbConn, bool $doAdd, int $category, int $linkId, string $link, string $text): void
+  // 22 - printCategoryForm ($dbConn, int $categorySafe, string $heading): void  
   
-  $userid = getUserid();      
-  
-  // possible actions: 
-  // 1=> present links of one category + text field for category + add-Link option
-  // 2=> add one link to db or edit one link (of action 1)
-  // 3=> reset all cnt to 0
-  // 4=> delete one link
-  // 5=> do the update of a category (of action 1)
+  $userid = getUserid();
   
   // Form processing
   $doSafe = safeIntFromExt('GET', 'do', 1); // this is an integer (range 1 to 5) or non-existing
   $categorySafe = safeIntFromExt('POST', 'categoryInput', 1); // this is an integer (range 0 to 3) or non-existing
-  $idSafe = safeIntFromExt('GET', 'id', 11);            // this is an integer (max 11 characters) or non-existing. The link id
+  $idSafe = safeIntFromExt('GET', 'id', 11); // this is an integer (max 11 characters) or non-existing. The link id
   
   // non-integer values are more complicated, text may be HTML-safe or sqli-safe
   if (isset($_POST['link'])) { 
