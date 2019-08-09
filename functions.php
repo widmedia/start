@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // This file is a pure function definition file. It is included in other sites
 
 // function list: (TODO: update with input data types and return types)
@@ -58,7 +58,7 @@ function initialize () {
 }
 
 //prints the h4 title and one row
-function printConfirm ($dbConn, $heading, $text): void {
+function printConfirm ($dbConn, string $heading, string $text): void {
   if (!headers_sent()) {
     printStartOfHtml($dbConn);
   } // headers
@@ -66,7 +66,7 @@ function printConfirm ($dbConn, $heading, $text): void {
 } 
 
 // prints a valid html error page and stops php execution
-function printErrorAndDie ($heading, $text): void {
+function printErrorAndDie (string $heading, string $text): void {
   // cannot use printStatic as I don't have a dbConn
   echo '
 <!DOCTYPE html><html><head>
@@ -84,27 +84,28 @@ function printErrorAndDie ($heading, $text): void {
 }
 
 // checks whether not the test user and displays some very generic failure message
-function error ($dbConn, $errorMsgNum): void {  
+function error ($dbConn, int $errorMsgNum): void {  
   if (getUserid() != 2) { // no error is printed for the test user    
     printConfirm($dbConn, 'Error', getLanguage($dbConn,33).$errorMsgNum.getLanguage($dbConn,34).' sali@widmedia.ch');
   }
 }
 
 // function returns the text of the category. If something does not work as expected, 0 is returned
-function getCategory ($dbConn, $userid, $category) {
+function getCategory ($dbConn, int $userid, int $category): string {
   if ($result = $dbConn->query('SELECT `text` FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1')) {
     $row = $result->fetch_assoc();
     return $row['text'];
   } else { 
-    return 0; // should never reach this point
+    return ''; // should never reach this point
   } // if 
 } // function
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
 function printStartOfHtml ($dbConn): void {
   printStatic($dbConn);  
+    
+  $msgSafe = safeIntFromExt('GET', 'msg', 1);
   
-  $msgSafe = makeSafeInt($_GET['msg'], 1);
   if ($msgSafe > 0) {
     echo '<body onLoad="overlayMsgFade();">'; 
     printOverlayGeneric($dbConn, $msgSafe); 
@@ -162,14 +163,14 @@ function printFooter ($dbConn): void {
 } // function
 
 // displays a red-colored div, either disappearing or not
-function overlayDiv ($disappearing, $zIndex, $text) {
+function overlayDiv (bool $disappearing, int $zIndex, string $text): void {
   $divId = '';
   if ($disappearing) { $divId = ' id="overlay" '; } // will disappear (using javascript) if the div gets an id
   echo '<div '.$divId.'class="overlayMessage" style="z-index: '.$zIndex.';">'.$text.'</div>';  
 }
 
 // prints some disappearing message box. used on links.php and index.php
-function printOverlayGeneric ($dbConn, $messageNumber): void {    
+function printOverlayGeneric ($dbConn, int $messageNumber): void {    
   if (($messageNumber >= 1) and ($messageNumber <= 7)) { 
     $message = getLanguage($dbConn,($messageNumber+18)); 
   } else { 
@@ -179,7 +180,7 @@ function printOverlayGeneric ($dbConn, $messageNumber): void {
 }  
 
 // prints a message when the email of this account has not been verified
-function printOverlayAccountVerify ($dbConn, $userid): void {
+function printOverlayAccountVerify ($dbConn, int $userid): void {
   if ($userid > 0) {
     $verified = false;
     if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
@@ -213,9 +214,8 @@ function getCurrentSite () {
 function printNavMenu ($dbConn): void {
   // set the session var only if I did get the ln-variable
   if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
-    $lang = 'de';  
-    $langDiv = makeSafeStr($_GET['ln'], 2);
-    if ($langDiv == 'en') { // otherwise it stays
+    $lang = 'de';      
+    if (makeSafeStr($_GET['ln'], 2) == 'en') { // otherwise it stays
       $lang = 'en';
     }
     $_SESSION['ln'] = $lang;
@@ -271,7 +271,7 @@ function printNavMenu ($dbConn): void {
 }
 
 // checks whether userid is 2 (= test user)
-function testUserCheck ($dbConn, $userid) { // actually it is returning true, if it is not the testUser
+function testUserCheck ($dbConn, int $userid): bool { // actually it is returning true, if it is NOT the testUser
   if ($userid == 2) {    
     printConfirm($dbConn, getLanguage($dbConn,30), getLanguage($dbConn,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConn,32).'</a>');
     return false;
@@ -282,13 +282,13 @@ function testUserCheck ($dbConn, $userid) { // actually it is returning true, if
 
 // deletes the userid cookie and the userid session. 
 // NB: Leaves the ln-variables, otherwise I cannot print the 'logout-successful' message in non-default language
-function sessionAndCookieDelete () {
+function sessionAndCookieDelete (): void {
   $_SESSION['userid'] = 0; // the most important one, make sure it's really 0
-  setcookie('userIdCookie', 0, (time() - 42000)); // some big enough value in the past to make sure things like summer time changes do not affect it
+  setcookie('userIdCookie', '0', (time() - 42000)); // some big enough value in the past to make sure things like summer time changes do not affect it  
 }  
 
 // does the db operations to remove a certain user. Does some checks as well
-function deleteUser ($dbConn, $userid) {
+function deleteUser ($dbConn, int $userid): bool {
   if ($userid > 0) { // have a valid userid
     if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
       // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
@@ -321,7 +321,7 @@ function getUserid (): int {
 // returns a 'safe' integer. Return value is 0 if the checks did not work out
 function makeSafeInt ($unsafe, int $length): int {
   $safe = 0;
-  $unsafe = filter_var(substr($unsafe, 0, $length), FILTER_SANITIZE_NUMBER_INT); // sanitize a length-limited variable  
+  $unsafe = filter_var(substr($unsafe, 0, $length), FILTER_SANITIZE_NUMBER_INT); // sanitize a length-limited variable. TODO: not working
   if (filter_var($unsafe, FILTER_VALIDATE_INT)) { 
     $safe = (int)$unsafe;
   }
@@ -339,12 +339,12 @@ function makeSafeHex ($unsafe, int $length): string {
 }
 
 // returns a 'safe' string. Not that much to do though for a string
-function makeSafeStr ($unsafe, int $length) {
+function makeSafeStr ($unsafe, int $length): string {
   return (htmlentities(substr($unsafe, 0, $length))); // length-limited variable, HTML encoded
 }
 
 // does a (relative) redirect
-function redirectRelative ($page) {
+function redirectRelative (string $page): void {
   // redirecting relative to current page NB: some clients require absolute paths
   $host  = $_SERVER['HTTP_HOST'];
   $uri   = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');  
@@ -489,7 +489,7 @@ function printInlineCss (): void {
 }
 
 // returns various text in the session-stored language. language-db organized as follows: id(int_11) / en(text) / de(text)
-function getLanguage ($dbConn, $textId) { // NB: ln and id variables are safe
+function getLanguage ($dbConn, int $textId): string { // NB: ln and id variables are safe
   $lang = 'de';
   if (isset($_SESSION['ln'])) {
     $lang = $_SESSION['ln'];
@@ -499,10 +499,11 @@ function getLanguage ($dbConn, $textId) { // NB: ln and id variables are safe
     $row = $result->fetch_row();    
     return $row[0];
   } // no else case because can't do that much otherwise
+  return '';
 }
 
 // 44. used in editUser to update email and password and in index to set a new pw when it has been forgotten.
-function updateUser ($dbConn, $userid, $forgotPw) {  
+function updateUser ($dbConn, int $userid, bool $forgotPw): bool {  
   if (testUserCheck($dbConn, $userid)) {
     if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
       $row = $result->fetch_assoc(); // guaranteed to get only one row
@@ -519,7 +520,7 @@ function updateUser ($dbConn, $userid, $forgotPw) {
       }
       // could maybe merge some of this stuff with the functionality on index.php...addNewUser
       if ($pwCheck) {
-        $hasPwCheckBox = makeSafeInt($_POST['hasPw'],1);
+        $hasPwCheckBox = safeIntFromExt('POST', 'hasPw', 1);
         if ($forgotPw) { $hasPwCheckBox = 1; }
         if ($hasPwCheckBox == 1) { // if hasPw-checkbox, the newPw must be at least 4 chars long
           $pwHash = 0;
@@ -553,20 +554,20 @@ function updateUser ($dbConn, $userid, $forgotPw) {
             if ($result = $dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'" WHERE `id` = "'.$userid.'"')) {              
               return true;
             } else { error($dbConn, 104402); return false; } // update query
-          } // forgotPW
+          } else { return false; } // forgotPW
         } // emailOK-else
       } else { error($dbConn, 104403); return false; } // pwCheck ok                
     } else { error($dbConn, 104404); return false; } // select query did work
-  } // testUserCheck
+  } else { return false; } // testUserCheck
 }
 
 // checks whether a get/post/cookie variable exists and makes it safe if it does. If not, returns 0
 function safeIntFromExt (string $source, string $varName, int $length) : int {
-  if ($source === 'GET') {
-    return makeSafeInt($_GET[$varName], $length);
-  } elseif ($source === 'POST') {
-    return makeSafeInt($_POST[$varName], $length);
-  } elseif ($source === 'COOKIE') {
+  if (($source === 'GET') and (isset($_GET[$varName]))) {
+    return makeSafeInt($_GET[$varName], $length);    
+  } elseif (($source === 'POST') and (isset($_POST[$varName]))) {
+    return makeSafeInt($_POST[$varName], $length);    
+  } elseif (($source === 'COOKIE') and (isset($_COOKIE[$varName]))) {
     return makeSafeInt($_COOKIE[$varName], $length);
   } else {
     return 0;
@@ -575,11 +576,11 @@ function safeIntFromExt (string $source, string $varName, int $length) : int {
 
 // same as int above...
 function safeHexFromExt (string $source, string $varName, int $length) : string {
- if ($source === 'GET') {
+ if (($source === 'GET') and (isset($_GET[$varName]))) {
     return makeSafeHex($_GET[$varName], $length);
-  } elseif ($source === 'POST') {
+  } elseif (($source === 'POST') and (isset($_POST[$varName]))) {
     return makeSafeHex($_POST[$varName], $length);
-  } elseif ($source === 'COOKIE') {
+  } elseif (($source === 'COOKIE') and (isset($_COOKIE[$varName]))) {
     return makeSafeHex($_COOKIE[$varName], $length);
   } else {
     return '0';
