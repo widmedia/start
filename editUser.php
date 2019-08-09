@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
   require_once('functions.php');
   $dbConn = initialize();
   
-  function printUserEdit ($dbConn, $row) {    
+  function printUserEdit ($dbConn, $row): void {    
     $hasPwText       = '';
     $displayPwRows   = 'none';
     $pwFieldRequired = '';
@@ -50,9 +50,11 @@
   // 1=> delete an existing user: db operations
   // 2=> update an existing user: db operations
   
+  // TODO: think about merging this whole file with the editLinks file
+  
   // Form processing
   $userid = getUserid();
-  $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 0 to 2)      
+  $doSafe = safeIntFromExt('GET', 'do', 1); // this is an integer (range 0 to 2)      
 
   if ($doSafe == 0) { // edit an existing user: present the form
     if ($userid) { // have a valid userid
