@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
   require_once('functions.php');
   $dbConn = initialize();
   
-  function printEntryPoint ($dbConn, $userid) {
+  function printEntryPoint ($dbConn, int $userid): void {
     echo '
     <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,35).'</span></h3>
     <div class="row twelve columns">&nbsp;</div>
@@ -22,7 +22,7 @@
 
   
   // prints 1 row to either add a new link or edit an existing one  
-  function printSingleLinkFields ($dbConn, $doAdd, $category, $linkId, $link, $text) {
+  function printSingleLinkFields ($dbConn, bool $doAdd, int $category, int $linkId, string $link, string $text): void {
     if ($doAdd) { // this means I edit a link
       $submitText = getLanguage($dbConn,38);      
       $deleteText = '';
@@ -40,7 +40,7 @@
     </form>';   
   } // function
   
-  function printCategoryForm ($dbConn, $categorySafe, $heading) { 
+  function printCategoryForm ($dbConn, int $categorySafe, string $heading): void { 
     echo '<div class="row twelve columns">
     <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConn,41).'"></form><div>';
@@ -56,13 +56,21 @@
   // 5=> do the update of a category (of action 1)
   
   // Form processing
-  $doSafe       = makeSafeInt($_GET['do'], 1);             // this is an integer (range 1 to 5) or non-existing
-  $categorySafe = makeSafeInt($_POST['categoryInput'], 1); // this is an integer (range 0 to 3) or non-existing
-  $idSafe       = makeSafeInt($_GET['id'], 11);            // this is an integer (max 11 characters) or non-existing. The link id     
+  $doSafe = safeIntFromExt('GET', 'do', 1); // this is an integer (range 1 to 5) or non-existing
+  $categorySafe = safeIntFromExt('POST', 'categoryInput', 1); // this is an integer (range 0 to 3) or non-existing
+  $idSafe = safeIntFromExt('GET', 'id', 11);            // this is an integer (max 11 characters) or non-existing. The link id
   
   // non-integer values are more complicated, text may be HTML-safe or sqli-safe
-  $linkUnsafe = filter_var(substr($_POST['link'], 0, 1023), FILTER_SANITIZE_URL);  // this is an url (max 1023 characters) or non-existing
-  $textUnsafe = filter_var(substr($_POST['text'], 0, 63), FILTER_SANITIZE_STRING); // this is a generic string (max 63 characters) or non-existing
+  if (isset($_POST['link'])) { 
+    $linkUnsafe = filter_var(substr($_POST['link'], 0, 1023), FILTER_SANITIZE_URL);  // this is an url (max 1023 characters) or non-existing
+  } else { 
+    $linkUnsafe = ''; 
+  }
+  if (isset($_POST['text'])) { 
+    $textUnsafe = filter_var(substr($_POST['text'], 0, 63), FILTER_SANITIZE_STRING); // this is a generic string (max 63 characters) or non-existing
+  } else {
+    $textUnsafe = '';
+  }
 
   $linkOk = false;
   $linkSqlSafe  = '';
@@ -96,7 +104,7 @@
     // print one form per row, an edit form for every link
     if ($result = $dbConn->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
       while ($row = $result->fetch_assoc()) {        
-        printSingleLinkFields($dbConn, false, 0, $row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
+        printSingleLinkFields($dbConn, false, 0, (int)$row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
       } // while
     } // query ok
   } elseif ($doSafe == 2) { // add or edit a link
