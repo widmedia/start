@@ -1,33 +1,34 @@
 <?php declare(strict_types=1);
 // This file is a pure function definition file. It is included in other sites
 
-// function list: (TODO: update with input data types and return types)
+// function list: 
 // 20 - initialize ()
-// 21 - printConfirm ($dbConn, $heading, $text)
-// 22 - printErrorAndDie ($heading, $text)
+// 21 - printConfirm ($dbConn, string $heading, string $text): void
+// 22 - printErrorAndDie (string $heading, string $text): void
 // 23 - 
-// 24 - error ($dbConn, $errorMsgNum)
-// 25 - getCategory ($dbConn, $userid, $category)
-// 26 - printStartOfHtml ($dbConn)
-// 27 - printFooter ($dbConn)
-// 28 - overlayDiv ($disappearing, $zIndex, $text)
-// 29 - printOverlayGeneric ($dbConn, $messageNumber)    
-// 30 - printOverlayAccountVerify ($dbConn, $userid)
+// 24 - error ($dbConn, int $errorMsgNum): void  
+// 25 - getCategory ($dbConn, int $userid, int $category): string
+// 26 - printStartOfHtml ($dbConn): void
+// 27 - printFooter ($dbConn): void
+// 28 - overlayDiv (bool $disappearing, int $zIndex, string $text): void
+// 29 - printOverlayGeneric ($dbConn, int $messageNumber): void    
+// 30 - printOverlayAccountVerify ($dbConn, int $userid): void
 // 31 - getCurrentSite ()
-// 32 - printNavMenu ($dbConn)
-// 33 - testUserCheck ($dbConn, $userid)
-// 34 - sessionAndCookieDelete ()
-// 35 - deleteUser ($dbConn, $userid)
-// 36 - getUserid ()
-// 37 - makeSafeInt ($unsafe, $length)
-// 38 - makeSafeHex ($unsafe, $length)
-// 39 - makeSafeStr ($unsafe, $length)
-// 40 - redirectRelative ($page)
-// 41 - printStatic ($dbConn)
-// 42 - printInlineCss ()
-// 43 - getLanguage ($dbConn, $textId)
-// 44 - updateUser ($dbConn, $userid, $forgotPw)
-
+// 32 - printNavMenu ($dbConn): void
+// 33 - testUserCheck ($dbConn, int $userid): bool
+// 34 - sessionAndCookieDelete (): void
+// 35 - deleteUser ($dbConn, int $userid): bool
+// 36 - getUserid (): int
+// 37 - makeSafeInt ($unsafe, int $length): int
+// 38 - makeSafeHex ($unsafe, int $length): string
+// 39 - makeSafeStr ($unsafe, int $length): string
+// 40 - redirectRelative (string $page): void
+// 41 - printStatic ($dbConn): void
+// 42 - printInlineCss (): void   
+// 43 - getLanguage ($dbConn, int $textId): string // NB: ln and id variables are safe
+// 44 - updateUser ($dbConn, int $userid, bool $forgotPw): bool  
+// 45 - safeIntFromExt (string $source, string $varName, int $length) : int
+// 46 - safeHexFromExt (string $source, string $varName, int $length) : string
   
 // this function is called on every (user related) page on the very start  
 // it does the session start and opens connection to the data base. Returns the dbConn variable

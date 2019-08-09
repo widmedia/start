@@ -465,8 +465,8 @@
       </form>';   
     } else { error($dbConn, 110900); printConfirm($dbConn, 'Error', 'Recovery link expired');}    
   } elseif ($doSafe == 10) {  // process the newly set password
-    $useridPostSafe = makeSafeInt($_POST['userid'], 11);
-    $verPost = makeSafeHex($_POST['ver'], 64);
+    $useridPostSafe = safeIntFromExt('POST', 'userid', 11);
+    $verPost = safeHexFromExt('POST', 'ver', 64);
     
     if (checkPwForgot($dbConn, $useridPostSafe, mysqli_real_escape_string($dbConn, $verPost))) { // check whether this account is really in the pwRecovery data base
       if (updateUser ($dbConn, $useridPostSafe, true)) {

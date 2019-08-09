@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
   require_once('../functions.php');
   $dbConn = initialize();
   
   
   // prints all the users (limit 100) in the database, sorted by id
-  function printUserTable ($dbConn) {
+  function printUserTable ($dbConn): void {
     $currentTime = time();
     
     echo '<table><tr><th>id</th><th>email</th><th>login</th><th>Pw/verified</th><th>verDate</th><th>select</th></tr>';
@@ -35,7 +35,7 @@
     echo '</table>';
   } // function
   
-  function printValueTable ($result, $numEntries) {
+  function printValueTable ($result, int $numEntries): void {
     echo '<div class="row twelve columns"><table>';
     while ($row = $result->fetch_row()) {
       echo '<tr>';
@@ -48,7 +48,7 @@
   }
     
   // sends an email to the user
-  function reminderMail($dbConn, $editUserId, $reason) { 
+  function reminderMail($dbConn, int $editUserId, int $reason): bool { 
     if ($reason == 1) { 
       $emailBodyDe = "(English below)\n\nSalü,\n\nDein Account auf widmedia.ch/start ist seit einiger Zeit inaktiv (kein Login während mindestens einem Monat).\n\n- Falls du deinen Account behalten möchtest, log dich bitte innerhalb von 24 Stunden wieder ein (Logininfos wurden dir bei der Accounteröffnung zugeschickt).\n";
       $emailBodyEn = "Hello,\n\nYour account on widmedia.ch/start has been inactive for quite some time (no login for at least one month).\n\n- If you like to keep your account, please login within the next 24 hours (login information have been sent at account opening).\n";
@@ -78,7 +78,7 @@
   
   // reads the user db, checks how many users have been active in this month and updates the statistics database (userStat)
   // userStat structure: id (int 11) / year (format 2019) int4 / month (format 07) int 2 / numUser (int 11)
-  function doUserStatistics($dbConn) {
+  function doUserStatistics($dbConn): void {
     // find current year and month
     $currentTime = time();
     $year = date('Y', $currentTime);
@@ -115,18 +115,12 @@
   <title>Admin page</title>
   <meta name="author" content="Daniel Widmer">
   <meta name="robots" content="noindex, nofollow">
-
-  <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- CSS -->
   <link rel="stylesheet" href="../css/font.css" type="text/css">
   <link rel="stylesheet" href="../css/normalize.css" type="text/css">
   <link rel="stylesheet" href="../css/skeleton.css" type="text/css">';
   printInlineCss();
   echo '
-  
-  <!-- Favicon -->  
   <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon.png">
   </head>
   <body>';
@@ -152,8 +146,8 @@
   doUserStatistics($dbConn);
   echo '</div>';  
   
-  $doSafe = makeSafeInt($_GET['do'], 1); // this is an integer (range 1 to 3)
-  $editUserId = makeSafeInt($_GET['editUserId'], 11); // this is an integer    
+  $doSafe = safeIntFromExt('GET', 'do', 1); // this is an integer (range 1 to 3)
+  $editUserId = safeIntFromExt('GET','editUserId', 11); // this is an integer    
   
   if ($doSafe == 1) { // display all the infos related to to current user
     if ($editUserId) { // have a valid userid      
@@ -188,8 +182,7 @@
     } else {
       error($dbConn, 170400);
     }
-  }   
-  
+  }     
 ?>
   </div> <!-- /container -->
   <div class="section noBottom">

@@ -3,8 +3,8 @@
   require_once('functions.php');
   $dbConn = initialize();  // does the session start and opens connection to the data base. Returns the dbConn variable
   
-  (int)$idSafe = makeSafeInt($_GET['id'], 11); 
-  (int)$userid = getUserid();
+  $idSafe = safeIntFromExt('GET', 'id', 11); 
+  $userid = getUserid();
   
   if (($idSafe > 0) and ($userid > 0)) {  
     // important to verify the userid as well. Query should always return just one
