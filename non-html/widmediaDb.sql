@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 31. Jul 2019 um 17:46
+-- Erstellungszeit: 15. Aug 2019 um 14:20
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -217,7 +217,8 @@ CREATE TABLE `user` (
   `randCookie` char(64) NOT NULL,
   `verified` tinyint(1) NOT NULL DEFAULT '0',
   `verCode` char(64) NOT NULL,
-  `verDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `verDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ln` char(2) NOT NULL DEFAULT 'de'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

@@ -213,18 +213,33 @@ function getCurrentSite () {
 }
 
 function printNavMenu ($dbConn): void {
-  // set the session var only if I did get the ln-variable
-  if (isset($_GET['ln'])) { // TODO: might take it from cookie and/or from data base
-    $lang = 'de';      
-    if (makeSafeStr($_GET['ln'], 2) == 'en') { // otherwise it stays
-      $lang = 'en';
-    }
-    $_SESSION['ln'] = $lang;
-    // TODO: might store it in a cookie and/or into user data base
-  }
-  
   $siteSafe = getCurrentSite();
-  $notLoggedIn = (getUserid() == 0);
+  $userid = getUserid();
+  $notLoggedIn = ($userid == 0);
+  
+  if (isset($_GET['ln'])) { // this means the user is changing the language. This has precedence over whatever    
+    $getLnSafe = makeSafeStr($_GET['ln'], 2); 
+      
+    if (($getLnSafe == 'en') or ($getLnSafe == 'de')) { // those are valid values
+      $_SESSION['ln'] = $getLnSafe;
+      if ($userid > 0) { // user is logged in
+        $dbConn->query('UPDATE `user` SET `ln` = "'.$getLnSafe.'" WHERE `id` = "'.$userid.'"');
+      }      
+    } // don't do anything for invalid values
+  } else { // no GET, meaning nobody wants to change it    
+    if ($userid > 0) { // use the db value when user is logged in
+      if ($result = $dbConn->query('SELECT `ln` FROM `user` WHERE `id` = "'.$userid.'"')) {
+        $row = $result->fetch_row();    
+        if (($row[0] == 'de') or ($row[0] == 'en')) {
+          $_SESSION['ln'] = $row[0]; // set it to the data base value
+        } // valid value in the data base. if not, I don't do anything
+      } // query ok        
+    } else { // user is not logged in
+      if (!isset($_SESSION['ln'])) { // session var is not yet set
+        $_SESSION['ln'] = 'de'; // don't have any other info, will set it to the default
+      }
+    }    
+  }  
   
   if ($siteSafe == 'index.php') { $home = '<li class="menuCurrentPage">Home</li>'; } else { $home = '<li><a href="index.php?do=6">Home</a></li>'; }
   if ($notLoggedIn) { $login = '<li><a href="index.php#login">- log in</a></li>'; } else { $login = ''; }
@@ -245,8 +260,8 @@ function printNavMenu ($dbConn): void {
   // TODO: design of the language selection
   if(isset($_GET['do'])) { // don't want to present the language sel on pages which are not default pages, where form entries are processed or similar
     $languageSelection = ''; 
-  } else {
-    $languageSelection = '<li>&nbsp;</li><li style="font-size:smaller;"><a href="'.$siteSafe.'?ln=de">DE</a>&nbsp;&nbsp;&nbsp;<a href="'.$siteSafe.'?ln=en">EN</a></li>';
+  } else {    
+    $languageSelection = '<li>&nbsp;</li><li style="font-size:smaller"><a href="'.$siteSafe.'?ln=de">&nbsp;DE</a>&nbsp;&nbsp;&nbsp;<a href="'.$siteSafe.'?ln=en">EN&nbsp;</a></li>';
   }
   
   echo '
