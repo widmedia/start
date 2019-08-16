@@ -12,9 +12,7 @@
       $pwFieldRequired = 'required';
     }
     
-    // later to do: will change it to arrays as soon as I have several pictures
-    $bgImgName_0 = 'bg_ice_1920x1080.jpg'; // 
-    $bgImgName_1 = 'bg_bamboo_1920x1080.jpg'; 
+    // later to do: will change it to arrays as soon as I have several pictures    
     $currentlySelectedStyle = 'border: 2px solid #faff3b;';
     $notSelectedStyle = 'border: 2px dotted #000;';
     $bgBorderSel_0 = $currentlySelectedStyle;
@@ -48,8 +46,8 @@
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="six columns"><a href="editUser.php?do=3&imgId=0" style="background-color:transparent;"><img src="images/'.$bgImgName_0.'" width="240" height="135" style="'.$bgBorderSel_0.'"></a></div>
-      <div class="six columns"><a href="editUser.php?do=3&imgId=1" style="background-color:transparent;"><img src="images/'.$bgImgName_1.'" width="240" height="135" style="'.$bgBorderSel_1.'"></a></div>
+      <div class="six columns"><a href="editUser.php?do=3&imgId=0" style="background-color:transparent;"><img src="images/bg/bg_0.jpg" width="240" height="135" style="'.$bgBorderSel_0.'"></a></div>
+      <div class="six columns"><a href="editUser.php?do=3&imgId=1" style="background-color:transparent;"><img src="images/bg/bg_1.jpg" width="240" height="135" style="'.$bgBorderSel_1.'"></a></div>
     </div>
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>

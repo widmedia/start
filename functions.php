@@ -469,20 +469,20 @@ function printInlineCss ($dbConn, bool $haveDb): void {
   $bg_diff2 = 'rgba(255, 47, 25, 0.6)'; // same color, different transparency for overlay and borders
   $bg_link  = 'rgba(180, 180, 180, 0.5)'; // grayish
   
-  $bgImg = 'bg_ice_1920x1080.jpg'; // default value. In case e.g. user is not logged in 
+  $bgImg = 'bg_0.jpg'; // 'ice image', default, in case e.g. user is not logged in 
   if ($haveDb) { // in some error cases, I don't have a data base connection
     $userid = getUserid();
     if ($result = $dbConn->query('SELECT `bgImgId` FROM `user` WHERE `id` = "'.$userid.'"')) {
       $row = $result->fetch_row();    
       if ($row[0] == 1) { // otherwise everything stays as is. later to do: more images...
-        $bgImg = 'bg_bamboo_1920x1080.jpg';
+        $bgImg = 'bg_1.jpg';
       }
     }   
   }  
   
   echo '
   <style>
-    html { background: url("images/'.$bgImg.'") no-repeat center center fixed; }
+    html { background: url("images/bg/'.$bgImg.'") no-repeat center center fixed; }
     body { color: '.$lightMain.'; } 
     a { color: '.$font_link.'; background-color: '.$bg_link.';}
     a:hover { color: '.$lightMain.'; }
