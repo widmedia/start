@@ -13,18 +13,18 @@
     }
     
     // later to do: will change it to arrays as soon as I have several pictures    
-    $currentlySelectedStyle = 'border: 2px solid #faff3b;';
+    $currentlySelectedStyle = 'border: 2px solid #faff3b;';  // to do: should use the color definition from printInlineCss. But later on, that's coming from the db anyhow
     $notSelectedStyle = 'border: 2px dotted #000;';
-    $bgBorderSel_0 = $currentlySelectedStyle;
+    $bgBorderSel_0 = $notSelectedStyle;
     $bgBorderSel_1 = $notSelectedStyle;
-    if ($row['bgImgId'] == 1) { // background image, stored with an id in the user data base, 0 and 1 are valid items
-      $bgBorderSel_0 = $notSelectedStyle;
+    if ($row['bgImgId'] == 1) { // background image, stored with an id in the user data base, 0 and 1 are valid items      
       $bgBorderSel_1 = $currentlySelectedStyle;
-    }
-    
+    } else { // default bg image
+      $bgBorderSel_0 = $currentlySelectedStyle;
+    }    
     
     echo '
-    <h3 class="section-heading"><span class="bgCol">Userid: '.$row['id'].'</span></h3>
+    <h3 class="section-heading"><span class="bgCol">Email / '.getLanguage($dbConn,84).'</span></h3>
     <form action="editUser.php?do=2" method="post">
     <div class="row twelve columns"><span class="bgCol">'.getLanguage($dbConn,46).$row['lastLogin'].'</span></div>    
     <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();"> <span class="bgCol">'.getLanguage($dbConn,47).'</span> <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConn,48).'</div></div>    
@@ -43,11 +43,11 @@
     </div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,51).'"></div>    
-    <div class="row twelve columns"><hr /></div>
-    <div class="row twelve columns">&nbsp;</div>
+    <div class="row twelve columns"><hr /></div>    
+    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>
     <div class="row">
-      <div class="six columns"><a href="editUser.php?do=3&imgId=0" style="background-color:transparent;"><img src="images/bg/bg_0.jpg" width="240" height="135" style="'.$bgBorderSel_0.'"></a></div>
-      <div class="six columns"><a href="editUser.php?do=3&imgId=1" style="background-color:transparent;"><img src="images/bg/bg_1.jpg" width="240" height="135" style="'.$bgBorderSel_1.'"></a></div>
+      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&imgId=0" style="background-color:transparent;"><img src="images/bg/bg_0.jpg" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>
+      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&imgId=1" style="background-color:transparent;"><img src="images/bg/bg_1.jpg" style="'.$bgBorderSel_1.' width:100%; vertical-align:middle;"></a></div>
     </div>
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
