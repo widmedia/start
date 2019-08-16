@@ -133,8 +133,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :)
 */
 
 html {
-  font-size: 62.5%;
-  background: url('../images/2560x1440.jpg') no-repeat center center fixed; 
+  font-size: 62.5%;  
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

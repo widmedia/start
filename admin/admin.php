@@ -119,8 +119,11 @@
   <link rel="stylesheet" href="../css/font.css" type="text/css">
   <link rel="stylesheet" href="../css/normalize.css" type="text/css">
   <link rel="stylesheet" href="../css/skeleton.css" type="text/css">';
-  printInlineCss();
-  echo '
+  printInlineCss($dbConn, true);  
+  echo '  
+  <style>
+    html { background: url("../images/bg_ice_1920x1080.jpg") no-repeat center center fixed; }    
+  </style>  
   <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon.png">
   </head>
   <body>';

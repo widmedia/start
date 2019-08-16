@@ -24,7 +24,7 @@
 // 39 - makeSafeStr ($unsafe, int $length): string
 // 40 - redirectRelative (string $page): void
 // 41 - printStatic ($dbConn): void
-// 42 - printInlineCss (): void   
+// 42 - printInlineCss ($dbConn, bool $haveDb): void   
 // 43 - getLanguage ($dbConn, int $textId): string // NB: ln and id variables are safe
 // 44 - updateUser ($dbConn, int $userid, bool $forgotPw): bool  
 // 45 - safeIntFromExt (string $source, string $varName, int $length) : int
@@ -79,7 +79,7 @@ function printErrorAndDie (string $heading, string $text): void {
   <link rel="stylesheet" href="css/font.css" type="text/css">
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
-  printInlineCss();
+  printInlineCss('', false);
   echo '</head><body><div class="row twelve columns textBox"><h4>'.$heading.'</h4><p>'.$text.'</p></div></body></html>';
   die();  
 }
@@ -422,7 +422,7 @@ function printStatic ($dbConn): void {
   <link rel="stylesheet" href="css/font.css" type="text/css">
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
-  printInlineCss();
+  printInlineCss($dbConn, true);
   
   echo '
   <script type="text/javascript">
@@ -456,7 +456,7 @@ function printStatic ($dbConn): void {
 }
 
 // defines all the styles with color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
-function printInlineCss (): void {   
+function printInlineCss ($dbConn, bool $haveDb): void {   
   $lightMain = 'rgba(250, 255, 59, 0.85)'; // yellowish (works good on blue, works on gray as well) = #faff3b;
   $darkMain =  'rgba(182, 189, 0, 0.85)'; // darker version of above settings  
   
@@ -469,8 +469,20 @@ function printInlineCss (): void {
   $bg_diff2 = 'rgba(255, 47, 25, 0.6)'; // same color, different transparency for overlay and borders
   $bg_link  = 'rgba(180, 180, 180, 0.5)'; // grayish
   
+  $bgImg = 'bg_ice_1920x1080.jpg'; // default value. In case e.g. user is not logged in 
+  if ($haveDb) { // in some error cases, I don't have a data base connection
+    $userid = getUserid();
+    if ($result = $dbConn->query('SELECT `bgImgId` FROM `user` WHERE `id` = "'.$userid.'"')) {
+      $row = $result->fetch_row();    
+      if ($row[0] == 1) { // otherwise everything stays as is. later to do: more images...
+        $bgImg = 'bg_bamboo_1920x1080.jpg';
+      }
+    }   
+  }  
+  
   echo '
   <style>
+    html { background: url("images/'.$bgImg.'") no-repeat center center fixed; }
     body { color: '.$lightMain.'; } 
     a { color: '.$font_link.'; background-color: '.$bg_link.';}
     a:hover { color: '.$lightMain.'; }
