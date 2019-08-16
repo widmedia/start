@@ -124,10 +124,10 @@ function printStartOfHtml ($dbConn): void {
 function printFooter ($dbConn): void {
   echo '</div>'; // close the container
   $siteSafe = getCurrentSite(); 
-  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg"> '.getLanguage($dbConn,45).'</a>';
-  $home   = '<a class="button differentColor" href="links.php"><img src="images/icon_home.png" class="logoImg"> Links</a>';
-  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg"> '.getLanguage($dbConn,1).'</a>'; 
-  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon_logout.png" class="logoImg"> Log out</a>';
+  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
+  $home   = '<a class="button differentColor" href="links.php"><img src="images/icon_home.png" class="logoImg" alt="icon home"> Links</a>';
+  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
+  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon_logout.png" class="logoImg" alt="icon logout"> Log out</a>';
   
   // default values. For links.php as current site   
   $linkLeft   = $edit;
@@ -265,7 +265,7 @@ function printNavMenu ($dbConn): void {
   }
   
   echo '
-  <nav role="navigation" style="width:400px">
+  <nav style="width:400px">
     <div id="menuToggle">
       <input type="checkbox">
       <span></span>
@@ -425,7 +425,7 @@ function printStatic ($dbConn): void {
   printInlineCss($dbConn, true);
   
   echo '
-  <script type="text/javascript">
+  <script>
   // changes the display property of the pw-text field (actually the whole row) and some warning message
   function pwToggle() {
     if (document.getElementById("pwCheckBox").checked == 1) {

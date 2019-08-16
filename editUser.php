@@ -46,12 +46,12 @@
     <div class="row twelve columns"><hr /></div>    
     <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>
     <div class="row">
-      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&imgId=0" style="background-color:transparent;"><img src="images/bg/bg_0.jpg" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>
-      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&imgId=1" style="background-color:transparent;"><img src="images/bg/bg_1.jpg" style="'.$bgBorderSel_1.' width:100%; vertical-align:middle;"></a></div>
+      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&imgId=0" style="background-color:transparent;"><img src="images/bg/bg_0.jpg" alt="default background image" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>
+      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&imgId=1" style="background-color:transparent;"><img src="images/bg/bg_1.jpg" alt="another background image" style="'.$bgBorderSel_1.' width:100%; vertical-align:middle;"></a></div>
     </div>
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><a href="editUser.php?do=1" class="button differentColor"><img src="images/icon_delete.png" class="logoImg"> '.getLanguage($dbConn,52).'</a></div>
+    <div class="row twelve columns"><a href="editUser.php?do=1" class="button differentColor"><img src="images/icon_delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>
     </form>';
   } // function
   
@@ -59,6 +59,7 @@
   // 0=> edit an existing user: present the form
   // 1=> delete an existing user: db operations
   // 2=> update an existing user: db operations
+  // 3=> change the background image: db operations
   
   // TODO: think about merging this whole file with the editLinks file
   
