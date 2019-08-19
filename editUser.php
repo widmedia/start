@@ -12,7 +12,7 @@
       $pwFieldRequired = 'required';
     }
     
-    // later to do: will change it to arrays as soon as I have several pictures    
+    // later TODO: will change it to arrays as soon as I have several pictures    
     $currentlySelectedStyle = 'border: 2px solid #faff3b;';  // to do: should use the color definition from printInlineCss. But later on, that's coming from the db anyhow
     $notSelectedStyle = 'border: 2px dotted #000;';
     $bgBorderSel_0 = $notSelectedStyle;
@@ -46,8 +46,8 @@
     <div class="row twelve columns"><hr /></div>    
     <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>
     <div class="row">
-      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&styleId=0" style="background-color:transparent;"><img src="images/bg/bg_0.jpg" alt="default background image" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>
-      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&styleId=1" style="background-color:transparent;"><img src="images/bg/bg_1.jpg" alt="another background image" style="'.$bgBorderSel_1.' width:100%; vertical-align:middle;"></a></div>
+      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&styleId=0" style="background-color:transparent;"><img src="images/bg/'.styleDef(0,'bgImg').'" alt="default background image" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>
+      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&styleId=1" style="background-color:transparent;"><img src="images/bg/'.styleDef(1,'bgImg').'" alt="another background image" style="'.$bgBorderSel_1.' width:100%; vertical-align:middle;"></a></div>
     </div>
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>

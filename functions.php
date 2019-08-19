@@ -27,8 +27,10 @@
 // 42 - printInlineCss ($dbConn, bool $haveDb): void   
 // 43 - getLanguage ($dbConn, int $textId): string // NB: ln and id variables are safe
 // 44 - updateUser ($dbConn, int $userid, bool $forgotPw): bool  
-// 45 - safeIntFromExt (string $source, string $varName, int $length) : int
-// 46 - safeHexFromExt (string $source, string $varName, int $length) : string
+// 45 - safeIntFromExt (string $source, string $varName, int $length): int
+// 46 - safeHexFromExt (string $source, string $varName, int $length): string
+// 47 - getStyle($dbConn, int $userid, string $item): string
+// 48 - styleDef(int $styleId, string $item): string
   
 // this function is called on every (user related) page on the very start  
 // it does the session start and opens connection to the data base. Returns the dbConn variable
@@ -456,29 +458,22 @@ function printStatic ($dbConn): void {
 }
 
 // defines all the styles with color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
-function printInlineCss ($dbConn, bool $haveDb): void {   
+function printInlineCss ($dbConn, bool $haveDb): void {  
+  $userid = getUserid();
+  
   $lightMain = 'rgba(250, 255, 59, 0.85)'; // yellowish (works good on blue, works on gray as well) = #faff3b;
   $darkMain =  'rgba(182, 189, 0, 0.85)'; // darker version of above settings  
   
   $font_link     = '#8d3a53'; // some red  
   $borders_lines = '#e1e1e1'; // whitish  
   
-  $bg_norm  = 'rgba(0, 113, 255, 0.40)'; // blueish
-  $bg_norm2 = 'rgba(0, 113, 255, 0.80)'; // same color, different transparency for navMenu
-  $bg_diff  = 'rgba(255, 47, 25, 0.3)'; // reddish 
-  $bg_diff2 = 'rgba(255, 47, 25, 0.6)'; // same color, different transparency for overlay and borders
+  $bg_norm  = 'rgba('.getStyle($dbConn, $userid, 'bgNorm').', 0.40)'; // default blueish
+  $bg_norm2 = 'rgba('.getStyle($dbConn, $userid, 'bgNorm').', 0.80)'; // same color, different transparency for navMenu
+  $bg_diff  = 'rgba('.getStyle($dbConn, $userid, 'bgDiff').', 0.3)'; // reddish 
+  $bg_diff2 = 'rgba('.getStyle($dbConn, $userid, 'bgDiff').', 0.6)'; // same color, different transparency for overlay and borders
   $bg_link  = 'rgba(180, 180, 180, 0.5)'; // grayish
   
-  $bgImg = 'bg_0.jpg'; // 'ice image', default, in case e.g. user is not logged in 
-  if ($haveDb) { // in some error cases, I don't have a data base connection
-    $userid = getUserid();
-    if ($result = $dbConn->query('SELECT `styleId` FROM `user` WHERE `id` = "'.$userid.'"')) {
-      $row = $result->fetch_row();    
-      if ($row[0] == 1) { // otherwise everything stays as is. later to do: more images...
-        $bgImg = 'bg_1.jpg';
-      }
-    }   
-  }  
+  $bgImg = getStyle($dbConn, $userid, 'bgImg');
   
   echo '
   <style>
@@ -590,7 +585,7 @@ function updateUser ($dbConn, int $userid, bool $forgotPw): bool {
 }
 
 // checks whether a get/post/cookie variable exists and makes it safe if it does. If not, returns 0
-function safeIntFromExt (string $source, string $varName, int $length) : int {
+function safeIntFromExt (string $source, string $varName, int $length): int {
   if (($source === 'GET') and (isset($_GET[$varName]))) {
     return makeSafeInt($_GET[$varName], $length);    
   } elseif (($source === 'POST') and (isset($_POST[$varName]))) {
@@ -603,7 +598,7 @@ function safeIntFromExt (string $source, string $varName, int $length) : int {
 }
 
 // same as int above...
-function safeHexFromExt (string $source, string $varName, int $length) : string {
+function safeHexFromExt (string $source, string $varName, int $length): string {
  if (($source === 'GET') and (isset($_GET[$varName]))) {
     return makeSafeHex($_GET[$varName], $length);
   } elseif (($source === 'POST') and (isset($_POST[$varName]))) {
@@ -615,6 +610,35 @@ function safeHexFromExt (string $source, string $varName, int $length) : string 
   }
 }
 
+// returns the style item (an image name or a color code) 
+function getStyle($dbConn, int $userid, string $item): string {
+  $styleId = 0; // default value, also for all non-logged in users
+  if ($userid > 0) { // logged in users
+    if ($result = $dbConn->query('SELECT `styleId` FROM `user` WHERE `id` = "'.$userid.'"')) {
+      $row = $result->fetch_row();    
+      $styleId = (int)$row[0];
+    }
+  }
+  return styleDef($styleId, $item);
+}
 
-
+// following styles are defined
+// styleId  |   bgImg   |   lightMain   |   darkMain   |   bgNorm   |   bgDiff   |
+// -------------------------------------------------------------------------------
+//     0    | bg_0.jpg  | 250, 255, 59  | 182, 189, 0  | 0, 113, 255| 255, 47, 25|
+//     1    | bg_1.jpg  | 250, 255, 59  | 182, 189, 0  | 255, 47, 25| 0, 113, 255|   
+function styleDef(int $styleId, string $item): string {
+  $bgNormArr = array('0, 113, 255','255, 47, 25');
+  $bgDiffArr = array('255, 47, 25','0, 113, 255');
+  
+  if ($item == 'bgImg') {
+    return ('bg_'.$styleId.'.jpg'); // currently working. Think again about this when using two digit style IDs
+  } elseif ($item == 'bgNorm') {
+    return $bgNormArr[$styleId];
+  } elseif ($item == 'bgDiff') {    
+    return $bgDiffArr[$styleId];
+  } else {
+    return '';
+  }    
+}
 
