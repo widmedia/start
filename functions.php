@@ -71,14 +71,14 @@ function printErrorAndDie (string $heading, string $text): void {
   // cannot use printStatic as I don't have a dbConn
   echo '
 <!DOCTYPE html><html><head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Error page</title>
-  <meta name="description" content="a generic error page">  
-  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/font.css" type="text/css">
-  <link rel="stylesheet" href="css/normalize.css" type="text/css">
-  <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
+  <meta name="description" content="a generic error page" />  
+  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/font.css" type="text/css" />
+  <link rel="stylesheet" href="css/normalize.css" type="text/css" />
+  <link rel="stylesheet" href="css/skeleton.css" type="text/css" />';
   printInlineCss('', false);
   echo '</head><body><div class="row twelve columns textBox"><h4>'.$heading.'</h4><p>'.$text.'</p></div></body></html>';
   die();  
@@ -399,13 +399,13 @@ function printStatic ($dbConn): void {
 <!DOCTYPE html>
 <html lang="'.getLanguage($dbConn,111).'">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>'.$title.'</title>
   <meta property="og:title" content="'.$title.'" />
-  <meta name="author" content="Daniel Widmer">
-  <meta name="description" content="'.$description.'">  
+  <meta name="author" content="Daniel Widmer" />
+  <meta name="description" content="'.$description.'" />  
   <link rel="canonical" href="'.$url.'" />  
-  <meta name="robots" content="index, follow">    
+  <meta name="robots" content="index, follow" />    
   <meta property="og:description" content="'.$description.'" />
   <meta property="og:url" content="'.$url.'" />
   <meta property="og:type" content="website" />  
@@ -417,11 +417,11 @@ function printStatic ($dbConn): void {
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="800" />
   <meta property="og:image:height" content="800" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png">    
-  <link rel="stylesheet" href="css/font.css" type="text/css">
-  <link rel="stylesheet" href="css/normalize.css" type="text/css">
-  <link rel="stylesheet" href="css/skeleton.css" type="text/css">';
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" sizes="96x96" href="images/favicon.png" />
+  <link rel="stylesheet" href="css/font.css" type="text/css" />
+  <link rel="stylesheet" href="css/normalize.css" type="text/css" />
+  <link rel="stylesheet" href="css/skeleton.css" type="text/css" />';
   printInlineCss($dbConn, true);
   
   echo '
@@ -472,7 +472,7 @@ function printInlineCss ($dbConn, bool $haveDb): void {
   $bgImg = 'bg_0.jpg'; // 'ice image', default, in case e.g. user is not logged in 
   if ($haveDb) { // in some error cases, I don't have a data base connection
     $userid = getUserid();
-    if ($result = $dbConn->query('SELECT `bgImgId` FROM `user` WHERE `id` = "'.$userid.'"')) {
+    if ($result = $dbConn->query('SELECT `styleId` FROM `user` WHERE `id` = "'.$userid.'"')) {
       $row = $result->fetch_row();    
       if ($row[0] == 1) { // otherwise everything stays as is. later to do: more images...
         $bgImg = 'bg_1.jpg';
