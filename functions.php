@@ -623,20 +623,28 @@ function getStyle($dbConn, int $userid, string $item): string {
 }
 
 // following styles are defined
-// styleId  |   bgImg   |   lightMain   |   darkMain   |   bgNorm   |   bgDiff   |
+// styleId  |   bgImg   |   bgNorm   |   bgDiff   |  lightMain   |   darkMain   | 
 // -------------------------------------------------------------------------------
-//     0    | bg_0.jpg  | 250, 255, 59  | 182, 189, 0  | 0, 113, 255| 255, 47, 25|
-//     1    | bg_1.jpg  | 250, 255, 59  | 182, 189, 0  | 255, 47, 25| 0, 113, 255|   
+//     0    | bg_0.jpg  | 0, 113, 255| 255, 47, 25|250, 255, 59  | 182, 189, 0  | 
+//     1    | bg_1.jpg  | 255, 47, 25| 0, 113, 255|250, 255, 59  | 182, 189, 0  |    
+//     2    | bg_2.jpg  | ... default ...
+// ... 6    | bg_6.jpg  | ... default ...
 function styleDef(int $styleId, string $item): string {
-  $bgNormArr = array('0, 113, 255','255, 47, 25');
-  $bgDiffArr = array('255, 47, 25','0, 113, 255');
+  $def = '0, 113, 255';
+  $bgNormArr = array($def,'255, 47, 25',$def,$def,$def,$def,$def);
+  $def = '255, 47, 25';
+  $bgDiffArr = array($def,'0, 113, 255',$def,$def,$def,$def,$def);
   
-  if ($item == 'bgImg') {
-    return ('bg_'.$styleId.'.jpg'); // currently working. Think again about this when using two digit style IDs
-  } elseif ($item == 'bgNorm') {
-    return $bgNormArr[$styleId];
-  } elseif ($item == 'bgDiff') {    
-    return $bgDiffArr[$styleId];
+  if ($styleId < 7) {
+    if ($item == 'bgImg') {
+      return ('bg_'.$styleId.'.jpg'); // currently working. Think again about this when using two digit style IDs
+    } elseif ($item == 'bgNorm') {
+      return $bgNormArr[$styleId];
+    } elseif ($item == 'bgDiff') {    
+      return $bgDiffArr[$styleId];
+    } else {
+      return '';
+    }    
   } else {
     return '';
   }    

@@ -14,14 +14,12 @@
     
     // later TODO: will change it to arrays as soon as I have several pictures    
     $currentlySelectedStyle = 'border: 2px solid #faff3b;';  // to do: should use the color definition from printInlineCss. But later on, that's coming from the db anyhow
-    $notSelectedStyle = 'border: 2px dotted #000;';
-    $bgBorderSel_0 = $notSelectedStyle;
-    $bgBorderSel_1 = $notSelectedStyle;
-    if ($row['styleId'] == 1) { // background image, stored with an id in the user data base, 0 and 1 are valid items      
-      $bgBorderSel_1 = $currentlySelectedStyle;
-    } else { // default bg image
-      $bgBorderSel_0 = $currentlySelectedStyle;
-    }    
+    $notSel = 'border: 2px dotted #000;';
+    
+    // 0..6 are valid selectors
+    $bgBorderSel = array($notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel);
+    $bgBorderSel[$row['styleId']] = $currentlySelectedStyle;
+        
     
     echo '
     <h3 class="section-heading"><span class="bgCol">Email / '.getLanguage($dbConn,84).'</span></h3>
@@ -46,8 +44,9 @@
     <div class="row twelve columns"><hr /></div>    
     <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>
     <div class="row">
-      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&styleId=0" style="background-color:transparent;"><img src="images/bg/'.styleDef(0,'bgImg').'" alt="default background image" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>
-      <div class="six columns u-max-full-width"><a href="editUser.php?do=3&styleId=1" style="background-color:transparent;"><img src="images/bg/'.styleDef(1,'bgImg').'" alt="another background image" style="'.$bgBorderSel_1.' width:100%; vertical-align:middle;"></a></div>
+      <div class="four columns u-max-full-width"><a href="editUser.php?do=3&styleId=0" style="background-color:transparent;"><img src="images/bg/'.styleDef(0,'bgImg').'" alt="default background image" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>
+      <div class="four columns u-max-full-width"><a href="editUser.php?do=3&styleId=1" style="background-color:transparent;"><img src="images/bg/'.styleDef(1,'bgImg').'" alt="another background image" style="'.$bgBorderSel_1.' width:100%; vertical-align:middle;"></a></div>
+      <div class="four columns u-max-full-width"><a href="editUser.php?do=3&styleId=2" style="background-color:transparent;"><img src="images/bg/'.styleDef(2,'bgImg').'" alt="another background image" style="'.$bgBorderSel_2.' width:100%; vertical-align:middle;"></a></div>
     </div>
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
@@ -91,7 +90,7 @@
   } elseif ($doSafe == 3) { // update an existing user: styleId link
     if ($userid > 0) { // have a valid userid
       $styleIdFromGet = safeIntFromExt('GET', 'styleId', 2); // this is an integer, range 0 to 99
-      if ($styleIdFromGet == 0 or $styleIdFromGet == 1) { // currently the only valid image ids
+      if ($styleIdFromGet <= 6) { // currently the only valid image ids
         if ($result = $dbConn->query('UPDATE `user` SET `styleId` = "'.$styleIdFromGet.'" WHERE `id` = "'.$userid.'"')) {
           redirectRelative('editUser.php'); // stay on the page
         } else { error($dbConn, 150300); } // query
