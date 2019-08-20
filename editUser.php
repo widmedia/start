@@ -42,12 +42,15 @@
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,51).'" /></div>    
     <div class="row twelve columns"><hr /></div>    
-    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>
-    <div class="row">
-      <div class="four columns u-max-full-width"><a href="editUser.php?do=3&styleId=0" style="background-color:transparent;"><img src="images/bg/'.styleDef(0,'bgImg').'" alt="default background image" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>
-      <div class="four columns u-max-full-width"><a href="editUser.php?do=3&styleId=1" style="background-color:transparent;"><img src="images/bg/'.styleDef(1,'bgImg').'" alt="another background image" style="'.$bgBorderSel_1.' width:100%; vertical-align:middle;"></a></div>
-      <div class="four columns u-max-full-width"><a href="editUser.php?do=3&styleId=2" style="background-color:transparent;"><img src="images/bg/'.styleDef(2,'bgImg').'" alt="another background image" style="'.$bgBorderSel_2.' width:100%; vertical-align:middle;"></a></div>
-    </div>
+    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>';
+    for ($i = 0; $i < 7; $i++) {
+      if (($i % 4) == 0) { echo '<div class="row">'; }
+      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=3&styleId='.$i.'" style="background-color:transparent;"><img src="images/bg/'.styleDef($i,'bgImg').'" alt="default background image" style="'.$bgBorderSel_0.' width:100%; vertical-align:middle;"></a></div>';
+      if (($i == 3) or ($i == 6)) { // last one does not fit into modulo function ($i % 4) == 3
+        echo '</div><div class="row twelve columns">&nbsp;</div>'; 
+      } 
+    }
+    echo '    
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns"><a href="editUser.php?do=1" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon_delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>
