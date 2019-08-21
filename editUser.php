@@ -48,10 +48,15 @@
         echo '</div><div class="row twelve columns">&nbsp;</div>'; 
       } 
     }
-    echo '    
+    echo '<div class="row twelve columns"><hr /></div>    
+    <h3 class="section-heading"><span class="bgCol">Sprache / Language</span></h3>
+    <div class="row">
+      <div class="six columns"><span class="bgCol">English:</span><a href="editUser.php?ln=en">&nbsp;EN&nbsp;</a></div>
+      <div class="six columns"><span class="bgCol">Deutsch:</span><a href="editUser.php?ln=de">&nbsp;DE&nbsp;</a></div>
+    </div>
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><a href="editUser.php?do=1" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon_delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>
+    <div class="row twelve columns"><a href="editUser.php?do=1" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon/delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>
     </form>';
   } // function
   

@@ -126,10 +126,10 @@ function printStartOfHtml ($dbConn): void {
 function printFooter ($dbConn): void {
   echo '</div>'; // close the container
   $siteSafe = getCurrentSite(); 
-  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon_edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
-  $home   = '<a class="button differentColor" href="links.php"><img src="images/icon_home.png" class="logoImg" alt="icon home"> Links</a>';
-  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon_info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
-  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon_logout.png" class="logoImg" alt="icon logout"> Log out</a>';
+  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
+  $home   = '<a class="button differentColor" href="links.php"><img src="images/icon/home.png" class="logoImg" alt="icon home"> Links</a>';
+  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon/info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
+  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon/logout.png" class="logoImg" alt="icon logout"> Log out</a>';
   
   // default values. For links.php as current site   
   $linkLeft   = $edit;

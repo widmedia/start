@@ -15,8 +15,8 @@
     echo '</div><div class="row twelve columns">&nbsp;</div>';                    
     echo '
     <div class="row">
-      <div class="six columns"><a class="button differentColor" href="editUser.php"><img src="images/icon_db.png" alt="icon data base" class="logoImg"> '.getLanguage($dbConn,28).'</a></div>
-      <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon_zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
+      <div class="six columns"><a class="button differentColor" href="editUser.php"><img src="images/icon/db.png" alt="icon data base" class="logoImg"> '.getLanguage($dbConn,28).'</a></div>
+      <div class="six columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
     </div>';    
   } // function 
   
@@ -27,7 +27,7 @@
       $deleteText = '';
     } else {
       $submitText = getLanguage($dbConn,39);
-      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/icon_delete.png" alt="icon delete" class="logoImg"> '.getLanguage($dbConn,40).'</a>';
+      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/icon/delete.png" alt="icon delete" class="logoImg"> '.getLanguage($dbConn,40).'</a>';
     }
     echo '
     <form action="editLinks.php?do=2&id='.$linkId.'" method="post">      

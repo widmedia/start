@@ -259,9 +259,9 @@
       </ul></div>
     </div>
     <div class="row twelve columns"><hr></div>
-    <div class="row twelve columns">'.getLanguage($dbConn,80).' <img src="images/icon_arrow_right.png" alt="pointing to the open free account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own free account" class="logoImg"> '.getLanguage($dbConn,81).'</a></div>
+    <div class="row twelve columns">'.getLanguage($dbConn,80).' <img src="images/icon/arrow_right.png" alt="pointing to the open free account form" class="logoImg"> <a href="index.php?do=2#newUser" class="button"><img src="images/icon/plus.png" alt="open your own free account" class="logoImg"> '.getLanguage($dbConn,81).'</a></div>
     <div class="row twelve columns"><hr></div>
-    <div class="row twelve columns">'.getLanguage($dbConn,82).' <img src="images/icon_arrow_right.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button">'.getLanguage($dbConn,83).'</a></div>
+    <div class="row twelve columns">'.getLanguage($dbConn,82).' <img src="images/icon/arrow_right.png" alt="pointing to the test user login" class="logoImg"> <a href="index.php?userid=2" class="button">'.getLanguage($dbConn,83).'</a></div>
     <div class="row twelve columns"><hr></div>';
   } // function
   
@@ -295,8 +295,8 @@
     </form>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">
-      <div class="six columns"><a href="index.php?do=2#newUser" class="button"><img src="images/icon_plus.png" alt="open your own account" class="logoImg"> '.getLanguage($dbConn,81).'</a></div>
-      <div class="six columns"><a href="index.php?do=7#login" class="button"><img src="images/icon_question.png" alt="get an email with your new password" class="logoImg"> '.getLanguage($dbConn,87).'</a></div>
+      <div class="six columns"><a href="index.php?do=2#newUser" class="button"><img src="images/icon/plus.png" alt="open your own account" class="logoImg"> '.getLanguage($dbConn,81).'</a></div>
+      <div class="six columns"><a href="index.php?do=7#login" class="button"><img src="images/icon/question.png" alt="get an email with your new password" class="logoImg"> '.getLanguage($dbConn,87).'</a></div>
     </div>';        
     }
     echo '<div class="row twelve columns">&nbsp;</div>';
