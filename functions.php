@@ -461,16 +461,16 @@ function printStatic ($dbConn): void {
 function printInlineCss ($dbConn, bool $haveDb): void {  
   $userid = getUserid();
   
-  $lightMain = 'rgba(250, 255, 59, 0.85)'; // yellowish (works good on blue, works on gray as well) = #faff3b;
-  $darkMain =  'rgba(182, 189, 0, 0.85)'; // darker version of above settings  
+  $lightMain = 'rgba('.getStyle($dbConn, $userid, 'lightMain').')'; // yellowish (works good on blue, works on gray as well) = #faff3b;
+  $darkMain =  'rgba('.getStyle($dbConn, $userid, 'darkMain').')'; // darker version of above settings  
   
   $font_link     = '#8d3a53'; // some red  
   $borders_lines = '#e1e1e1'; // whitish  
   
-  $bg_norm  = 'rgba('.getStyle($dbConn, $userid, 'bgNorm').', 0.40)'; // default blueish
-  $bg_norm2 = 'rgba('.getStyle($dbConn, $userid, 'bgNorm').', 0.80)'; // same color, different transparency for navMenu
-  $bg_diff  = 'rgba('.getStyle($dbConn, $userid, 'bgDiff').', 0.3)'; // reddish 
-  $bg_diff2 = 'rgba('.getStyle($dbConn, $userid, 'bgDiff').', 0.6)'; // same color, different transparency for overlay and borders
+  $bg_norm  = 'rgba('.getStyle($dbConn, $userid, 'bgNorm').')'; // default blueish
+  $bg_norm2 = 'rgba('.getStyle($dbConn, $userid, 'bgNorm2').')'; // same color, different transparency for navMenu
+  $bg_diff  = 'rgba('.getStyle($dbConn, $userid, 'bgDiff').')'; // reddish 
+  $bg_diff2 = 'rgba('.getStyle($dbConn, $userid, 'bgDiff2').', 0.6)'; // same color, different transparency for overlay and borders
   $bg_link  = 'rgba(180, 180, 180, 0.5)'; // grayish
   
   $bgImg = getStyle($dbConn, $userid, 'bgImg');
@@ -622,31 +622,44 @@ function getStyle($dbConn, int $userid, string $item): string {
   return styleDef($styleId, $item);
 }
 
-// following styles are defined
-// styleId  |   bgImg   |   bgNorm   |   bgDiff   |  lightMain   |   darkMain   | 
+// following styles items are defined
+// styleId  |   bgImg   | bgNorm (2) | bgDiff (2) |  lightMain   |   darkMain   | 
 // -------------------------------------------------------------------------------
 //     0    | bg_0.jpg  | 0, 113, 255| 255, 47, 25|250, 255, 59  | 182, 189, 0  | 
-//     1    | bg_1.jpg  | 255, 47, 25| 0, 113, 255|250, 255, 59  | 182, 189, 0  |    
-//     2    | bg_2.jpg  | ... default ...
-// ... 6    | bg_6.jpg  | ... default ...
 function styleDef(int $styleId, string $item): string {
-  $def = '0, 113, 255';
-  $bgNormArr = array($def,'255, 47, 25',$def,$def,$def,$def,$def);
-  $def = '255, 47, 25';
-  $bgDiffArr = array($def,'0, 113, 255',$def,$def,$def,$def,$def);
+  // TODO: define as table. Or move to data base?
   
-  if ($styleId < 7) {
+  
+  $def = '0,113,255,0.40'; $bgNormArr = array($def,'117,89,217,0.60',$def,$def,'91,115,56,0.40',$def,$def);
+  $def = '0,113,255,0.80'; $bgNorm2Arr =array($def,'117,89,217,0.80',$def,$def,'91,115,56,0.80',$def,$def);
+  
+  $def = '255,47,25,0.30'; $bgDiffArr = array($def,'210,242,141,0.50',$def,$def,'191,23,37,0.30',$def,$def);
+  $def = '255,47,25,0.60'; $bgDiff2Arr =array($def,'210,242,141,0.60',$def,$def,'191,23,37,0.60',$def,$def);
+  
+  $def = '250,255,59,0.85'; $lightMainArr = array($def,'200,200,200,0.85',$def,$def,'250,228,117,0.85',$def,$def);
+  
+  $def = '182,189,0,0.85'; $darkMainArr = array($def,'160,160,160,0.85',$def,$def,'174,158,81,0.85',$def,$def);  
+
+  if ($styleId < 7) { // only 0..6 are defined
     if ($item == 'bgImg') {
       return ('bg_'.$styleId.'.jpg'); // currently working. Think again about this when using two digit style IDs
     } elseif ($item == 'bgNorm') {
       return $bgNormArr[$styleId];
-    } elseif ($item == 'bgDiff') {    
+    } elseif ($item == 'bgNorm2') {
+      return $bgNorm2Arr[$styleId];
+    } elseif ($item == 'bgDiff') {
       return $bgDiffArr[$styleId];
+    } elseif ($item == 'bgDiff2') {
+      return $bgDiff2Arr[$styleId];
+    } elseif ($item == 'lightMain') {
+      return $lightMainArr[$styleId];
+    } elseif ($item == 'darkMain') {
+      return $darkMainArr[$styleId];
     } else {
       return '';
-    }    
+    }
   } else {
     return '';
-  }    
+  }
 }
 
