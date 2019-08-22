@@ -461,8 +461,8 @@ function printStatic ($dbConn): void {
 function printInlineCss ($dbConn, bool $haveDb): void {  
   $userid = getUserid();
   
-  $lightMain = 'rgba('.getStyle($dbConn, $userid, 'lightMain').')'; // yellowish (works good on blue, works on gray as well) = #faff3b;
-  $darkMain =  'rgba('.getStyle($dbConn, $userid, 'darkMain').')'; // darker version of above settings  
+  $txtLight = 'rgba('.getStyle($dbConn, $userid, 'txtLight').')'; // yellowish (works good on blue, works on gray as well) = #faff3b;
+  $txtDark =  'rgba('.getStyle($dbConn, $userid, 'txtDark').')'; // darker version of above settings  
   
   $font_link     = '#8d3a53'; // some red  
   $borders_lines = '#e1e1e1'; // whitish  
@@ -478,13 +478,13 @@ function printInlineCss ($dbConn, bool $haveDb): void {
   echo '
   <style>
     html { background: url("images/bg/'.$bgImg.'") no-repeat center center fixed; }
-    body { color: '.$lightMain.'; } 
+    body { color: '.$txtLight.'; } 
     a { color: '.$font_link.'; background-color: '.$bg_link.';}
-    a:hover { color: '.$lightMain.'; }
+    a:hover { color: '.$txtLight.'; }
     .button,
     button,
     input[type="submit"],    
-    input[type="button"] { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; } 
+    input[type="button"] { color: '.$txtLight.'; background-color: '.$bg_norm.'; border-color: '.$txtDark.'; } 
     .button:hover,
     button:hover,
     input[type="submit"]:hover,    
@@ -492,21 +492,21 @@ function printInlineCss ($dbConn, bool $haveDb): void {
     .button:focus,
     button:focus,
     input[type="submit"]:focus,    
-    input[type="button"]:focus { color: '.$darkMain.'; background-color: '.$bg_diff.'; border-color: '.$bg_diff2.'; }
+    input[type="button"]:focus { color: '.$txtDark.'; background-color: '.$bg_diff.'; border-color: '.$bg_diff2.'; }
     th,
     td { border-color: '.$borders_lines.'; }
     hr { border-color: '.$borders_lines.'; }
-    .differentColor { color: '.$lightMain.'; background-color: '.$bg_diff.'; }
-    .textBox { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; }
-    .noPwWarning { color: '.$lightMain.'; background-color: '.$bg_diff.'; }
-    .overlayMessage { color: '.$lightMain.'; background-color: '.$bg_diff2.'; }
-    .userStatBar { color: '.$lightMain.'; background-color: '.$bg_norm.'; border-color: '.$darkMain.'; }
-    .imgBorder { border-color: '.$darkMain.'; }
-    .tooltip .tooltiptext { color: '.$lightMain.'; background-color: '.$bg_norm.'; }
-    #menu { background-color: '.$bg_norm2.'; border-color: '.$darkMain.'; }
-    #menu a { color: '.$lightMain.'; }
-    #menu a:hover, #menu a:focus { color: '.$darkMain.'; }
-    .menuCurrentPage { color: '.$darkMain.'; }
+    .differentColor { color: '.$txtLight.'; background-color: '.$bg_diff.'; }
+    .textBox { color: '.$txtLight.'; background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }
+    .noPwWarning { color: '.$txtLight.'; background-color: '.$bg_diff.'; }
+    .overlayMessage { color: '.$txtLight.'; background-color: '.$bg_diff2.'; }
+    .userStatBar { color: '.$txtLight.'; background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }
+    .imgBorder { border-color: '.$txtDark.'; }
+    .tooltip .tooltiptext { color: '.$txtLight.'; background-color: '.$bg_norm.'; }
+    #menu { background-color: '.$bg_norm2.'; border-color: '.$txtDark.'; }
+    #menu a { color: '.$txtLight.'; }
+    #menu a:hover, #menu a:focus { color: '.$txtDark.'; }
+    .menuCurrentPage { color: '.$txtDark.'; }
     .bgCol { background-color: '.$bg_norm.'; }
   </style>'; 
 }
@@ -622,44 +622,32 @@ function getStyle($dbConn, int $userid, string $item): string {
   return styleDef($styleId, $item);
 }
 
-// following styles items are defined
-// styleId  |   bgImg   | bgNorm (2) | bgDiff (2) |  lightMain   |   darkMain   | 
-// -------------------------------------------------------------------------------
-//     0    | bg_0.jpg  | 0, 113, 255| 255, 47, 25|250, 255, 59  | 182, 189, 0  | 
+// input: a style id (number from 0 to 6), output: a string (either a color-string or a background image string)
 function styleDef(int $styleId, string $item): string {
-  // TODO: define as table. Or move to data base?
-  
-  
-  $def = '0,113,255,0.40'; $bgNormArr = array($def,'117,89,217,0.60',$def,$def,'91,115,56,0.40',$def,$def);
-  $def = '0,113,255,0.80'; $bgNorm2Arr =array($def,'117,89,217,0.80',$def,$def,'91,115,56,0.80',$def,$def);
-  
-  $def = '255,47,25,0.30'; $bgDiffArr = array($def,'210,242,141,0.50',$def,$def,'191,23,37,0.30',$def,$def);
-  $def = '255,47,25,0.60'; $bgDiff2Arr =array($def,'210,242,141,0.60',$def,$def,'191,23,37,0.60',$def,$def);
-  
-  $def = '250,255,59,0.85'; $lightMainArr = array($def,'200,200,200,0.85',$def,$def,'250,228,117,0.85',$def,$def);
-  
-  $def = '182,189,0,0.85'; $darkMainArr = array($def,'160,160,160,0.85',$def,$def,'174,158,81,0.85',$def,$def);  
-
+  // following styles items are defined. The default values of the items are:
+  $bgNorm  = '0,113,255,0.40';
+  $bgNorm2 = '0,113,255,0.80';
+  $bgDiff  = '255,47,25,0.30';
+  $bgDiff2 = '255,47,25,0.60';
+  $txtLight='250,255,59,0.85';
+  $txtDark ='182,189,0,0.85';
+    
+  $styles = 
+    array(//            0          1                  2           3          4                  5           6
+      'bgNorm' => array($bgNorm,   '117,89,217,0.60', $bgNorm,    $bgNorm,   '191,23,37,0.40',  $bgNorm,    $bgNorm),
+      'bgNorm2'=> array($bgNorm2,  '117,89,217,0.80', $bgNorm2,   $bgNorm2,  '191,23,37,0.80',  $bgNorm2,   $bgNorm2),
+      'bgDiff' => array($bgDiff,   '210,242,141,0.50',$bgDiff,    $bgDiff,   '91,115,56,0.30',  $bgDiff,    $bgDiff),
+      'bgDiff2'=> array($bgDiff2,  '210,242,141,0.60',$bgDiff2,   $bgDiff2,  '91,115,56,0.60',  $bgDiff2,   $bgDiff2),
+      'txtLight'=>array($txtLight, '240,240,240,0.85',$txtLight,  $txtLight, '200,182,94,0.85', $txtLight,  $txtLight),
+      'txtDark'=> array($txtDark,  '180,180,180,0.85',$txtDark,   $txtDark,  '174,158,81,0.85', $txtDark,   $txtDark),
+      'bgImg'  => array('ice.jpg', 'bamboo.jpg',      'water.jpg','pigs.jpg','monk.jpg',        'stone.jpg','smoke.jpg'),
+    );
+    
   if ($styleId < 7) { // only 0..6 are defined
-    if ($item == 'bgImg') {
-      return ('bg_'.$styleId.'.jpg'); // currently working. Think again about this when using two digit style IDs
-    } elseif ($item == 'bgNorm') {
-      return $bgNormArr[$styleId];
-    } elseif ($item == 'bgNorm2') {
-      return $bgNorm2Arr[$styleId];
-    } elseif ($item == 'bgDiff') {
-      return $bgDiffArr[$styleId];
-    } elseif ($item == 'bgDiff2') {
-      return $bgDiff2Arr[$styleId];
-    } elseif ($item == 'lightMain') {
-      return $lightMainArr[$styleId];
-    } elseif ($item == 'darkMain') {
-      return $darkMainArr[$styleId];
-    } else {
-      return '';
+    if (($item == 'bgNorm') or ($item == 'bgNorm2') or ($item == 'bgDiff') or ($item == 'bgDiff2') or ($item == 'txtLight') or ($item == 'txtDark') or ($item == 'bgImg')) { 
+      return $styles[$item][$styleId];    
     }
-  } else {
-    return '';
   }
+  return '';  // error case, should not reach this point
 }
 
