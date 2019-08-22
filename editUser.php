@@ -15,8 +15,8 @@
     $notSel = 'border: 2px dotted #000;';
     $currentlySelectedStyle = 'border: 2px solid #faff3b;';  // a bright color (not related to the designs)
 
-    // 0..6 are valid selectors
-    $bgBorderSel = array($notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel);
+    // 1..7 are valid selectors, 0=undefined is valid as well
+    $bgBorderSel = array($notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel);
     $bgBorderSel[$row['styleId']] = $currentlySelectedStyle;
     
     echo '
@@ -26,16 +26,16 @@
     <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();" /> <span class="bgCol">'.getLanguage($dbConn,47).'</span> <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConn,48).'</div></div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
-      <div class="two columns"><span class="bgCol">Email:</span> </div>
-      <div class="ten columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20" /></div>
+      <div class="four columns"><span class="bgCol">Email:</span> </div>
+      <div class="eight columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20" /></div>
     </div>
     <div class="row" id="pwOldRow" style="display: '.$displayPwRows.';">
-      <div class="two columns"><span class="bgCol">'.getLanguage($dbConn,49).':</span></div>
-      <div class="ten columns"><input name="password" type="password" maxlength="63" value="" '.$pwFieldRequired.' size="20" /></div>
+      <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,49).':</span></div>
+      <div class="eight columns"><input name="password" type="password" maxlength="63" value="" '.$pwFieldRequired.' size="20" /></div>
     </div>
     <div class="row" id="pwRow" style="display: '.$displayPwRows.';">
-      <div class="two columns"><span class="bgCol">'.getLanguage($dbConn,50).':</span></div>
-      <div class="ten columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20" /></div>
+      <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,50).':</span></div>
+      <div class="eight columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20" /></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,51).'" /></div>    
@@ -43,7 +43,7 @@
     <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>';
     for ($i = 0; $i < 7; $i++) {
       if (($i % 4) == 0) { echo '<div class="row">'; }
-      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=3&styleId='.$i.'" style="background-color:transparent;"><img src="images/bg/'.styleDef($i,'bgImg').'" alt="default background image" style="'.$bgBorderSel[$i].' width:100%; vertical-align:middle;"></a></div>';
+      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=3&styleId='.($i+1).'" style="background-color:transparent;"><img src="images/bg/'.styleDef(($i+1),'bgImg').'" alt="default background image" style="'.$bgBorderSel[($i+1)].' width:100%; vertical-align:middle;"></a></div>';
       if (($i == 3) or ($i == 6)) { // last one does not fit into modulo function ($i % 4) == 3
         echo '</div><div class="row twelve columns">&nbsp;</div>'; 
       } 

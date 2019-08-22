@@ -469,9 +469,9 @@ function printInlineCss ($dbConn, bool $haveDb): void {
   
   $bg_norm  = 'rgba('.getStyle($dbConn, $userid, 'bgNorm').')'; // default blueish
   $bg_norm2 = 'rgba('.getStyle($dbConn, $userid, 'bgNorm2').')'; // same color, different transparency for navMenu
-  $bg_diff  = 'rgba('.getStyle($dbConn, $userid, 'bgDiff').')'; // reddish 
-  $bg_diff2 = 'rgba('.getStyle($dbConn, $userid, 'bgDiff2').', 0.6)'; // same color, different transparency for overlay and borders
-  $bg_link  = 'rgba(180, 180, 180, 0.5)'; // grayish
+  $bg_diff  = 'rgba('.getStyle($dbConn, $userid, 'bgDiff').')'; // default reddish 
+  $bg_diff2 = 'rgba('.getStyle($dbConn, $userid, 'bgDiff2').')'; // same color, different transparency for overlay and borders
+  $bg_link  = 'rgba(180, 180, 180, 0.6)'; // grayish
   
   $bgImg = getStyle($dbConn, $userid, 'bgImg');
   
@@ -591,7 +591,7 @@ function safeIntFromExt (string $source, string $varName, int $length): int {
   } elseif (($source === 'POST') and (isset($_POST[$varName]))) {
     return makeSafeInt($_POST[$varName], $length);    
   } elseif (($source === 'COOKIE') and (isset($_COOKIE[$varName]))) {
-    return makeSafeInt($_COOKIE[$varName], $length);
+    return makeSafeInt($_COOKIE[$varName], $length);  
   } else {
     return 0;
   }
@@ -611,9 +611,15 @@ function safeHexFromExt (string $source, string $varName, int $length): string {
 }
 
 // returns the style item (an image name or a color code) 
-function getStyle($dbConn, int $userid, string $item): string {
-  $styleId = 0; // default value, also for all non-logged in users
-  if ($userid > 0) { // logged in users
+function getStyle($dbConn, int $userid, string $item): string {  
+  if (isset($_SESSION['styleId'])) {
+    $styleId = $_SESSION['styleId'];
+  } else {
+    $styleId = rand(1,7); // default value, also for all non-logged in users
+    $_SESSION['styleId'] = $styleId; // store it for this session. Otherwise every new site needs to load a new bgImg
+  }
+  
+  if ($userid > 0) { // logged in users, overrides the session info
     if ($result = $dbConn->query('SELECT `styleId` FROM `user` WHERE `id` = "'.$userid.'"')) {
       $row = $result->fetch_row();    
       $styleId = (int)$row[0];
@@ -622,32 +628,29 @@ function getStyle($dbConn, int $userid, string $item): string {
   return styleDef($styleId, $item);
 }
 
-// input: a style id (number from 0 to 6), output: a string (either a color-string or a background image string)
+// input: a style id (number from 1 to 7, 0 is valid as well), output: a string (either a color-string or a background image string)
 function styleDef(int $styleId, string $item): string {
   // following styles items are defined. The default values of the items are:
-  $bgNorm  = '0,113,255,0.40';
-  $bgNorm2 = '0,113,255,0.80';
-  $bgDiff  = '255,47,25,0.30';
-  $bgDiff2 = '255,47,25,0.60';
-  $txtLight='250,255,59,0.85';
-  $txtDark ='182,189,0,0.85';
+  $bgNorm   = '0,113,255,0.40';
+  $bgNorm2  = '0,113,255,0.80';
+  $bgDiff   = '255,47,25,0.30';
+  $bgDiff2  = '255,47,25,0.60';
+  $txtLight = '250,255,59,0.85';
+  $txtDark  = '182,189,0,0.85';
     
-  $styles = 
-    array(//            0          1                  2                 3          4                  5           6
-      'bgNorm' => array($bgNorm,   '117,89,217,0.60', '0,113,255,0.40', $bgNorm,   '191,23,37,0.40',  $bgNorm,    $bgNorm),
-      'bgNorm2'=> array($bgNorm2,  '117,89,217,0.80', '0,113,255,0.80', $bgNorm2,  '191,23,37,0.80',  $bgNorm2,   $bgNorm2),
-      'bgDiff' => array($bgDiff,   '210,242,141,0.50',$bgDiff,          $bgDiff,   '91,115,56,0.30',  $bgDiff,    $bgDiff),
-      'bgDiff2'=> array($bgDiff2,  '210,242,141,0.60',$bgDiff2,         $bgDiff2,  '91,115,56,0.60',  $bgDiff2,   $bgDiff2),
-      'txtLight'=>array($txtLight, '240,240,240,0.85','250,255,65,0.85',$txtLight, '200,182,94,0.85', $txtLight,  $txtLight),
-      'txtDark'=> array($txtDark,  '180,180,180,0.85','192,199,10,0.85',$txtDark,  '174,158,81,0.85', $txtDark,   $txtDark),
-      'bgImg'  => array('ice.jpg', 'bamboo.jpg',      'water.jpg',      'pigs.jpg','monk.jpg',        'stone.jpg','smoke.jpg')
-      //                ok         ok                 ok                nok        nok                nok         nok
+  $styles = // two dimensional array. First dimension is working with keys, second one with index.
+    array(// 0 = undefined, same as 1          2                  3                 4          5                  6                  7
+      'bgNorm' => array($bgNorm,   $bgNorm,   '117,89,217,0.60', '0,113,255,0.40', $bgNorm,   '191,23,37,0.40',  '191,23,37,0.50',  $bgNorm),
+      'bgNorm2'=> array($bgNorm2,  $bgNorm2,  '117,89,217,0.80', '0,113,255,0.80', $bgNorm2,  '191,23,37,0.80',  '191,23,37,0.80',  $bgNorm2),
+      'bgDiff' => array($bgDiff,   $bgDiff,   '210,242,141,0.50',$bgDiff,          $bgDiff,   '71,95,36,0.30',   '71,95,36,0.60',   $bgDiff),
+      'bgDiff2'=> array($bgDiff2,  $bgDiff2,  '210,242,141,0.60',$bgDiff2,         $bgDiff2,  '71,95,36,0.60',   '71,95,36,0.80',   $bgDiff2),
+      'txtLight'=>array($txtLight, $txtLight, '240,240,240,0.85','250,255,65,0.85',$txtLight, '240,222,134,0.85','240,222,134,0.85',$txtLight),
+      'txtDark'=> array($txtDark,  $txtDark,  '180,180,180,0.85','192,199,10,0.85',$txtDark,  '174,158,81,0.85', '174,158,81,0.85', $txtDark),
+      'bgImg'  => array('ice.jpg', 'ice.jpg', 'bamboo.jpg',      'water.jpg',      'pigs.jpg','monk.jpg',        'stone.jpg',       'smoke.jpg')
     );
     
-  if ($styleId < 7) { // only 0..6 are defined
-    if (($item == 'bgNorm') or ($item == 'bgNorm2') or ($item == 'bgDiff') or ($item == 'bgDiff2') or ($item == 'txtLight') or ($item == 'txtDark') or ($item == 'bgImg')) { 
-      return $styles[$item][$styleId];    
-    }
+  if ($styleId < 8) { // only 0..7 are defined    
+    return $styles[$item][$styleId];        
   }
   return '';  // error case, should not reach this point
 }
