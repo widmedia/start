@@ -94,7 +94,7 @@
       } else { error($dbConn, 150200); }
     } else { error($dbConn, 150201); } // have a valid userid         
   } elseif ($doSafe == 3) { // update an existing user: styleId link
-    if ($userid > 0) { // have a valid userid
+    if ($userid > 0) { // have a valid userid, testuser may change it as well
       $styleIdFromGet = safeIntFromExt('GET', 'styleId', 2); // this is an integer, range 0 to 99
       if ($styleIdFromGet <= 6) { // currently the only valid image ids
         if ($result = $dbConn->query('UPDATE `user` SET `styleId` = "'.$styleIdFromGet.'" WHERE `id` = "'.$userid.'"')) {
