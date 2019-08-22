@@ -633,14 +633,15 @@ function styleDef(int $styleId, string $item): string {
   $txtDark ='182,189,0,0.85';
     
   $styles = 
-    array(//            0          1                  2           3          4                  5           6
-      'bgNorm' => array($bgNorm,   '117,89,217,0.60', $bgNorm,    $bgNorm,   '191,23,37,0.40',  $bgNorm,    $bgNorm),
-      'bgNorm2'=> array($bgNorm2,  '117,89,217,0.80', $bgNorm2,   $bgNorm2,  '191,23,37,0.80',  $bgNorm2,   $bgNorm2),
-      'bgDiff' => array($bgDiff,   '210,242,141,0.50',$bgDiff,    $bgDiff,   '91,115,56,0.30',  $bgDiff,    $bgDiff),
-      'bgDiff2'=> array($bgDiff2,  '210,242,141,0.60',$bgDiff2,   $bgDiff2,  '91,115,56,0.60',  $bgDiff2,   $bgDiff2),
-      'txtLight'=>array($txtLight, '240,240,240,0.85',$txtLight,  $txtLight, '200,182,94,0.85', $txtLight,  $txtLight),
-      'txtDark'=> array($txtDark,  '180,180,180,0.85',$txtDark,   $txtDark,  '174,158,81,0.85', $txtDark,   $txtDark),
-      'bgImg'  => array('ice.jpg', 'bamboo.jpg',      'water.jpg','pigs.jpg','monk.jpg',        'stone.jpg','smoke.jpg'),
+    array(//            0          1                  2                 3          4                  5           6
+      'bgNorm' => array($bgNorm,   '117,89,217,0.60', '0,113,255,0.40', $bgNorm,   '191,23,37,0.40',  $bgNorm,    $bgNorm),
+      'bgNorm2'=> array($bgNorm2,  '117,89,217,0.80', '0,113,255,0.80', $bgNorm2,  '191,23,37,0.80',  $bgNorm2,   $bgNorm2),
+      'bgDiff' => array($bgDiff,   '210,242,141,0.50',$bgDiff,          $bgDiff,   '91,115,56,0.30',  $bgDiff,    $bgDiff),
+      'bgDiff2'=> array($bgDiff2,  '210,242,141,0.60',$bgDiff2,         $bgDiff2,  '91,115,56,0.60',  $bgDiff2,   $bgDiff2),
+      'txtLight'=>array($txtLight, '240,240,240,0.85','250,255,65,0.85',$txtLight, '200,182,94,0.85', $txtLight,  $txtLight),
+      'txtDark'=> array($txtDark,  '180,180,180,0.85','192,199,10,0.85',$txtDark,  '174,158,81,0.85', $txtDark,   $txtDark),
+      'bgImg'  => array('ice.jpg', 'bamboo.jpg',      'water.jpg',      'pigs.jpg','monk.jpg',        'stone.jpg','smoke.jpg')
+      //                ok         ok                 ok                nok        nok                nok         nok
     );
     
   if ($styleId < 7) { // only 0..6 are defined
