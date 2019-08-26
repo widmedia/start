@@ -639,14 +639,14 @@ function styleDef(int $styleId, string $item): string {
   $txtDark  = '182,189,0,0.85';
     
   $styles = // two dimensional array. First dimension is working with keys, second one with index.
-    array(// 0 = undefined, same as 1          2                  3                 4          5                  6                  7
-      'bgNorm' => array($bgNorm,   $bgNorm,   '117,89,217,0.60', '0,113,255,0.40', $bgNorm,   '191,23,37,0.40',  '191,23,37,0.50',  $bgNorm),
-      'bgNorm2'=> array($bgNorm2,  $bgNorm2,  '117,89,217,0.80', '0,113,255,0.80', $bgNorm2,  '191,23,37,0.80',  '191,23,37,0.80',  $bgNorm2),
-      'bgDiff' => array($bgDiff,   $bgDiff,   '210,242,141,0.50',$bgDiff,          $bgDiff,   '71,95,36,0.30',   '71,95,36,0.60',   $bgDiff),
-      'bgDiff2'=> array($bgDiff2,  $bgDiff2,  '210,242,141,0.60',$bgDiff2,         $bgDiff2,  '71,95,36,0.60',   '71,95,36,0.80',   $bgDiff2),
-      'txtLight'=>array($txtLight, $txtLight, '240,240,240,0.85','250,255,65,0.85',$txtLight, '240,222,134,0.85','240,222,134,0.85',$txtLight),
-      'txtDark'=> array($txtDark,  $txtDark,  '180,180,180,0.85','192,199,10,0.85',$txtDark,  '174,158,81,0.85', '174,158,81,0.85', $txtDark),
-      'bgImg'  => array('ice.jpg', 'ice.jpg', 'bamboo.jpg',      'water.jpg',      'pigs.jpg','monk.jpg',        'stone.jpg',       'smoke.jpg')
+    array(// 0 = undefined, same as 1        2                  3                  4          5                  6                  7
+      'bgNorm' => array($bgNorm,  $bgNorm,  '117, 89,217,0.60','0,113,255,0.40',  $bgNorm,   '191,23,37,0.40',  '0,  0,  0,0.50',  $bgNorm),
+      'bgNorm2'=> array($bgNorm2, $bgNorm2, '117, 89,217,0.80','0,113,255,0.80',  $bgNorm2,  '191,23,37,0.80',  '0,  0,  0,0.80',  $bgNorm2),
+      'bgDiff' => array($bgDiff,  $bgDiff,  '210,242,141,0.50',$bgDiff,           $bgDiff,   '71,95,36,0.30',   '71,95,36,0.60',   $bgDiff),
+      'bgDiff2'=> array($bgDiff2, $bgDiff2, '210,242,141,0.60',$bgDiff2,          $bgDiff2,  '71,95,36,0.60',   '71,95,36,0.80',   $bgDiff2),
+      'txtLight'=>array($txtLight,$txtLight,'240,240,240,0.85','250,255, 65,0.85',$txtLight, '240,222,134,0.85','250,232,148,0.90',$txtLight),
+      'txtDark'=> array($txtDark, $txtDark, '180,180,180,0.85','192,199, 10,0.85',$txtDark,  '174,158,81,0.85', '174,158,81,0.85', $txtDark),
+      'bgImg'  => array('ice.jpg','ice.jpg','bamboo.jpg',      'water.jpg',       'pigs.jpg','monk.jpg',        'stone.jpg',       'smoke.jpg')
     );
     
   if ($styleId < 8) { // only 0..7 are defined    

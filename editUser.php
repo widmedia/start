@@ -12,17 +12,13 @@
       $pwFieldRequired = 'required';
     }
 
-    $notSel = 'border: 2px dotted #000;';
-    $currentlySelectedStyle = 'border: 2px solid #faff3b;';  // a bright color (not related to the designs)
-
-    // 1..7 are valid selectors, 0=undefined is valid as well
-    $bgBorderSel = array($notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel);
-    $bgBorderSel[$row['styleId']] = $currentlySelectedStyle;
+    $notSel = 'border: 2px dotted #000;';        
+    $bgBorderSel = array($notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel); // 1..7 are valid selectors, 0=undefined is valid as well
+    $bgBorderSel[$row['styleId']] = 'border: 2px solid #faff3b;';  // some bright color (not related to the designs)
     
     echo '
     <h3 class="section-heading"><span class="bgCol">Email / '.getLanguage($dbConn,84).'</span></h3>
-    <form action="editUser.php?do=2" method="post">
-    <div class="row twelve columns"><span class="bgCol">'.getLanguage($dbConn,46).$row['lastLogin'].'</span></div>    
+    <form action="editUser.php?do=2" method="post">    
     <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" '.$hasPwText.' onclick="pwToggle();" /> <span class="bgCol">'.getLanguage($dbConn,47).'</span> <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConn,48).'</div></div>
     <div class="row"><div class="twelve columns">&nbsp;</div></div>
     <div class="row">
@@ -96,7 +92,7 @@
   } elseif ($doSafe == 3) { // update an existing user: styleId link
     if ($userid > 0) { // have a valid userid, testuser may change it as well
       $styleIdFromGet = safeIntFromExt('GET', 'styleId', 2); // this is an integer, range 0 to 99
-      if ($styleIdFromGet <= 6) { // currently the only valid image ids
+      if ($styleIdFromGet < 8) { // currently the only valid image ids
         if ($result = $dbConn->query('UPDATE `user` SET `styleId` = "'.$styleIdFromGet.'" WHERE `id` = "'.$userid.'"')) {
           redirectRelative('editUser.php'); // stay on the page
         } else { error($dbConn, 150300); } // query
