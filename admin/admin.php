@@ -122,7 +122,7 @@
   printInlineCss($dbConn, true);  
   echo '  
   <style>
-    html { background: url("../images/bg_ice_1920x1080.jpg") no-repeat center center fixed; }    
+    html { background: url("../images/bg/ice.jpg") no-repeat center center fixed; }    
   </style>  
   <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon.png">
   </head>
