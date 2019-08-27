@@ -477,8 +477,7 @@ function printInlineCss ($dbConn, bool $haveDb): void {
   
   echo '
   <style>
-    html { background: url("images/bg/'.$bgImg.'") no-repeat center center fixed; }
-    body { color: '.$txtLight.'; } 
+    body { color: '.$txtLight.'; background-image: url("images/bg/'.$bgImg.'"); } 
     a { color: '.$font_link.'; background-color: '.$bg_link.';}
     a:hover { color: '.$txtLight.'; }
     .button,
