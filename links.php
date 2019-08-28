@@ -21,7 +21,7 @@
       while ($row = $result->fetch_assoc()) {
         $link = $row['link'];
         if (strlen($link) > 26) { $link = substr($link,0,23).'...'; }
-        echo $divClass.'<a href="link.php?id='.$row['id'].'" target="_blank" class="button tooltip">'.$row['text'].'<span class="tooltiptext">'.$link.'</span></a><span class="counter">'.$row['cntTot'].'</span></div>';        
+        echo $divClass.'<a href="link.php?id='.$row['id'].'" target="_blank" class="button tooltip linksButton">'.$row['text'].'<span class="tooltiptext">'.$link.'</span></a><span class="counter">'.$row['cntTot'].'</span></div>';        
         $counter++;
 
         if (($counter % $modulo) == 0) {
