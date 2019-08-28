@@ -17,19 +17,25 @@
     }
 
     if ($result = $dbConn->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
-      $counter = 0;        
-      while ($row = $result->fetch_assoc()) {
-        $link = $row['link'];
-        if (strlen($link) > 26) { $link = substr($link,0,23).'...'; }
-        echo $divClass.'<a href="link.php?id='.$row['id'].'" target="_blank" class="button tooltip linksButton">'.$row['text'].'<span class="tooltiptext">'.$link.'</span></a><span class="counter">'.$row['cntTot'].'</span></div>';        
-        $counter++;
+      if ($result->num_rows == 0) { // most probably a new user
+        // TODO: category is a post variable otherwise
+        // TODO: language of text
+        echo '<div class="twelve columns linktext"><a href="editLinks.php?do=1&categoryInput='.$category.'" class="button tooltip linksButton">add your own link<span class="tooltiptext">https://widmedia.ch/start/editLinks.php</span></a></div>';        
+      } else {
+        $counter = 0;
+        while ($row = $result->fetch_assoc()) {
+          $link = $row['link'];
+          if (strlen($link) > 26) { $link = substr($link,0,23).'...'; }
+          echo $divClass.'<a href="link.php?id='.$row['id'].'" target="_blank" class="button tooltip linksButton">'.$row['text'].'<span class="tooltiptext">'.$link.'</span></a><span class="counter">'.$row['cntTot'].'</span></div>';
+          $counter++;
 
-        if (($counter % $modulo) == 0) {
-          echo '</div>'."\n".'<div class="row">';
-        }
-      } // while    
+          if (($counter % $modulo) == 0) {
+            echo '</div>'."\n".'<div class="row">';
+          }
+        } // while    
+      } // have at least one entry
       $result->close(); // free result set
-    } // if 
+    } // query 
     echo '</div>'; // class row
   } // function   
 
