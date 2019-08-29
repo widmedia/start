@@ -87,14 +87,14 @@ function printErrorAndDie (string $heading, string $text): void {
 }
 
 // checks whether not the test user and displays some very generic failure message
-function error ($dbConn, int $errorMsgNum): void {  
+function error (object $dbConn, int $errorMsgNum): void {  
   if (getUserid() != 2) { // no error is printed for the test user    
     printConfirm($dbConn, 'Error', getLanguage($dbConn,33).$errorMsgNum.getLanguage($dbConn,34).' sali@widmedia.ch');
   }
 }
 
 // function returns the text of the category. If something does not work as expected, 0 is returned
-function getCategory ($dbConn, int $userid, int $category): string {
+function getCategory (object $dbConn, int $userid, int $category): string {
   if ($result = $dbConn->query('SELECT `text` FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1')) {
     $row = $result->fetch_assoc();
     return $row['text'];
@@ -104,7 +104,7 @@ function getCategory ($dbConn, int $userid, int $category): string {
 } // function
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
-function printStartOfHtml ($dbConn): void {
+function printStartOfHtml (object $dbConn): void {
   printStatic($dbConn);  
     
   $msgSafe = safeIntFromExt('GET', 'msg', 1);
@@ -123,7 +123,7 @@ function printStartOfHtml ($dbConn): void {
 }
  
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
-function printFooter ($dbConn): void {
+function printFooter (object $dbConn): void {
   echo '</div>'; // close the container
   $siteSafe = getCurrentSite(); 
   $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
@@ -257,7 +257,7 @@ function printNavMenu ($dbConn): void {
     $editLinks = '<li'.$strikeThrough.'>- '.getLanguage($dbConn,27).'</li>';
     $editUser  = '<li'.$strikeThrough.'>- '.getLanguage($dbConn,28).'</li>';    
   } 
-  if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">'.getLanguage($dbConn,106).'</a></li>'; }
+  if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">log out</a></li>'; }
   
   // TODO: design of the language selection
   if(isset($_GET['do'])) { // don't want to present the language sel on pages which are not default pages, where form entries are processed or similar

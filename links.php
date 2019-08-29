@@ -5,7 +5,7 @@
   // function to output several links in a formatted way
   // creating a div for every link and div-rows for every $module-th entry
   // has a limit of 100 links per category
-  function printLinks($dbConn, int $userid, int $category): void {
+  function printLinks(object $dbConn, int $userid, int $category): void {
     echo '<div class="row">';
     
     // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
@@ -17,10 +17,9 @@
     }
 
     if ($result = $dbConn->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
-      if ($result->num_rows == 0) { // most probably a new user
-        // TODO: category is a post variable otherwise
-        // TODO: language of text
-        echo '<div class="twelve columns linktext"><a href="editLinks.php?do=1&categoryInput='.$category.'" class="button tooltip linksButton">add your own link<span class="tooltiptext">https://widmedia.ch/start/editLinks.php</span></a></div>';        
+      if ($result->num_rows == 0) { // most probably a new user        
+        echo '<div class="twelve columns linktext"><form action="editLinks.php?do=1" method="post"><input name="categoryInput" type="hidden" value="'.$category.'">
+              <input name="submit" type="submit" value="'.getLanguage($dbConn,123).getLanguage($dbConn,36).getCategory($dbConn, $userid, $category).'"></form></div>';        
       } else {
         $counter = 0;
         while ($row = $result->fetch_assoc()) {
