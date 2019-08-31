@@ -531,11 +531,14 @@ function updateUser ($dbConn, int $userid, bool $forgotPw): bool {
       $row = $result->fetch_assoc(); // guaranteed to get only one row
       $pwCheck = false;
       if ($row['hasPw'] == 1) { // if there has been a hasPw, then I need to check whether the oldPw matches the stored one (without looking at hasPw-checkbox)
-        $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING);
-        if (password_verify($passwordUnsafe, $row['pwHash'])) {        
-          $pwCheck = true;
-        } // else, $pwCheck stays at false
-        if ($forgotPw) { $pwCheck = true; } // not verifying the old password
+        if ($forgotPw) { 
+          $pwCheck = true; // not verifying the old password 
+        } else {
+          $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING);
+          if (password_verify($passwordUnsafe, $row['pwHash'])) {        
+            $pwCheck = true;
+          } // else, $pwCheck stays at false
+        }
       } else { 
         $pwCheck = true; // not an error
         if ($forgotPw) { $pwCheck = false; } // an error
@@ -553,18 +556,20 @@ function updateUser ($dbConn, int $userid, bool $forgotPw): bool {
         } // else, not an error
         
         $emailOk = false;
-        $emailUnsafe = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);
-        // newEmail must not exist in the db (exclude current user itself)
-        if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
-          // check whether email already exists
-          $emailSqlSafe = mysqli_real_escape_string($dbConn, $emailUnsafe);
-          if (strcasecmp($emailSqlSafe, $row['email'])  != 0) { // 0 means they are equal
-            if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
-              if ($result->num_rows == 0) {
-                $emailOk = true; 
+        if (!$forgotPw) {
+          $emailUnsafe = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);
+          // newEmail must not exist in the db (exclude current user itself)
+          if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
+            // check whether email already exists
+            $emailSqlSafe = mysqli_real_escape_string($dbConn, $emailUnsafe);
+            if (strcasecmp($emailSqlSafe, $row['email'])  != 0) { // 0 means they are equal
+              if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
+                if ($result->num_rows == 0) {
+                  $emailOk = true; 
+                }
               }
-            }
-          } else { $emailOk = true; }; // no need to check again if the email did not change
+            } else { $emailOk = true; }; // no need to check again if the email did not change
+          }
         }
         
         if ($emailOk) {
