@@ -408,6 +408,7 @@
   } elseif ($doSafe == 9) {  // process the pwRecovery link from the email
     if (checkPwForgot($dbConn, $useridGetSafe, $verSqlSafe)) {    
       printStartOfHtml($dbConn);
+      // TODO: outsource to function?
       echo '
       <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,120).'</span></h3>
       <form action="index.php?do=10" method="post">

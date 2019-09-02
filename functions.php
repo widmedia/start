@@ -214,7 +214,7 @@ function getCurrentSite () {
   return ($siteSafe); 
 }
 
-function printNavMenu ($dbConn): void {
+function printNavMenu (object $dbConn): void {
   $siteSafe = getCurrentSite();
   $userid = getUserid();
   $notLoggedIn = ($userid == 0);
@@ -288,7 +288,7 @@ function printNavMenu ($dbConn): void {
 }
 
 // checks whether userid is 2 (= test user)
-function testUserCheck ($dbConn, int $userid): bool { // actually it is returning true, if it is NOT the testUser
+function testUserCheck (object $dbConn, int $userid): bool { // actually it is returning true, if it is NOT the testUser
   if ($userid == 2) {    
     printConfirm($dbConn, getLanguage($dbConn,30), getLanguage($dbConn,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConn,32).'</a>');
     return false;
@@ -305,7 +305,7 @@ function sessionAndCookieDelete (): void {
 }  
 
 // does the db operations to remove a certain user. Does some checks as well
-function deleteUser ($dbConn, int $userid): bool {
+function deleteUser (object $dbConn, int $userid): bool {
   if ($userid > 0) { // have a valid userid
     if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
       // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
@@ -336,23 +336,23 @@ function getUserid (): int {
 }
 
 // returns a 'safe' integer. Return value is 0 if the checks did not work out
-function makeSafeInt ($unsafe, int $length): int {
-  $safe = 0;
-  $unsafe = filter_var(substr($unsafe, 0, $length), FILTER_SANITIZE_NUMBER_INT); // sanitize a length-limited variable. TODO: not working
+function makeSafeInt ($unsafe, int $length): int {  
+  $unsafe = filter_var(substr($unsafe, 0, $length), FILTER_SANITIZE_NUMBER_INT); // sanitize a length-limited variable
   if (filter_var($unsafe, FILTER_VALIDATE_INT)) { 
-    $safe = (int)$unsafe;
-  }
-  return $safe;
+    return (int)$unsafe;
+  } else { 
+    return 0;
+  }  
 }
 
 // returns a 'safe' character-as-hex value
-function makeSafeHex ($unsafe, int $length): string {
-  $safe = '0';
+function makeSafeHex ($unsafe, int $length): string {  
   $unsafe = substr($unsafe, 0, $length); // length-limited variable  
   if (ctype_xdigit($unsafe)) {
-    $safe = (string)$unsafe;
+    return (string)$unsafe;
+  } else {
+    return '0';
   }
-  return $safe;
 }
 
 // returns a 'safe' string. Not that much to do though for a string
@@ -370,7 +370,7 @@ function redirectRelative (string $page): void {
 }
 
 // prints static header information and sets title and description depending on the page
-function printStatic ($dbConn): void {
+function printStatic (object $dbConn): void {
   // description tag and title are different for every site  
   $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a HTML site is generated
     
@@ -445,7 +445,7 @@ function printStatic ($dbConn): void {
 }
 
 // defines all the styles with color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
-function printInlineCss ($dbConn, bool $haveDb): void {  
+function printInlineCss (object $dbConn, bool $haveDb): void {  
   $userid = getUserid();
   
   $txtLight = 'rgba('.getStyle($dbConn, $userid, 'txtLight').')'; // yellowish (works good on blue, works on gray as well) = #faff3b;
@@ -498,7 +498,7 @@ function printInlineCss ($dbConn, bool $haveDb): void {
 }
 
 // returns various text in the session-stored language. language-db organized as follows: id(int_11) / en(text) / de(text)
-function getLanguage ($dbConn, int $textId): string { // NB: ln and id variables are safe
+function getLanguage (object $dbConn, int $textId): string { // NB: ln and id variables are safe
   $lang = 'de';
   if (isset($_SESSION['ln'])) {
     $lang = $_SESSION['ln'];
@@ -512,7 +512,7 @@ function getLanguage ($dbConn, int $textId): string { // NB: ln and id variables
 }
 
 // 44. used in editUser to update email and password and in index to set a new pw when it has been forgotten.
-function updateUser ($dbConn, int $userid, bool $forgotPw): bool {  
+function updateUser (object $dbConn, int $userid, bool $forgotPw): bool {  
   if (testUserCheck($dbConn, $userid)) {
     if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
       $row = $result->fetch_assoc(); // guaranteed to get only one row      
@@ -597,7 +597,7 @@ function safeStrFromExt (string $source, string $varName, int $length): string {
 }
 
 // returns the style item (an image name or a color code) 
-function getStyle($dbConn, int $userid, string $item): string {  
+function getStyle(object $dbConn, int $userid, string $item): string {  
   if (isset($_SESSION['styleId'])) {
     $styleId = $_SESSION['styleId'];
   } else {
