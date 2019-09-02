@@ -66,16 +66,8 @@
   $idSafe = safeIntFromExt('GET', 'id', 11); // this is an integer (max 11 characters) or non-existing. The link id
   
   // non-integer values are more complicated, text may be HTML-safe or sqli-safe
-  if (isset($_POST['link'])) { 
-    $linkUnsafe = filter_var(substr($_POST['link'], 0, 1023), FILTER_SANITIZE_URL);  // this is an url (max 1023 characters) or non-existing
-  } else { 
-    $linkUnsafe = ''; 
-  }
-  if (isset($_POST['text'])) { 
-    $textUnsafe = filter_var(substr($_POST['text'], 0, 63), FILTER_SANITIZE_STRING); // this is a generic string (max 63 characters) or non-existing
-  } else {
-    $textUnsafe = '';
-  }
+  $linkUnsafe = filter_var(safeStrFromExt('POST','link', 1023), FILTER_SANITIZE_URL);  // this is an url (max 1023 characters) or non-existing
+  $textUnsafe = filter_var(safeStrFromExt('POST','text', 63), FILTER_SANITIZE_STRING); // this is a generic string (max 63 characters) or non-existing  
 
   $linkOk = false;
   $linkSqlSafe  = '';

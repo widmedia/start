@@ -61,7 +61,7 @@ function initialize () {
 }
 
 //prints the h4 title and one row
-function printConfirm ($dbConn, string $heading, string $text): void {
+function printConfirm (object $dbConn, string $heading, string $text): void {
   if (!headers_sent()) {
     printStartOfHtml($dbConn);
   } // headers
@@ -220,7 +220,7 @@ function printNavMenu ($dbConn): void {
   $notLoggedIn = ($userid == 0);
   
   if (isset($_GET['ln'])) { // this means the user is changing the language. This has precedence over whatever    
-    $getLnSafe = makeSafeStr($_GET['ln'], 2); 
+    $getLnSafe = safeStrFromExt('GET','ln', 2);
       
     if (($getLnSafe == 'en') or ($getLnSafe == 'de')) { // those are valid values
       $_SESSION['ln'] = $getLnSafe;
@@ -258,8 +258,7 @@ function printNavMenu ($dbConn): void {
     $editUser  = '<li'.$strikeThrough.'>- '.getLanguage($dbConn,28).'</li>';    
   } 
   if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">log out</a></li>'; }
-  
-  // TODO: design of the language selection
+    
   if(isset($_GET['do'])) { // don't want to present the language sel on pages which are not default pages, where form entries are processed or similar
     $languageSelection = ''; 
   } else {    
@@ -427,20 +426,8 @@ function printStatic ($dbConn): void {
   printInlineCss($dbConn, true);
   
   echo '
-  <script>
-  // changes the display property of the pw-text field (actually the whole row) and some warning message
-  function pwToggle() {
-    if (document.getElementById("pwCheckBox").checked == 1) {
-      document.getElementById("pwRow").style.display = "initial";
-      document.getElementById("noPwWarning").style.display = "none";
-    } else {
-      document.getElementById("pwRow").style.display = "none";
-      document.getElementById("noPwWarning").style.display = "block";
-    }
-  }
-
-  // fades out a message and does a display: none when it is fully faded out
-  function overlayMsgFade() {
+  <script>  
+  function overlayMsgFade() {  // fades out a message and does a display: none when it is fully faded out
     element = document.getElementById("overlay");
     var op = 0.8;  // initial opacity
     var timer = setInterval(function () {
@@ -528,36 +515,18 @@ function getLanguage ($dbConn, int $textId): string { // NB: ln and id variables
 function updateUser ($dbConn, int $userid, bool $forgotPw): bool {  
   if (testUserCheck($dbConn, $userid)) {
     if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
-      $row = $result->fetch_assoc(); // guaranteed to get only one row
-      $pwCheck = false;
-      if ($row['hasPw'] == 1) { // if there has been a hasPw, then I need to check whether the oldPw matches the stored one (without looking at hasPw-checkbox)
-        if ($forgotPw) { 
-          $pwCheck = true; // not verifying the old password 
-        } else {
-          $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING);
-          if (password_verify($passwordUnsafe, $row['pwHash'])) {        
-            $pwCheck = true;
-          } // else, $pwCheck stays at false
-        }
-      } else { 
-        $pwCheck = true; // not an error
-        if ($forgotPw) { $pwCheck = false; } // an error
-      }
-      // could maybe merge some of this stuff with the functionality on index.php...addNewUser
-      if ($pwCheck) {
-        $hasPwCheckBox = safeIntFromExt('POST', 'hasPw', 1);
-        if ($forgotPw) { $hasPwCheckBox = 1; }
-        if ($hasPwCheckBox == 1) { // if hasPw-checkbox, the newPw must be at least 4 chars long
-          $pwHash = 0;
-          if (strlen($_POST['passwordNew']) > 3) {  
-            $passwordUnsafe = filter_var(substr($_POST['passwordNew'], 0, 63), FILTER_SANITIZE_STRING);
-            $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
-          } else { error($dbConn, 104400); return false; }
-        } // else, not an error
+      $row = $result->fetch_assoc(); // guaranteed to get only one row      
+      $passwordUnsafe = safeStrFromExt('POST','password', 63);
+      if (($forgetPw) or (password_verify($passwordUnsafe, $row['pwHash']))) {        
+        $pwHash = 0;
+        $passwordUnsafe = filter_var(safeStrFromExt('POST','passwordNew', 63), FILTER_SANITIZE_STRING);
+        if (strlen($passwordUnsafe) > 3) {
+          $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
+        } else { error($dbConn, 104400); return false; }
         
         $emailOk = false;
         if (!$forgotPw) {
-          $emailUnsafe = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);
+          $emailUnsafe = filter_var(safeStrFromExt('POST','email', 127), FILTER_SANITIZE_EMAIL);
           // newEmail must not exist in the db (exclude current user itself)
           if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
             // check whether email already exists
@@ -573,7 +542,7 @@ function updateUser ($dbConn, int $userid, bool $forgotPw): bool {
         }
         
         if ($emailOk) {
-          if ($result = $dbConn->query('UPDATE `user` SET `hasPw` = "'.$hasPwCheckBox.'", `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {            
+          if ($result = $dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {            
             return true;
           } else { error($dbConn, 104401); return false; } // update query
         } else { 
@@ -611,6 +580,19 @@ function safeHexFromExt (string $source, string $varName, int $length): string {
     return makeSafeHex($_COOKIE[$varName], $length);
   } else {
     return '0';
+  }
+}
+
+// same as hex above...
+function safeStrFromExt (string $source, string $varName, int $length): string {
+ if (($source === 'GET') and (isset($_GET[$varName]))) {
+    return makeSafeStr($_GET[$varName], $length);
+  } elseif (($source === 'POST') and (isset($_POST[$varName]))) {
+    return makeSafeStr($_POST[$varName], $length);
+  } elseif (($source === 'COOKIE') and (isset($_COOKIE[$varName]))) {
+    return makeSafeStr($_COOKIE[$varName], $length);
+  } else {
+    return '';
   }
 }
 

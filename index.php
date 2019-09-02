@@ -8,7 +8,7 @@
   // a3: add new user function. do=2 (process form: do=3). linked from the insecure site
   // a4: confirm email. do=5
   // b: secured
-  // b1: link with userid (do=0)
+  // b1: link with testuserid (do=0)
   // b2: direct visit (do=0), cookie is set
   // b3: login form done, do=4, (email/pw as POST). setCookie is checked or not
   
@@ -30,9 +30,9 @@
   // 20 - function logOut ()
   // 21 - function verifyCredentials ($dbConn, $authMethod, $userid, $passwordUnsafe, $randCookieInput)
   // 22 - function newUserLinks ($dbConn, $newUserid)
-  // 23 - function newUserLoginAndLinks ($dbConn, $newUserid, $hasPw, $pw)
+  // 23 - function newUserLoginAndLinks ($dbConn, $newUserid, $pw)
   // 24 - function mail2userid ($dbConn, $emailSafe)
-  // 25 - function newUserEmailConfirmation ($dbConn, $newUserid, $hasPw, $emailSqlSafe)
+  // 25 - function newUserEmailConfirmation ($dbConn, $newUserid, $emailSqlSafe)
   // 26 - function printUserStat ($dbConn)
   // 27 - function printNewUserForm ($dbConn)
   // 28 - function printTitle($dbConn)
@@ -52,25 +52,20 @@
     $loginOk = false;
     $_SESSION['userid'] = 0; // clear it just to make sure    
     
-    if ($result = $dbConn->query('SELECT `hasPw`, `pwHash`, `randCookie` FROM `user` WHERE `id` = "'.$userid.'"')) { // make sure a pw is enabled in the login-db
+    if ($result = $dbConn->query('SELECT `pwHash`, `randCookie` FROM `user` WHERE `id` = "'.$userid.'"')) {
       if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        $hasPw = $row['hasPw'];
+        $row = $result->fetch_assoc();        
         $pwHash = $row['pwHash'];
         $randCookie = $row['randCookie'];
 
         if ($authMethod == 1) { // with a pw
-          if (($hasPw == 1) and (password_verify($passwordUnsafe, $pwHash))) {
+          if (($userid == 2) or (password_verify($passwordUnsafe, $pwHash))) {
             $loginOk = true;            
-          } else { error($dbConn, 112000); } // hasPw == 1 and password was verified
+          } else { error($dbConn, 112000); } // password was verified
         } elseif ($authMethod == 2) { // with a Cookie
           if (($randCookie) and ($randCookie == $randCookieInput)) {
             $loginOk = true;            
-          } else { error($dbConn, 112001); }  // there is no zero in the data base and 64hex value is correct
-        } elseif ($authMethod == 3) { // id only. the most unsafe one
-          if ($hasPw == 0) {
-            $loginOk = true;
-          } else { error($dbConn, 112002); } // hasPw == 0
+          } else { error($dbConn, 112001); }  // there is no zero in the data base and 64hex value is correct        
         } // authMethod
       } else { error($dbConn, 112003); } // numRows == 1
     } else { error($dbConn, 112004); } // select query did work    
@@ -103,18 +98,14 @@
   }
   
   // sets the value in the `user` table as well as the `links` table
-  function newUserLoginAndLinks ($dbConn, int $newUserid, int $hasPw, $pw) : bool {       
+  function newUserLoginAndLinks (object $dbConn, int $newUserid, string $pw) : bool {       
     // password_hash("testUserPassword", PASSWORD_DEFAULT) returns '$2y$10$3qc.gl4eDPpXDqM7hDssquu4ThnJ9rbH7wrEkdTZd0Cg0NAjAzm.2';
-    if ($hasPw == 1) {
-      $pwHash = password_hash($pw, PASSWORD_DEFAULT); // $pw is potentially unsafe. Shouldn't be an issue as I store the hash
-    } else {
-      $pwHash = '';
-    }
-  
+    $pwHash = password_hash($pw, PASSWORD_DEFAULT); // $pw is potentially unsafe. Shouldn't be an issue as I store the hash
+    
     // NB: set a cookie for some random big number. Not the password itself and not the pwHash!
     // NB: will use this number on every cookie for this user, to login on several devices. One cannot guess other users random number                  
     $hexStr64 = bin2hex(random_bytes(32)); // some random value, used for cookie     
-    if ($result = $dbConn->query('UPDATE `user` SET `hasPw` = "'.$hasPw.'", `pwHash` = "'.$pwHash.'", `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) { 
+    if ($result = $dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'", `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) { 
       return newUserLinks($dbConn, $newUserid); // Adding 1 user, 3 categories, 4 links
     } else {
       return false;
@@ -122,7 +113,7 @@
   } 
 
   // returns the userid which matches to the email given. Returns 0 if something went wrong
-  function mail2userid ($dbConn, string $emailSafe) : int {
+  function mail2userid (object $dbConn, string $emailSafe) : int {
     $userid = 0;
     if ($result = $dbConn->query('SELECT `id` FROM `user` WHERE `email` = "'.mysqli_real_escape_string($dbConn, $emailSafe).'"')) {
       if ($result->num_rows == 1) {
@@ -134,14 +125,10 @@
   }  
   
   // sends an email to the new user with a special link and updates the database with that email confirmation link
-  function newUserEmailConfirmation ($dbConn, $newUserid, $hasPw, $emailSqlSafe) : bool {
+  function newUserEmailConfirmation (object $dbConn, int $newUserid, string $emailSqlSafe) : bool {
     $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
     $emailBody = "Sali,\n\n".getLanguage($dbConn,95)."\n\n".getLanguage($dbConn,96)."\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
-    if ($hasPw == 1) {
-      $emailBody = $emailBody.getLanguage($dbConn,97)."\nhttps://widmedia.ch/start/index.php#login ".getLanguage($dbConn,98)."\n";
-    } else {
-      $emailBody = $emailBody.getLanguage($dbConn,99)."\nhttps://widmedia.ch/start/index.php?userid=".$newUserid."\n".getLanguage($dbConn,100)."\n";
-    }
+    $emailBody = $emailBody.getLanguage($dbConn,97)."\nhttps://widmedia.ch/start/index.php#login ".getLanguage($dbConn,98)."\n";    
     $emailBody = $emailBody."\n\n".getLanguage($dbConn,101)."\nDaniel ".getLanguage($dbConn,102)." widmedia\n\n--\n".getLanguage($dbConn,5).": sali@widmedia.ch\n";
     
     if ($result = $dbConn->query('UPDATE `user` SET `verCode` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) {   
@@ -190,15 +177,13 @@
   function printNewUserForm ($dbConn): void {
     echo '<h3 class="section-heading"><span id="newUser" class="bgCol">'.getLanguage($dbConn,32).'</span></h3>
     <form action="index.php?do=3" method="post">
-    <div class="row twelve columns" style="text-align: left;"><input type="checkbox" id="pwCheckBox" name="hasPw" value="1" checked onclick="pwToggle();"> <span class="bgCol">'.getLanguage($dbConn,47).'</span> <div id="noPwWarning" class="noPwWarning" style="display: none;">'.getLanguage($dbConn,48).'</div></div>
-    <div class="row twelve columns">&nbsp;</div>
     <div class="row">
       <div class="three columns"><span class="bgCol">'.getLanguage($dbConn,62).':</span> </div>
       <div class="nine columns"><input name="email" type="email" maxlength="127" value="" required size="20"></div>
     </div>    
     <div class="row" id="pwRow">
       <div class="three columns"><span class="bgCol">'.getLanguage($dbConn,63).':</span> </div>
-      <div class="nine columns"><input name="password" type="password" maxlength="63" value="" size="20"></div>
+      <div class="nine columns"><input name="password" type="password" maxlength="63" value="" required size="20"></div>
     </div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,64).'"></div>
@@ -324,8 +309,8 @@
   $randCookieSafe   = safeHexFromExt('COOKIE', 'randCookie', 64); 
 
   if ($doSafe == 0) { // the $_GET-do parameter has higher priority than the rest
-    if ($useridGetSafe > 0) { // login like index.php?userid=2 the $_GET-userid has higher priority than the cookie userid
-      if (verifyCredentials($dbConn, 3, $useridGetSafe, '', '')) {
+    if ($useridGetSafe == 2) { // login like index.php?userid=2 the $_GET-userid has higher priority than the cookie userid
+      if (verifyCredentials($dbConn, 1, $useridGetSafe, '', '')) {
         redirectRelative('links.php');
       }
     } elseif (($useridCookieSafe > 0) and (verifyCredentials($dbConn, 2, $useridCookieSafe, '', $randCookieSafe))){
@@ -333,24 +318,12 @@
     }
   }    
   
-  if (isset($_POST['email'])) { 
-    $emailUnsafe = filter_var(substr($_POST['email'], 0, 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
-    $emailSqlSafe   = mysqli_real_escape_string($dbConn, $emailUnsafe);
-  } else {
-    $emailUnsafe = ''; 
-    $emailSqlSafe = '';
-  }
-  if (isset($_POST['password'])) {
-    $passwordUnsafe = filter_var(substr($_POST['password'], 0, 63), FILTER_SANITIZE_STRING); // generic string, max length 63
-  } else {
-    $passwordUnsafe = '';
-  }
-  
-  $setCookieSafe = safeIntFromExt('POST', 'setCookie', 1);
-  $hasPw = safeIntFromExt('POST', 'hasPw', 1);  
+  $emailUnsafe = filter_var(safeStrFromExt('POST', 'email', 127), FILTER_SANITIZE_EMAIL);    // email string, max length 127
+  $emailSqlSafe = mysqli_real_escape_string($dbConn, $emailUnsafe);  
+  $passwordUnsafe = filter_var(safeStrFromExt('POST', 'password', 63), FILTER_SANITIZE_STRING); // generic string, max length 63    
+  $setCookieSafe = safeIntFromExt('POST', 'setCookie', 1);  
   $verGet = safeHexFromExt('GET', 'ver', 64);
-  $verSqlSafe = mysqli_real_escape_string($dbConn, $verGet);
-  
+  $verSqlSafe = mysqli_real_escape_string($dbConn, $verGet);  
   
   if ($doSafe == 0) { // valid use case. Entry point of this site
     printStartOfHtml($dbConn);
@@ -369,25 +342,19 @@
     // step 1: user data need to make sense: email-addr valid           
     if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
       // check whether email already exists      
-      if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
-        if ($result->num_rows == 0) {
-          if (($hasPw == 0) or (($hasPw == 1) and (strlen($passwordUnsafe) > 3))) {                    
-            if ($result = $dbConn->query('INSERT INTO `user` (`email`, `lastLogin`) VALUES ("'.$emailSqlSafe.'", CURRENT_TIMESTAMP)')) { 
-              $newUserid = (int)$dbConn->insert_id;
-              if (newUserLoginAndLinks($dbConn, $newUserid, $hasPw, $passwordUnsafe)) {                      
-                if(newUserEmailConfirmation($dbConn, $newUserid, $hasPw, $emailSqlSafe)) {
-                  if ($hasPw == 1) {
-                    $loginText = getLanguage($dbConn,88).' <a href="index.php#login">https://widmedia.ch/start/index.php#login</a>';
-                  } else {
-                    $loginText = 'login <a href="index.php?userid='.$newUserid.'">https://widmedia.ch/start/index.php?userid='.$newUserid.'</a>';
-                  }                    
-                  printConfirm($dbConn, getLanguage($dbConn,89), getLanguage($dbConn,90).$loginText.'<br><br>'.getLanguage($dbConn,86));
-                } else { error($dbConn, 110300); } // newUserEmail
-              } else { error($dbConn, 110301); } // links, categories insert
-            } else { error($dbConn, 110302); } // user insert                        
-          } else { error($dbConn, 110303); printConfirm($dbConn, 'Error',getLanguage($dbConn,91)); } // if password, then length ok
-        } else { error($dbConn, 110304); printConfirm($dbConn, 'Error',getLanguage($dbConn,92)); } // email does not exist
-      } else { error($dbConn, 110305); } // query worked
+      if (($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) and ($result->num_rows == 0)) {
+        if (strlen($passwordUnsafe) > 3) {
+          if ($result = $dbConn->query('INSERT INTO `user` (`email`, `lastLogin`) VALUES ("'.$emailSqlSafe.'", CURRENT_TIMESTAMP)')) { 
+            $newUserid = (int)$dbConn->insert_id;
+            if (newUserLoginAndLinks($dbConn, $newUserid, $passwordUnsafe)) {                      
+              if(newUserEmailConfirmation($dbConn, $newUserid, $emailSqlSafe)) {
+                $loginText = getLanguage($dbConn,88).' <a href="index.php#login">https://widmedia.ch/start/index.php#login</a>';
+                printConfirm($dbConn, getLanguage($dbConn,89), getLanguage($dbConn,90).$loginText.'<br><br>'.getLanguage($dbConn,86));
+              } else { error($dbConn, 110300); } // newUserEmail
+            } else { error($dbConn, 110301); } // links, categories insert
+          } else { error($dbConn, 110302); } // user insert                        
+        } else { error($dbConn, 110303); printConfirm($dbConn, 'Error',getLanguage($dbConn,91)); } // password length ok
+      } else { error($dbConn, 110304); printConfirm($dbConn, 'Error',getLanguage($dbConn,92)); } // email does not exist      
     } else { error($dbConn, 110306); } // have a valid email 
   } elseif ($doSafe == 4) { // process the login data, maybe set a cookie
     if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email
@@ -406,15 +373,12 @@
     } else { error($dbConn, 110403); } // valid email          
   } elseif ($doSafe == 5) { // confirm the email address
     printStartOfHtml($dbConn);
-    if (($useridGetSafe > 2) and ($result = $dbConn->query('SELECT `hasPw` FROM `user` WHERE `id` = "'.$useridGetSafe.'" AND `verCode` = "'.$verSqlSafe.'"'))) {
+    if (($useridGetSafe > 2) and ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `id` = "'.$useridGetSafe.'" AND `verCode` = "'.$verSqlSafe.'"'))) {
       // NB: I'm not even looking at the date (mentioned a 24 hour limit in the email). That's fine. I'll just delete accounts which have not been verified after some days...      
       if ($result->num_rows == 1) {
-        $row = $result->fetch_row();
-        $hasPw = $row[0];
+        $row = $result->fetch_row();        
         if ($result = $dbConn->query('UPDATE `user` SET `verified` = "1" WHERE `id` = "'.$useridGetSafe.'"')) {   
-          $loginLink = 'https://widmedia.ch/start/index.php';
-          if ($hasPw == 1) { $loginLink = $loginLink.'#login'; } 
-          else { $loginLink = $loginLink.'?userid='.$useridGetSafe; }
+          $loginLink = 'https://widmedia.ch/start/index.php#login';
           printConfirm($dbConn, getLanguage($dbConn,93), getLanguage($dbConn,94).' <a href="'.$loginLink.'">log in</a>.');
         } else { error($dbConn, 110500); } // update query
       } else { error($dbConn, 110501); } // 1 result

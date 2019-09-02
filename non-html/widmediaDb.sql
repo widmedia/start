@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 15. Aug 2019 um 14:20
+-- Erstellungszeit: 02. Sep 2019 um 13:00
 -- Server-Version: 10.1.40-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -172,7 +172,9 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (118, 'Recovery is now active for one hour...', 'Die Wiederherstellung ist nun für eine Stunde aktiv...'),
 (119, 'to the start page', 'zur Startseite'),
 (120, 'Reset password', 'Passwort zurücksetzen'),
-(121, 'Your password has been updated. You may log in again', 'Dein Passwort wurde aktualisiert, du kannst dich neu einloggen');
+(121, 'Your password has been updated. You may log in again', 'Dein Passwort wurde aktualisiert, du kannst dich neu einloggen'),
+(122, 'Background', 'Hintergrund'),
+(123, 'Add your own link to ', 'Deinen eigenen Link hinzufügen zur ');
 
 -- --------------------------------------------------------
 
@@ -212,13 +214,13 @@ CREATE TABLE `user` (
   `id` int(11) NOT NULL,
   `email` text NOT NULL,
   `lastLogin` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `hasPw` tinyint(1) NOT NULL,
   `pwHash` char(255) NOT NULL,
   `randCookie` char(64) NOT NULL,
   `verified` tinyint(1) NOT NULL DEFAULT '0',
   `verCode` char(64) NOT NULL,
   `verDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `ln` char(2) NOT NULL DEFAULT 'de'
+  `ln` char(2) NOT NULL DEFAULT 'de',
+  `styleId` int(2) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -288,7 +290,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

@@ -7,8 +7,8 @@
   function printUserTable ($dbConn): void {
     $currentTime = time();
     
-    echo '<table><tr><th>id</th><th>email</th><th>login</th><th>Pw/verified</th><th>verDate</th><th>select</th></tr>';
-    if ($result = $dbConn->query('SELECT `id`, `email`, `lastLogin`, `hasPw`, `verified`, `verDate` FROM `user` WHERE 1 ORDER BY `lastLogin` ASC LIMIT 100')) {
+    echo '<table><tr><th>id</th><th>email</th><th>login</th><th>verified</th><th>verDate</th><th>select</th></tr>';
+    if ($result = $dbConn->query('SELECT `id`, `email`, `lastLogin`, `verified`, `verDate` FROM `user` WHERE 1 ORDER BY `lastLogin` ASC LIMIT 100')) {
       while ($row = $result->fetch_assoc()) {
         $selectTemplate = '<a href="admin.php?do=1&editUserId='.$row['id'].'" class="button differentColor">select</a>';
         
@@ -29,7 +29,7 @@
         if (strlen($email) > 15) { $email = substr($email,0,12).'...'; }
         
         $verDate = date('d.m.Y', strtotime($row['verDate']));
-        echo '<tr><td>'.$row['id'].'</td><td>'.$email.'</td><td>'.$diffText.'</td><td>'.$row['hasPw'].' / '.$row['verified'].'</td><td>'.$verDate.'</td><td>'.$select.'</td></tr>';
+        echo '<tr><td>'.$row['id'].'</td><td>'.$email.'</td><td>'.$diffText.'</td><td>'.$row['verified'].'</td><td>'.$verDate.'</td><td>'.$select.'</td></tr>';
       } // while
     } // query ok
     echo '</table>';
@@ -162,8 +162,8 @@
         echo '<div class="row twelve columns">&nbsp;</div><h3 class="section-heading">User details userid '.$editUserId.'</h3>';
         // `categories`: `id`/`userid`/`category`/`text`/
         // `links`: `id`/`userid`/`category`/`text`/`link`/`cntTot`
-        // `user`: `id`/`email`/`lastLogin`/`hasPw`/`pwHash`/`randCookie`/`verified`/`verCode`/`verDate`      
-        printValueTable($result_user, 9);
+        // `user`: `id`/`email`/`lastLogin`/`pwHash`/`randCookie`/`verified`/`verCode`/`verDate`      
+        printValueTable($result_user, 8);
         printValueTable($result_categories, 4);
         printValueTable($result_links, 6);
         
