@@ -331,6 +331,13 @@
     printLogin($dbConn, false);
     printUserStat($dbConn);
   } elseif ($doSafe == 1) { // log out
+    // safe the current style and store it into the session var, so the user still sees his style
+    $userid = getUserid();
+    if (($userid > 0) and ($result = $dbConn->query('SELECT `styleId` FROM `user` WHERE `id` = "'.$userid.'"'))) {
+      $row = $result->fetch_row();    
+      $styleId = (int)$row[0];
+      $_SESSION['styleId'] = $styleId;      
+    }
     logOut();
   } elseif ($doSafe == 2) { // present the new user form
     printStartOfHtml($dbConn);

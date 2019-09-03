@@ -4,7 +4,7 @@
   
   
   // prints all the users (limit 100) in the database, sorted by id
-  function printUserTable ($dbConn): void {
+  function printUserTable (object $dbConn): void {
     $currentTime = time();
     
     echo '<table><tr><th>id</th><th>email</th><th>login</th><th>verified</th><th>verDate</th><th>select</th></tr>';
@@ -48,7 +48,7 @@
   }
     
   // sends an email to the user
-  function reminderMail($dbConn, int $editUserId, int $reason): bool { 
+  function reminderMail(object $dbConn, int $editUserId, int $reason): bool { 
     if ($reason == 1) { 
       $emailBodyDe = "(English below)\n\nSalü,\n\nDein Account auf widmedia.ch/start ist seit einiger Zeit inaktiv (kein Login während mindestens einem Monat).\n\n- Falls du deinen Account behalten möchtest, log dich bitte innerhalb von 24 Stunden wieder ein (Logininfos wurden dir bei der Accounteröffnung zugeschickt).\n";
       $emailBodyEn = "Hello,\n\nYour account on widmedia.ch/start has been inactive for quite some time (no login for at least one month).\n\n- If you like to keep your account, please login within the next 24 hours (login information have been sent at account opening).\n";
@@ -78,7 +78,7 @@
   
   // reads the user db, checks how many users have been active in this month and updates the statistics database (userStat)
   // userStat structure: id (int 11) / year (format 2019) int4 / month (format 07) int 2 / numUser (int 11)
-  function doUserStatistics($dbConn): void {
+  function doUserStatistics(object $dbConn): void {
     // find current year and month
     $currentTime = time();
     $year = date('Y', $currentTime);
@@ -148,6 +148,10 @@
   echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">';
   doUserStatistics($dbConn);
   echo '</div>';  
+  
+  echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns textBox">Session variables: <br><pre>';
+  print_r($_SESSION);
+  echo '</pre></div>';
   
   $doSafe = safeIntFromExt('GET', 'do', 1); // this is an integer (range 1 to 3)
   $editUserId = safeIntFromExt('GET','editUserId', 11); // this is an integer    
