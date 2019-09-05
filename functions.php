@@ -297,11 +297,11 @@ function testUserCheck (object $dbConn, int $userid): bool { // actually it is r
 }
 
 // deletes the userid cookie and the userid session. 
-// NB: Leaves the ln-variables, otherwise I cannot print the 'logout-successful' message in non-default language
+// NB: Leaves all other session info (like the ln-variable, otherwise I cannot print the 'logout-successful' message in non-default language)
 function sessionAndCookieDelete (): void {
   $_SESSION['userid'] = 0; // the most important one, make sure it's really 0
-  setcookie('userIdCookie', '0', (time() - 42000)); // some big enough value in the past to make sure things like summer time changes do not affect it  
-}  
+  setcookie('userIdCookie', '0', (time() - 42000), '/start/', 'widmedia.ch', true, true); // some big enough value in the past to make sure things like summer time changes do not affect it  
+}
 
 // does the db operations to remove a certain user. Does some checks as well
 function deleteUser (object $dbConn, int $userid): bool {

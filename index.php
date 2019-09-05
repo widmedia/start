@@ -370,10 +370,10 @@
       if (($userid > 0) and (verifyCredentials($dbConn, 1, $userid, $passwordUnsafe, ''))) { // now, can do the check of the hash value
         if ($setCookieSafe == 1) {
           $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
-          setcookie('userIdCookie', (string)$userid, $expire); 
+          setcookie('userIdCookie', (string)$userid, $expire, '/start/', 'widmedia.ch', true, true); 
           if ($result = $dbConn->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' )) { // this is just a random number which has been set at user creation
             $row = $result->fetch_row();
-            setcookie('randCookie', $row[0], $expire);
+            setcookie('randCookie', $row[0], $expire, '/start/', 'widmedia.ch', true, true);
           } else { error($dbConn, 110400); } // select query
         } // setCookie is selected
         redirectRelative('links.php');        
