@@ -494,6 +494,7 @@ function printInlineCss (object $dbConn, bool $haveDb): void {
     #menu a { color: '.$txtLight.'; }
     #menu a:hover, #menu a:focus { color: '.$txtDark.'; }
     .menuCurrentPage { color: '.$txtDark.'; }
+    #menuToggle input:checked ~ span { background: '.$txtLight.'; }
     .bgCol { background-color: '.$bg_norm.'; }
   </style>'; 
 }
