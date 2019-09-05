@@ -105,8 +105,7 @@ function getCategory (object $dbConn, int $userid, int $category): string {
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
 function printStartOfHtml (object $dbConn): void {
-  printStatic($dbConn);  
-    
+  printStatic($dbConn);     
   $msgSafe = safeIntFromExt('GET', 'msg', 1);
   
   if ($msgSafe > 0) {
@@ -119,7 +118,7 @@ function printStartOfHtml (object $dbConn): void {
   $userid = getUserid();
   if ($userid == 2) { overlayDiv(false, 3, getLanguage($dbConn,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConn,32).'</a>'); }  
   printOverlayAccountVerify($dbConn, $userid);  
-  echo '<div class="section categories noBottom"><div class="container">';
+  echo '<div class="section categories noBottom brightness"><div class="container">';
 }
  
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
@@ -461,10 +460,12 @@ function printInlineCss (object $dbConn, bool $haveDb): void {
   $bg_link  = 'rgba(180, 180, 180, 0.6)'; // grayish
   
   $bgImg = getStyle($dbConn, $userid, 'bgImg');
+  $brightness = getStyle($dbConn, $userid, 'brightness');
   
   echo '
   <style>
     body { color: '.$txtLight.'; background-image: url("images/bg/'.$bgImg.'"); } 
+    .brightness { background-color: rgba('.$brightness.'); }
     a { color: '.$font_link.'; background-color: '.$bg_link.';}
     a:hover { color: '.$txtLight.'; }
     .button,
@@ -617,22 +618,24 @@ function getStyle(object $dbConn, int $userid, string $item): string {
 // input: a style id (number from 1 to 7, 0 is valid as well), output: a string (either a color-string or a background image string)
 function styleDef(int $styleId, string $item): string {
   // following styles items are defined. The default values of the items are:
-  $bgNorm   = '0,113,255,0.40';
-  $bgNorm2  = '0,113,255,0.80';
-  $bgDiff   = '255,47,25,0.30';
-  $bgDiff2  = '255,47,25,0.60';
-  $txtLight = '250,255,59,0.85';
-  $txtDark  = '182,189,0,0.85';
+  $bgNorm   = '  0,113,255, 0.40';
+  $bgNorm2  = '  0,113,255, 0.80';
+  $bgDiff   = '255, 47, 25, 0.30';
+  $bgDiff2  = '255, 47, 25, 0.60';
+  $txtLight = '250,255, 59, 0.85';
+  $txtDark  = '182,189,  0, 0.85';
+  $bgCol    = '  0,  0,  0, 0.30';
     
   $styles = // two dimensional array. First dimension is working with keys, second one with index.
     array(// 0 = undefined, same as 1        2                  3                  4          5                  6                  7
-      'bgNorm' => array($bgNorm,  $bgNorm,  '117, 89,217,0.60','0,113,255,0.40',  $bgNorm,   '191,23,37,0.40',  '0,  0,  0,0.50',  $bgNorm),
-      'bgNorm2'=> array($bgNorm2, $bgNorm2, '117, 89,217,0.80','0,113,255,0.80',  $bgNorm2,  '191,23,37,0.80',  '0,  0,  0,0.80',  $bgNorm2),
-      'bgDiff' => array($bgDiff,  $bgDiff,  '210,242,141,0.50',$bgDiff,           $bgDiff,   '71,95,36,0.30',   '71,95,36,0.60',   $bgDiff),
-      'bgDiff2'=> array($bgDiff2, $bgDiff2, '210,242,141,0.60',$bgDiff2,          $bgDiff2,  '71,95,36,0.60',   '71,95,36,0.80',   $bgDiff2),
-      'txtLight'=>array($txtLight,$txtLight,'240,240,240,0.85','250,255, 65,0.85',$txtLight, '240,222,134,0.85','250,232,148,0.90',$txtLight),
-      'txtDark'=> array($txtDark, $txtDark, '180,180,180,0.85','192,199, 10,0.85',$txtDark,  '174,158,81,0.85', '174,158,81,0.85', $txtDark),
-      'bgImg'  => array('ice.jpg','ice.jpg','bamboo.jpg',      'water.jpg',       'pigs.jpg','monk.jpg',        'stone.jpg',       'smoke.jpg')
+      'bgNorm'   => array($bgNorm,  $bgNorm,  '117, 89,217,0.60','0,113,255,0.40',  $bgNorm,   '191,23,37,0.40',  '0,  0,  0,0.50',  $bgNorm),
+      'bgNorm2'  => array($bgNorm2, $bgNorm2, '117, 89,217,0.80','0,113,255,0.80',  $bgNorm2,  '191,23,37,0.80',  '0,  0,  0,0.80',  $bgNorm2),
+      'bgDiff'   => array($bgDiff,  $bgDiff,  '210,242,141,0.50',$bgDiff,           $bgDiff,   ' 0, 0, 0,0.30',   '71,95,36,0.60',   $bgDiff),
+      'bgDiff2'  => array($bgDiff2, $bgDiff2, '210,242,141,0.60',$bgDiff2,          $bgDiff2,  ' 0, 0, 0,0.60',   '71,95,36,0.80',   $bgDiff2),
+      'txtLight' => array($txtLight,$txtLight,'240,240,240,0.85','250,255, 65,0.85',$txtLight ,'240,222,134,0.85','250,232,148,0.90',$txtLight),
+      'txtDark'  => array($txtDark ,$txtDark ,'180,180,180,0.85','192,199, 10,0.85',$txtDark  ,'174,158,81,0.85' ,'174,158,81,0.85' ,$txtDark),
+      'bgImg'    => array('ice.jpg','ice.jpg','bamboo.jpg'      ,'water.jpg'       ,'pigs.jpg','monk.jpg'        ,'stone.jpg'       ,'smoke.jpg'),
+      'brightness'=>array($bgCol   ,$bgCol   ,$bgCol            ,$bgCol            ,$bgCol    ,$bgCol            ,$bgCol            ,$bgCol)
     );
     
   if ($styleId < 8) { // only 0..7 are defined    

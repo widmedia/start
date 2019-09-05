@@ -144,7 +144,7 @@
   // prints some graph with the user statistics 
   function printUserStat ($dbConn): void {
     $currentTime = time();
-    $year = date('Y', $currentTime); // TODO: provide option to select another year
+    $year = 2019; // date('Y', $currentTime); // TODO: provide option to select another year
     
     $result = $dbConn->query('SELECT `month`, `numUser` FROM `userStat` WHERE `year` = "'.$year.'" ORDER BY `month`');
     
@@ -159,7 +159,7 @@
     } // while
     
     // print a table with the twelve months
-    echo '<div class="row twelve columns">&nbsp;</div><div class="row twelve columns">&nbsp;</div>';
+    echo '<div class="row twelve columns">&nbsp;</div>';
     echo '<div class="row twelve columns"><hr></div>';
     echo '<h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,56).$year.'</span></h3><div class="row">';
     for ($i = 0; $i < 12; $i++) {       
@@ -279,12 +279,13 @@
     <div class="row twelve columns"><input name="login" type="submit" value="log in"></div>
     </form>
     <div class="row twelve columns">&nbsp;</div>
+    <div class="row twelve columns">&nbsp;</div>
     <div class="row">
       <div class="six columns"><a href="index.php?do=2#newUser" class="button"><img src="images/icon/plus.png" alt="open your own account" class="logoImg"> '.getLanguage($dbConn,81).'</a></div>
       <div class="six columns"><a href="index.php?do=7#login" class="button"><img src="images/icon/question.png" alt="get an email with your new password" class="logoImg"> '.getLanguage($dbConn,87).'</a></div>
     </div>';        
     }
-    echo '<div class="row twelve columns">&nbsp;</div>';
+    // echo '<div class="row twelve columns">&nbsp;</div>';
   } // function 
 
   // checks whether there is (at least) one entry in the data base and it's not yet expired
