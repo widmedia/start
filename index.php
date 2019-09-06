@@ -126,8 +126,8 @@
   // sends an email to the new user with a special link and updates the database with that email confirmation link
   function newUserEmailConfirmation (object $dbConn, int $newUserid, string $emailSqlSafe) : bool {
     $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database    
-    $emailBody = "Sali,\n\n".getLanguage($dbConn,95)."\n\n".getLanguage($dbConn,96)."\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n";
-    $emailBody = $emailBody.getLanguage($dbConn,97)."\nhttps://widmedia.ch/start/index.php#login ".getLanguage($dbConn,98)."\n";    
+    $emailBody = "Sali,\n\n".getLanguage($dbConn,95)."\n\n".getLanguage($dbConn,96)."\nhttps://widmedia.ch/start/index.php?do=5&userid=".$newUserid."&ver=".$hexStr64."\n\n";
+    $emailBody = $emailBody.getLanguage($dbConn,97).'https://widmedia.ch/start/index.php#login '.getLanguage($dbConn,98)."\n";    
     $emailBody = $emailBody."\n\n".getLanguage($dbConn,101)."\nDaniel ".getLanguage($dbConn,102)." widmedia\n\n--\n".getLanguage($dbConn,5).": sali@widmedia.ch\n";
     
     if (!($dbConn->query('UPDATE `user` SET `verCode` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"'))) {

@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 02. Sep 2019 um 13:00
--- Server-Version: 10.1.40-MariaDB
+-- Erstellungszeit: 06. Sep 2019 um 17:00
+-- Server-Version: 10.1.41-MariaDB
 -- PHP-Version: 7.1.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -148,9 +148,8 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (94, 'Thank you. Your email address has been verified and your account is now fully functional. Please', 'Merci. Deine Emailadresse wurde verifiziert und dein Account ist jetzt voll funktionsfähig.'),
 (95, 'Thank you for opening a free account on widmedia.ch/start.', 'Dankeschön dass du deinen Gratisaccount auf widmedia.ch/start eröffnet hast.'),
 (96, 'You need to confirm your email address within 24 hours to fully use your account. Please click on the link below to do so:', 'Du musst deine Emailadresse innerhalb von 24 Stunden bestätigen. Bitte klicke dazu auf den untenstehenden Link:'),
-(97, 'You did select password protection for your account. Please use the form on ', 'Du hast einen Account mit Passwortschutz gewählt. Auf '),
+(97, 'Please use the form on ', 'Auf '),
 (98, 'to log in.', 'kannst du dich einloggen.'),
-(99, 'You did not select password protection. This means you (and, btw. everybody else) may login with this link:', 'Du hast einen Account ohne Passwortschutz gewählt. Das heisst du (und übrigens jeder/jede) kann sich mit diesem Link einloggen:'),
 (100, 'Please store this link for future use as a bookmark or maybe your browser starting page.', 'Bitte speichere diesen Link entweder als Bookmark oder direkt als Startseite deines Browsers.'),
 (101, 'Have fun and best regards,', 'Viel Spass und freundliche Grüsse'),
 (102, 'from', 'von'),
