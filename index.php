@@ -52,13 +52,10 @@
     $_SESSION['userid'] = 0; // clear it just to make sure    
     
     if (!($result = $dbConn->query('SELECT `pwHash`, `randCookie` FROM `user` WHERE `id` = "'.$userid.'"'))) {
-      error($dbConn, 112004);
-      return false;
+      return error($dbConn, 112004);
     }
-      
     if (!($result->num_rows == 1)) {
-      error($dbConn, 112003);
-      return false;
+      return error($dbConn, 112003);
     }
 
     $row = $result->fetch_assoc();        
@@ -67,19 +64,16 @@
 
     if ($authMethod == 1) { // with a pw
       if (!(($userid == 2) or (password_verify($passwordUnsafe, $pwHash)))) {
-        error($dbConn, 112000); 
-        return false;
+        return error($dbConn, 112000);
       } 
     } elseif ($authMethod == 2) { // with a Cookie
       if (!(($randCookie) and ($randCookie == $randCookieInput))) { // there is no zero in the data base and 64hex value is correct
-        error($dbConn, 112001);
-        return false;
+        return error($dbConn, 112001);
       }
     } else { return false; } // should not happen, I myself set the authMethod
     
     if (!($dbConn->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"'))) {
-      error($dbConn, 112005);
-      return false;
+      return error($dbConn, 112005);
     }
     $_SESSION['userid'] = $userid;
     return true;    

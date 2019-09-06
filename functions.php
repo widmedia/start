@@ -87,10 +87,11 @@ function printErrorAndDie (string $heading, string $text): void {
 }
 
 // checks whether not the test user and displays some very generic failure message
-function error (object $dbConn, int $errorMsgNum): void {  
+function error (object $dbConn, int $errorMsgNum): boolean {  
   if (getUserid() != 2) { // no error is printed for the test user    
     printConfirm($dbConn, 'Error', getLanguage($dbConn,33).$errorMsgNum.getLanguage($dbConn,34).' sali@widmedia.ch');
   }
+  return false; // always returning false to simplify coding. Can write "return error($dbCon, 1234);" which will return false.
 }
 
 // function returns the text of the category. If something does not work as expected, 0 is returned
@@ -524,21 +525,18 @@ function updateUser (object $dbConn, int $userid, bool $forgotPw): bool {
     return false;
   }
   if (!($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"'))) {
-    error($dbConn, 104404); 
-    return false;
+    return error($dbConn, 104404);
   }
   
   $row = $result->fetch_assoc(); // guaranteed to get only one row      
   $passwordUnsafe = safeStrFromExt('POST','password', 63);
   if (!(($forgetPw) or (password_verify($passwordUnsafe, $row['pwHash'])))) {        
-    error($dbConn, 104403); 
-    return false;
+    return error($dbConn, 104403);
   }
     
   $passwordUnsafe = filter_var(safeStrFromExt('POST','passwordNew', 63), FILTER_SANITIZE_STRING);
   if (strlen($passwordUnsafe) <= 3) {
-    error($dbConn, 104400);
-    return false;
+    return error($dbConn, 104400);
   }
   $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
   
@@ -562,18 +560,15 @@ function updateUser (object $dbConn, int $userid, bool $forgotPw): bool {
     
   if ($emailOk) {
     if (!($dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"'))) {
-      error($dbConn, 104401); 
-      return false; 
+      return error($dbConn, 104401);
     }
     return true;
   } else { 
     if (!$forgotPw) { 
-      error($dbConn, 104405);
-      return false;
+      return error($dbConn, 104405);
     }
     if (!($dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'" WHERE `id` = "'.$userid.'"'))) {
-      error($dbConn, 104402); 
-      return false; 
+      return error($dbConn, 104402);      
     }
     return true;
   } // emailOK-else  
