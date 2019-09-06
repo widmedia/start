@@ -288,7 +288,7 @@
   } // function 
 
   // checks whether there is (at least) one entry in the data base and it's not yet expired
-  function checkPwForgot($dbConn, int $useridGetSafe, $verSqlSafe) : bool {
+  function checkPwForgot(object $dbConn, int $useridGetSafe, $verSqlSafe) : bool {
     if (!($result = $dbConn->query('SELECT `validUntil` FROM `pwForgot` WHERE `userid` = "'.$useridGetSafe.'" AND `hexval` = "'.$verSqlSafe.'" ORDER BY `id` DESC'))) {
       return false;
     }
@@ -302,6 +302,126 @@
       return false; 
     }
     
+    return true;
+  }
+  
+  // doing the db operations to add a new user into user-table
+  function addNewUser(object $dbConn, string $emailUnsafe, string $emailSqlSafe, string $passwordUnsafe): bool {
+    if (!(filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL))) { // have a valid email 
+      return error($dbConn, 110306);
+    }
+    // check whether email already exists
+    if (!(($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) and ($result->num_rows == 0))) {
+      printConfirm($dbConn, 'Error',getLanguage($dbConn,92));
+      return error($dbConn, 110304);
+    }
+    if (strlen($passwordUnsafe) <= 3) {
+      printConfirm($dbConn, 'Error',getLanguage($dbConn,91)); 
+      return error($dbConn, 110303); 
+    }
+    if (!($result = $dbConn->query('INSERT INTO `user` (`email`, `lastLogin`) VALUES ("'.$emailSqlSafe.'", CURRENT_TIMESTAMP)'))) { 
+      return error($dbConn, 110302);
+    }
+    $newUserid = (int)$dbConn->insert_id;
+    if (!(newUserLoginAndLinks($dbConn, $newUserid, $passwordUnsafe))) {
+      return error($dbConn, 110301);
+    }
+    if(!(newUserEmailConfirmation($dbConn, $newUserid, $emailSqlSafe))) {
+      return error($dbConn, 110300);
+    }
+    $loginText = getLanguage($dbConn,88).' <a href="index.php#login">https://widmedia.ch/start/index.php#login</a>';
+    printConfirm($dbConn, getLanguage($dbConn,89), getLanguage($dbConn,90).$loginText.'<br><br>'.getLanguage($dbConn,86));
+    return true;
+  }
+  
+  function processLoginData(object $dbConn, string $emailUnsafe, string $passwordUnsafe, int $setCookieSafe): bool {
+    if (!(filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL))) { // have a valid email
+      return error($dbConn, 110403);
+    }
+    $userid = mail2userid($dbConn, $emailUnsafe);
+    if (!(($userid > 0) and (verifyCredentials($dbConn, 1, $userid, $passwordUnsafe, '')))) { // email found in db and verification ok
+      return error($dbConn, 110402);
+    }
+    if ($setCookieSafe == 1) {
+      $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
+      setcookie('userIdCookie', (string)$userid, $expire, '/start/', 'widmedia.ch', true, true); 
+      if (!($result = $dbConn->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' ))) { // this is just a random number which has been set at user creation
+        return error($dbConn, 110400); 
+      }
+      $row = $result->fetch_row();
+      setcookie('randCookie', $row[0], $expire, '/start/', 'widmedia.ch', true, true);      
+    } // setCookie is selected
+    redirectRelative('links.php');        
+    return true;    
+  }
+  
+  function confirmEmailAddr(object $dbConn, int $useridGetSafe, string $verSqlSafe): bool {
+    if (!(($useridGetSafe > 2) and ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `id` = "'.$useridGetSafe.'" AND `verCode` = "'.$verSqlSafe.'"')))) {
+      return error($dbConn, 110503);
+    }
+    // NB: I'm not even looking at the date (mentioned a 24 hour limit in the email). That's fine. I'll just delete accounts which have not been verified after some days...      
+    if (!($result->num_rows == 1)) {
+      return error($dbConn, 110501);
+    }
+    $row = $result->fetch_row();        
+    if (!($dbConn->query('UPDATE `user` SET `verified` = "1" WHERE `id` = "'.$useridGetSafe.'"'))) {
+      return error($dbConn, 110500);
+    }
+    $loginLink = 'https://widmedia.ch/start/index.php#login';
+    printConfirm($dbConn, getLanguage($dbConn,93), getLanguage($dbConn,94).' <a href="'.$loginLink.'">log in</a>.');
+    return true;
+  }
+  
+  function processPwForgot(object $dbConn, string $emailUnsafe): bool {
+    $pwForgotUserid = mail2userid($dbConn, $emailUnsafe); // email exists    
+    if (!($pwForgotUserid > 0)) { // pwForgot-db stores a completely unrelated hexval which is valid for 1 hour. DB-layout: id / userid / hexval / validUntil
+      return error($dbConn, 110802); 
+    }  
+    $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database
+    $validUntil = date('Y-m-d H:i:s', time() + 3600);      
+    if (!($dbConn->query('INSERT INTO `pwForgot` (`userid`, `hexval`, `validUntil`) VALUES ("'.$pwForgotUserid.'", "'.$hexStr64.'", "'.$validUntil.'")'))) {
+      return error($dbConn, 110801); 
+    }
+    $emailBody = "Sali,\n\n".getLanguage($dbConn,113).":\nhttps://widmedia.ch/start/index.php?do=9&userid=".$pwForgotUserid."&ver=".$hexStr64."\n";
+    $emailBody = $emailBody."\n\n".getLanguage($dbConn,114).",\nDaniel ".getLanguage($dbConn,102)." widmedia\n\n--\n".getLanguage($dbConn,3).": sali@widmedia.ch\n";
+    if (!(mail($emailUnsafe, getLanguage($dbConn,115).' widmedia.ch/start', $emailBody))) {
+      return error($dbConn, 110800);
+    }  
+    printStartOfHtml($dbConn);    
+    printConfirm($dbConn, 'Email '.getLanguage($dbConn,116), getLanguage($dbConn,117).htmlentities($emailUnsafe).').<br>'.getLanguage($dbConn,118).'<br><br><a href="index.php?do=6">'.getLanguage($dbConn,119).'</a>');
+    return true;
+  }
+  
+  function processNewPw(object $dbConn, int $useridPostSafe, string $verPost): bool {    
+    if (!(checkPwForgot($dbConn, $useridPostSafe, mysqli_real_escape_string($dbConn, $verPost)))) { // check whether this account is really in the pwRecovery data base
+      return error($dbConn, 111002);
+    }
+    if (!(updateUser($dbConn, $useridPostSafe, true) and ($dbConn->query('DELETE FROM `pwForgot` WHERE `userid` = "'.$useridPostSafe.'"')))) {
+      return error($dbConn, 111001); 
+    }
+    printStartOfHtml($dbConn);
+    printConfirm($dbConn, getLanguage($dbConn,24), getLanguage($dbConn,121).': <a href="index.php#login">index.php#login</a>');      
+    return true;    
+  }
+  
+  function processPwRecLink(object $dbConn, int $useridGetSafe, string $verSqlSafe, string $verGet): bool {
+    if (!(checkPwForgot($dbConn, $useridGetSafe, $verSqlSafe))) {
+      printConfirm($dbConn, 'Error', 'Recovery link expired');
+      return error($dbConn, 110900);
+    }    
+    printStartOfHtml($dbConn);  
+    echo '
+    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,120).'</span></h3>
+    <form action="index.php?do=10" method="post">
+    <div class="row" id="pwRow">
+      <div class="three columns"><span class="bgCol">'.getLanguage($dbConn,50).':</span> </div>
+      <div class="nine columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20"></div>
+    </div>
+    <div class="row twelve columns">&nbsp;<input name="userid" type="hidden" value="'.$useridGetSafe.'"><input name="ver" type="hidden" value="'.$verGet.'"></div>
+    <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,39).'"></div>
+    <div class="row twelve columns">&nbsp;</div>
+    <div class="row twelve columns">&nbsp;</div>
+    </form>';   
     return true;
   }
   
@@ -334,12 +454,11 @@
     printTitle($dbConn);
     printLogin($dbConn, false);
     printUserStat($dbConn);
-  } elseif ($doSafe == 1) { // log out
-    // safe the current style and store it into the session var, so the user still sees his style
+  } elseif ($doSafe == 1) { // log out    
     $userid = getUserid();
     if (($userid > 0) and ($result = $dbConn->query('SELECT `styleId` FROM `user` WHERE `id` = "'.$userid.'"'))) {
       $row = $result->fetch_row();    
-      $styleId = (int)$row[0];
+      $styleId = (int)$row[0]; // safe the current style and store it into the session var, so the user still sees his style
       $_SESSION['styleId'] = $styleId;      
     }
     logOut();
@@ -349,51 +468,13 @@
     printNewUserForm($dbConn);
     printUserStat($dbConn);
   } elseif ($doSafe == 3) { // process the new user form data, add a new user
-    printStartOfHtml($dbConn);
-    // step 1: user data need to make sense: email-addr valid           
-    if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
-      // check whether email already exists      
-      if (($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) and ($result->num_rows == 0)) {
-        if (strlen($passwordUnsafe) > 3) {
-          if ($result = $dbConn->query('INSERT INTO `user` (`email`, `lastLogin`) VALUES ("'.$emailSqlSafe.'", CURRENT_TIMESTAMP)')) { 
-            $newUserid = (int)$dbConn->insert_id;
-            if (newUserLoginAndLinks($dbConn, $newUserid, $passwordUnsafe)) {                      
-              if(newUserEmailConfirmation($dbConn, $newUserid, $emailSqlSafe)) {
-                $loginText = getLanguage($dbConn,88).' <a href="index.php#login">https://widmedia.ch/start/index.php#login</a>';
-                printConfirm($dbConn, getLanguage($dbConn,89), getLanguage($dbConn,90).$loginText.'<br><br>'.getLanguage($dbConn,86));
-              } else { error($dbConn, 110300); } // newUserEmail
-            } else { error($dbConn, 110301); } // links, categories insert
-          } else { error($dbConn, 110302); } // user insert                        
-        } else { error($dbConn, 110303); printConfirm($dbConn, 'Error',getLanguage($dbConn,91)); } // password length ok
-      } else { error($dbConn, 110304); printConfirm($dbConn, 'Error',getLanguage($dbConn,92)); } // email does not exist      
-    } else { error($dbConn, 110306); } // have a valid email 
+    printStartOfHtml($dbConn);    
+    addNewUser($dbConn, $emailUnsafe, $emailSqlSafe, $passwordUnsafe); 
   } elseif ($doSafe == 4) { // process the login data, maybe set a cookie
-    if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email
-      $userid = mail2userid($dbConn, $emailUnsafe);
-      if (($userid > 0) and (verifyCredentials($dbConn, 1, $userid, $passwordUnsafe, ''))) { // now, can do the check of the hash value
-        if ($setCookieSafe == 1) {
-          $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
-          setcookie('userIdCookie', (string)$userid, $expire, '/start/', 'widmedia.ch', true, true); 
-          if ($result = $dbConn->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' )) { // this is just a random number which has been set at user creation
-            $row = $result->fetch_row();
-            setcookie('randCookie', $row[0], $expire, '/start/', 'widmedia.ch', true, true);
-          } else { error($dbConn, 110400); } // select query
-        } // setCookie is selected
-        redirectRelative('links.php');        
-      } else { error($dbConn, 110402); } // email found in db and verification ok
-    } else { error($dbConn, 110403); } // valid email          
+    processLoginData($dbConn, $emailUnsafe, $passwordUnsafe, $setCookieSafe);    
   } elseif ($doSafe == 5) { // confirm the email address
     printStartOfHtml($dbConn);
-    if (($useridGetSafe > 2) and ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `id` = "'.$useridGetSafe.'" AND `verCode` = "'.$verSqlSafe.'"'))) {
-      // NB: I'm not even looking at the date (mentioned a 24 hour limit in the email). That's fine. I'll just delete accounts which have not been verified after some days...      
-      if ($result->num_rows == 1) {
-        $row = $result->fetch_row();        
-        if ($result = $dbConn->query('UPDATE `user` SET `verified` = "1" WHERE `id` = "'.$useridGetSafe.'"')) {   
-          $loginLink = 'https://widmedia.ch/start/index.php#login';
-          printConfirm($dbConn, getLanguage($dbConn,93), getLanguage($dbConn,94).' <a href="'.$loginLink.'">log in</a>.');
-        } else { error($dbConn, 110500); } // update query
-      } else { error($dbConn, 110501); } // 1 result
-    } else { error($dbConn, 110503); } // valid userid and select query
+    confirmEmailAddr($dbConn, $useridGetSafe, $verSqlSafe);    
   } elseif ($doSafe == 6) {  // print the normal startpage, do not forward to links.php
     printStartOfHtml($dbConn);
     printTitle($dbConn);
@@ -402,46 +483,14 @@
   } elseif ($doSafe == 7) {  // forgot pw, present a form with the email field and a forgot PW title
     printStartOfHtml($dbConn);    
     printLogin($dbConn, true);
-  } elseif ($doSafe == 8) {  // process the data from step 7    
-    $pwForgotUserid = mail2userid($dbConn, $emailUnsafe);
-    if ($pwForgotUserid > 0) { // pwForgot-db stores a completely unrelated hexval which is valid for only 4 hours. DB-layout: id / userid / hexval / validUntil      
-      $hexStr64 = bin2hex(random_bytes(32)); // this is stored in the database
-      $validUntil = date('Y-m-d H:i:s', time() + 3600);      
-      if ($result = $dbConn->query('INSERT INTO `pwForgot` (`userid`, `hexval`, `validUntil`) VALUES ("'.$pwForgotUserid.'", "'.$hexStr64.'", "'.$validUntil.'")')) {
-        $emailBody = "Sali,\n\n".getLanguage($dbConn,113).":\nhttps://widmedia.ch/start/index.php?do=9&userid=".$pwForgotUserid."&ver=".$hexStr64."\n";
-        $emailBody = $emailBody."\n\n".getLanguage($dbConn,114).",\nDaniel ".getLanguage($dbConn,102)." widmedia\n\n--\n".getLanguage($dbConn,3).": sali@widmedia.ch\n";
-        if (mail($emailUnsafe, getLanguage($dbConn,115).' widmedia.ch/start', $emailBody)) {
-          printStartOfHtml($dbConn);    
-          printConfirm($dbConn, 'Email '.getLanguage($dbConn,116), getLanguage($dbConn,117).htmlentities($emailUnsafe).').<br>'.getLanguage($dbConn,118).'<br><br><a href="index.php?do=6">'.getLanguage($dbConn,119).'</a>');
-        } else { error($dbConn, 110800); }// mail send
-      } else { error($dbConn, 110801); }// insert query
-    } else { error($dbConn, 110802); } // email exists
+  } elseif ($doSafe == 8) {  // process the data from step 7 
+    processPwForgot($dbConn, $emailUnsafe);
   } elseif ($doSafe == 9) {  // process the pwRecovery link from the email
-    if (checkPwForgot($dbConn, $useridGetSafe, $verSqlSafe)) {    
-      printStartOfHtml($dbConn);
-      // TODO: outsource to function?
-      echo '
-      <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,120).'</span></h3>
-      <form action="index.php?do=10" method="post">
-      <div class="row" id="pwRow">
-        <div class="three columns"><span class="bgCol">'.getLanguage($dbConn,50).':</span> </div>
-        <div class="nine columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20"></div>
-      </div>
-      <div class="row twelve columns">&nbsp;<input name="userid" type="hidden" value="'.$useridGetSafe.'"><input name="ver" type="hidden" value="'.$verGet.'"></div>
-      <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,39).'"></div>
-      <div class="row twelve columns">&nbsp;</div>
-      <div class="row twelve columns">&nbsp;</div>
-      </form>';   
-    } else { error($dbConn, 110900); printConfirm($dbConn, 'Error', 'Recovery link expired');}    
+    processPwRecLink($dbConn, $useridGetSafe, $verSqlSafe, $verGet);
   } elseif ($doSafe == 10) {  // process the newly set password
     $useridPostSafe = safeIntFromExt('POST', 'userid', 11);
-    $verPost = safeHexFromExt('POST', 'ver', 64);
-    if (checkPwForgot($dbConn, $useridPostSafe, mysqli_real_escape_string($dbConn, $verPost))) { // check whether this account is really in the pwRecovery data base
-      if (updateUser($dbConn, $useridPostSafe, true) and ($result = $dbConn->query('DELETE FROM `pwForgot` WHERE `userid` = "'.$useridPostSafe.'"'))) {
-        printStartOfHtml($dbConn);
-        printConfirm($dbConn, getLanguage($dbConn,24), getLanguage($dbConn,121).': <a href="index.php#login">index.php#login</a>');      
-      } else { error($dbConn, 111001); }
-    }  else { error($dbConn, 111002); }
+    $verPost = safeHexFromExt('POST', 'ver', 64);    
+    processNewPw($dbConn, $useridPostSafe, $verPost);
   } else {
     error($dbConn, 110000);
   } // switch  

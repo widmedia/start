@@ -87,7 +87,7 @@ function printErrorAndDie (string $heading, string $text): void {
 }
 
 // checks whether not the test user and displays some very generic failure message
-function error (object $dbConn, int $errorMsgNum): boolean {  
+function error (object $dbConn, int $errorMsgNum): bool {  
   if (getUserid() != 2) { // no error is printed for the test user    
     printConfirm($dbConn, 'Error', getLanguage($dbConn,33).$errorMsgNum.getLanguage($dbConn,34).' sali@widmedia.ch');
   }
@@ -530,7 +530,7 @@ function updateUser (object $dbConn, int $userid, bool $forgotPw): bool {
   
   $row = $result->fetch_assoc(); // guaranteed to get only one row      
   $passwordUnsafe = safeStrFromExt('POST','password', 63);
-  if (!(($forgetPw) or (password_verify($passwordUnsafe, $row['pwHash'])))) {        
+  if (!(($forgotPw) or (password_verify($passwordUnsafe, $row['pwHash'])))) {        
     return error($dbConn, 104403);
   }
     
