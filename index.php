@@ -49,35 +49,40 @@
  
   // function to do the login. Several options are available to log in
   function verifyCredentials ($dbConn, int $authMethod, int $userid, $passwordUnsafe, $randCookieInput) : bool {
-    $loginOk = false;
     $_SESSION['userid'] = 0; // clear it just to make sure    
     
-    if ($result = $dbConn->query('SELECT `pwHash`, `randCookie` FROM `user` WHERE `id` = "'.$userid.'"')) {
-      if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();        
-        $pwHash = $row['pwHash'];
-        $randCookie = $row['randCookie'];
+    if (!($result = $dbConn->query('SELECT `pwHash`, `randCookie` FROM `user` WHERE `id` = "'.$userid.'"'))) {
+      error($dbConn, 112004);
+      return false;
+    }
+      
+    if (!($result->num_rows == 1)) {
+      error($dbConn, 112003);
+      return false;
+    }
 
-        if ($authMethod == 1) { // with a pw
-          if (($userid == 2) or (password_verify($passwordUnsafe, $pwHash))) {
-            $loginOk = true;            
-          } else { error($dbConn, 112000); } // password was verified
-        } elseif ($authMethod == 2) { // with a Cookie
-          if (($randCookie) and ($randCookie == $randCookieInput)) {
-            $loginOk = true;            
-          } else { error($dbConn, 112001); }  // there is no zero in the data base and 64hex value is correct        
-        } // authMethod
-      } else { error($dbConn, 112003); } // numRows == 1
-    } else { error($dbConn, 112004); } // select query did work    
+    $row = $result->fetch_assoc();        
+    $pwHash = $row['pwHash'];
+    $randCookie = $row['randCookie'];
 
-    if ($loginOk) {
-      if ($result = $dbConn->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"')) {
-        $_SESSION['userid'] = $userid;
-        return true;
-      } // update query did work
-    }  // loginOk
+    if ($authMethod == 1) { // with a pw
+      if (!(($userid == 2) or (password_verify($passwordUnsafe, $pwHash)))) {
+        error($dbConn, 112000); 
+        return false;
+      } 
+    } elseif ($authMethod == 2) { // with a Cookie
+      if (!(($randCookie) and ($randCookie == $randCookieInput))) { // there is no zero in the data base and 64hex value is correct
+        error($dbConn, 112001);
+        return false;
+      }
+    } else { return false; } // should not happen, I myself set the authMethod
     
-    return false;
+    if (!($dbConn->query('UPDATE `user` SET `lastLogin` = CURRENT_TIMESTAMP WHERE `id` = "'.$userid.'"'))) {
+      error($dbConn, 112005);
+      return false;
+    }
+    $_SESSION['userid'] = $userid;
+    return true;    
   } // function
   
   
@@ -105,23 +110,23 @@
     // NB: set a cookie for some random big number. Not the password itself and not the pwHash!
     // NB: will use this number on every cookie for this user, to login on several devices. One cannot guess other users random number                  
     $hexStr64 = bin2hex(random_bytes(32)); // some random value, used for cookie     
-    if ($result = $dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'", `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) { 
-      return newUserLinks($dbConn, $newUserid); // Adding 1 user, 3 categories, 4 links
-    } else {
+    if (!($dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'", `randCookie` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"'))) { 
       return false;
-    }    
+    }
+    return newUserLinks($dbConn, $newUserid); // Adding 1 user, 3 categories, 4 links    
   } 
 
   // returns the userid which matches to the email given. Returns 0 if something went wrong
-  function mail2userid (object $dbConn, string $emailSafe) : int {
-    $userid = 0;
-    if ($result = $dbConn->query('SELECT `id` FROM `user` WHERE `email` = "'.mysqli_real_escape_string($dbConn, $emailSafe).'"')) {
-      if ($result->num_rows == 1) {
-        $row = $result->fetch_row();
-        $userid = (int)$row[0];        
-      }
+  function mail2userid (object $dbConn, string $emailSafe) : int {    
+    if (!($result = $dbConn->query('SELECT `id` FROM `user` WHERE `email` = "'.mysqli_real_escape_string($dbConn, $emailSafe).'"'))) {
+      return 0;
     }
-    return $userid;
+    if (!($result->num_rows == 1)) {
+      return 0;
+    }
+    
+    $row = $result->fetch_row();
+    return (int)$row[0];            
   }  
   
   // sends an email to the new user with a special link and updates the database with that email confirmation link
@@ -131,14 +136,14 @@
     $emailBody = $emailBody.getLanguage($dbConn,97)."\nhttps://widmedia.ch/start/index.php#login ".getLanguage($dbConn,98)."\n";    
     $emailBody = $emailBody."\n\n".getLanguage($dbConn,101)."\nDaniel ".getLanguage($dbConn,102)." widmedia\n\n--\n".getLanguage($dbConn,5).": sali@widmedia.ch\n";
     
-    if ($result = $dbConn->query('UPDATE `user` SET `verCode` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"')) {   
-      if (mail($emailSqlSafe, getLanguage($dbConn,103), $emailBody)) {
-        return true;
-      } // mail send
+    if (!($dbConn->query('UPDATE `user` SET `verCode` = "'.$hexStr64.'" WHERE `id` = "'.$newUserid.'"'))) {
+      return false;
     } // update query
+    if (!(mail($emailSqlSafe, getLanguage($dbConn,103), $emailBody))) {
+      return false;
+    } // mail send
     
-    // should not reach this point
-    return false;    
+    return true;
   }
   
   // prints some graph with the user statistics 
@@ -285,21 +290,25 @@
       <div class="six columns"><a href="index.php?do=7#login" class="button"><img src="images/icon/question.png" alt="get an email with your new password" class="logoImg"> '.getLanguage($dbConn,87).'</a></div>
     </div>';        
     }
-    // echo '<div class="row twelve columns">&nbsp;</div>';
+    
   } // function 
 
   // checks whether there is (at least) one entry in the data base and it's not yet expired
   function checkPwForgot($dbConn, int $useridGetSafe, $verSqlSafe) : bool {
-    if ($result = $dbConn->query('SELECT `validUntil` FROM `pwForgot` WHERE `userid` = "'.$useridGetSafe.'" AND `hexval` = "'.$verSqlSafe.'" ORDER BY `id` DESC')) {
-      if ($result->num_rows >= 1) { // there might be more than one because user might have pressed the send email button several times
-        $row = $result->fetch_row(); // interested only in the last one, so no for loop
-        $validUntil = $row[0];
-        if (time() < (strtotime($validUntil))) {
-          return true;
-        }
-      }
+    if (!($result = $dbConn->query('SELECT `validUntil` FROM `pwForgot` WHERE `userid` = "'.$useridGetSafe.'" AND `hexval` = "'.$verSqlSafe.'" ORDER BY `id` DESC'))) {
+      return false;
     }
-    return false;
+    // there might be more than one because user might have pressed the send email button several times
+    if ($result->num_rows == 0) { 
+      return false; 
+    }
+    $row = $result->fetch_row(); // interested only in the last one, so no for loop
+    $validUntil = $row[0];
+    if (time() > (strtotime($validUntil))) { 
+      return false; 
+    }
+    
+    return true;
   }
   
   // -------------------------------------------------------------- //
