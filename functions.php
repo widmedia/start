@@ -33,7 +33,7 @@
 // 48 - styleDef(int $styleId, string $item): string
   
 // this function is called on every (user related) page on the very start  
-// it does the session start and opens connection to the data base. Returns the dbConn variable
+// it does the session start and opens connection to the data base. Returns the dbConn variable or a boolean
 function initialize () {
   session_start(); // this code must precede any HTML output
   
@@ -95,12 +95,11 @@ function error (object $dbConn, int $errorMsgNum): void {
 
 // function returns the text of the category. If something does not work as expected, 0 is returned
 function getCategory (object $dbConn, int $userid, int $category): string {
-  if ($result = $dbConn->query('SELECT `text` FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1')) {
-    $row = $result->fetch_assoc();
-    return $row['text'];
-  } else { 
-    return ''; // should never reach this point
-  } // if 
+  if (!($result = $dbConn->query('SELECT `text` FROM `categories` WHERE userid = "'.$userid.'" AND category = "'.$category.'" LIMIT 1'))) {
+    return '';
+  }
+  $row = $result->fetch_assoc();
+  return $row['text'];    
 } // function
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
@@ -181,24 +180,23 @@ function printOverlayGeneric ($dbConn, int $messageNumber): void {
   overlayDiv(true, 2, $message);  
 }  
 
-// prints a message when the email of this account has not been verified
+// prints a message when the email of this account has not been verified (I'm not checking whether I actually get a result. Just diplaying the message if 'verified' is 0)
 function printOverlayAccountVerify ($dbConn, int $userid): void {
-  if ($userid > 0) {
-    $verified = false;
-    if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"')) {
-      $row = $result->fetch_row();
-      if ($row[0] == 1) {
-        $verified = true;
-      } // verified
-    } // select query
-    
-    if (!$verified) { overlayDiv(false, 4, getLanguage($dbConn,104)); }
+  if ($userid === 0) { // user is not logged in
+    return;
   }
+  if (!($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `id` = "'.$userid.'"'))) {
+    return; // no meaninful message to display
+  }    
+  $row = $result->fetch_row();
+  if ($row[0] == 0) {
+    overlayDiv(false, 4, getLanguage($dbConn,104));
+  }
+  return;  
 } // function
 
 // returns the current site in the format 'about.php' in a safe way. Any do=xy parameters are obmitted
-function getCurrentSite () {
-  $siteSafe = '';
+function getCurrentSite (): string {  
   $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER[...] is something like /start/links.php (without any parameters)   
   if (
       ($siteUnsafe == 'about.php') or
@@ -208,11 +206,13 @@ function getCurrentSite () {
       ($siteUnsafe == 'link.php') or
       ($siteUnsafe == 'links.php')
      ) {
-        $siteSafe = $siteUnsafe;
+        return $siteUnsafe;
       }
-  return ($siteSafe); 
+  return ''; 
 }
 
+// prints the navigation menu on top left corner. Output depends on current_site and wheter one is logged in or not
+// does set the language session variable as well
 function printNavMenu (object $dbConn): void {
   $siteSafe = getCurrentSite();
   $userid = getUserid();
@@ -229,7 +229,7 @@ function printNavMenu (object $dbConn): void {
     } // don't do anything for invalid values
   } else { // no GET, meaning nobody wants to change it    
     if ($userid > 0) { // use the db value when user is logged in
-      if ($result = $dbConn->query('SELECT `ln` FROM `user` WHERE `id` = "'.$userid.'"')) {
+      if ($result = $dbConn->query('SELECT `ln` FROM `user` WHERE `id` = "'.$userid.'"')) { // not using a guard here because want to print the menu also when an error is happening
         $row = $result->fetch_row();    
         if (($row[0] == 'de') or ($row[0] == 'en')) {
           $_SESSION['ln'] = $row[0]; // set it to the data base value
@@ -286,8 +286,8 @@ function printNavMenu (object $dbConn): void {
   </nav>';
 }
 
-// checks whether userid is 2 (= test user)
-function testUserCheck (object $dbConn, int $userid): bool { // actually it is returning true, if it is NOT the testUser
+// checks whether userid is 2 (= test user). Actually it is returning true, if it is NOT the testUser
+function testUserCheck (object $dbConn, int $userid): bool {
   if ($userid == 2) {    
     printConfirm($dbConn, getLanguage($dbConn,30), getLanguage($dbConn,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConn,32).'</a>');
     return false;
@@ -305,24 +305,29 @@ function sessionAndCookieDelete (): void {
 
 // does the db operations to remove a certain user. Does some checks as well
 function deleteUser (object $dbConn, int $userid): bool {
-  if ($userid > 0) { // have a valid userid
-    if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {
-      // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
-      $rowCnt = $result->num_rows;
-      if (testUserCheck($dbConn, $userid) and ($userid != 1)) { // admin has userid 1, test user has userid 2
-        if ($rowCnt == 1) {                
-          $result_delLinks = $dbConn->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
-          $result_delCategories = $dbConn->query('DELETE FROM `categories` WHERE `userid` = "'.$userid.'"');                  
-          $result_delUser = $dbConn->query('DELETE FROM `user` WHERE `id` = "'.$userid.'"');
-          
-          if ($result_delLinks and $result_delCategories and $result_delUser) {
-            return true;
-          }
-        }
-      } // for userid = 1 there is no meaningful error message. But that's ok, it only affects the admin
-    }
+  if (!($userid > 0)) { // have a valid userid
+    return false;
   }
-  return false; // should not reach this point
+  if (!($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"'))) {
+    return false;
+  }
+  // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
+  $rowCnt = $result->num_rows;
+  if (!(testUserCheck($dbConn, $userid) and ($userid != 1))) { // admin has userid 1, test user has userid 2
+    return false; // for userid = 1 there is no meaningful error message. But that's ok, it only affects the admin    
+  }  
+  if (!($rowCnt == 1)) {                
+    return false;
+  }
+  $result_delLinks = $dbConn->query('DELETE FROM `links` WHERE `userid` = "'.$userid.'"');
+  $result_delCategories = $dbConn->query('DELETE FROM `categories` WHERE `userid` = "'.$userid.'"');                  
+  $result_delUser = $dbConn->query('DELETE FROM `user` WHERE `id` = "'.$userid.'"');
+  
+  if ($result_delLinks and $result_delCategories and $result_delUser) {
+    return true;
+  } else {
+    return false; // should not reach this point
+  }
 }
 
 // returns the userid integer from the session variable
@@ -394,7 +399,7 @@ function printStatic (object $dbConn): void {
   }
   
   $url = 'https://widmedia.ch/start/'.$siteSafe;
-     
+
   echo '
 <!DOCTYPE html>
 <html lang="'.getLanguage($dbConn,111).'">
@@ -515,48 +520,63 @@ function getLanguage (object $dbConn, int $textId): string { // NB: ln and id va
 
 // 44. used in editUser to update email and password and in index to set a new pw when it has been forgotten.
 function updateUser (object $dbConn, int $userid, bool $forgotPw): bool {  
-  if (testUserCheck($dbConn, $userid)) {
-    if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
-      $row = $result->fetch_assoc(); // guaranteed to get only one row      
-      $passwordUnsafe = safeStrFromExt('POST','password', 63);
-      if (($forgetPw) or (password_verify($passwordUnsafe, $row['pwHash']))) {        
-        $pwHash = 0;
-        $passwordUnsafe = filter_var(safeStrFromExt('POST','passwordNew', 63), FILTER_SANITIZE_STRING);
-        if (strlen($passwordUnsafe) > 3) {
-          $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
-        } else { error($dbConn, 104400); return false; }
-        
-        $emailOk = false;
-        if (!$forgotPw) {
-          $emailUnsafe = filter_var(safeStrFromExt('POST','email', 127), FILTER_SANITIZE_EMAIL);
-          // newEmail must not exist in the db (exclude current user itself)
-          if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
-            // check whether email already exists
-            $emailSqlSafe = mysqli_real_escape_string($dbConn, $emailUnsafe);
-            if (strcasecmp($emailSqlSafe, $row['email'])  != 0) { // 0 means they are equal
-              if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
-                if ($result->num_rows == 0) {
-                  $emailOk = true; 
-                }
-              }
-            } else { $emailOk = true; }; // no need to check again if the email did not change
+  if (!(testUserCheck($dbConn, $userid))) {
+    return false;
+  }
+  if (!($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"'))) {
+    error($dbConn, 104404); 
+    return false;
+  }
+  
+  $row = $result->fetch_assoc(); // guaranteed to get only one row      
+  $passwordUnsafe = safeStrFromExt('POST','password', 63);
+  if (!(($forgetPw) or (password_verify($passwordUnsafe, $row['pwHash'])))) {        
+    error($dbConn, 104403); 
+    return false;
+  }
+    
+  $passwordUnsafe = filter_var(safeStrFromExt('POST','passwordNew', 63), FILTER_SANITIZE_STRING);
+  if (strlen($passwordUnsafe) <= 3) {
+    error($dbConn, 104400);
+    return false;
+  }
+  $pwHash = password_hash($passwordUnsafe, PASSWORD_DEFAULT);
+  
+  // TODO: quiet ugly statements...
+  $emailOk = false;
+  if (!$forgotPw) {
+    $emailUnsafe = filter_var(safeStrFromExt('POST','email', 127), FILTER_SANITIZE_EMAIL);
+    // newEmail must not exist in the db (exclude current user itself)
+    if (filter_var($emailUnsafe, FILTER_VALIDATE_EMAIL)) { // have a valid email 
+      // check whether email already exists
+      $emailSqlSafe = mysqli_real_escape_string($dbConn, $emailUnsafe);
+      if (strcasecmp($emailSqlSafe, $row['email'])  != 0) { // 0 means they are equal
+        if ($result = $dbConn->query('SELECT `verified` FROM `user` WHERE `email` LIKE "'.$emailSqlSafe.'" LIMIT 1')) {
+          if ($result->num_rows == 0) {
+            $emailOk = true; 
           }
         }
-        
-        if ($emailOk) {
-          if ($result = $dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"')) {            
-            return true;
-          } else { error($dbConn, 104401); return false; } // update query
-        } else { 
-          if ($forgotPw) { 
-            if ($result = $dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'" WHERE `id` = "'.$userid.'"')) {              
-              return true;
-            } else { error($dbConn, 104402); return false; } // update query
-          } else { return false; } // forgotPW
-        } // emailOK-else
-      } else { error($dbConn, 104403); return false; } // pwCheck ok                
-    } else { error($dbConn, 104404); return false; } // select query did work
-  } else { return false; } // testUserCheck
+      } else { $emailOk = true; }; // no need to check again if the email did not change
+    }
+  }
+    
+  if ($emailOk) {
+    if (!($dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'", `email` = "'.$emailSqlSafe.'" WHERE `id` = "'.$userid.'"'))) {
+      error($dbConn, 104401); 
+      return false; 
+    }
+    return true;
+  } else { 
+    if (!$forgotPw) { 
+      error($dbConn, 104405);
+      return false;
+    }
+    if (!($dbConn->query('UPDATE `user` SET `pwHash` = "'.$pwHash.'" WHERE `id` = "'.$userid.'"'))) {
+      error($dbConn, 104402); 
+      return false; 
+    }
+    return true;
+  } // emailOK-else  
 }
 
 // checks whether a get/post/cookie variable exists and makes it safe if it does. If not, returns 0
