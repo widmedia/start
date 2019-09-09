@@ -42,6 +42,15 @@
     echo '<div class="row twelve columns">
     <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConn,41).'"></form><div>';
+    echo '<div class="row twelve columns"><h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,42).'</span></h3></div>';
+    printSingleLinkFields($dbConn, true, $categorySafe, 0, 'https://', 'text');
+    echo '<div class="row twelve columns"><hr></div>';
+    // print one form per row, an edit form for every link
+    if ($result = $dbConn->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
+      while ($row = $result->fetch_assoc()) { // not an error if there is no row with this query
+        printSingleLinkFields($dbConn, false, 0, (int)$row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
+      } // while
+    } // query ok    
   }
   
   function addOrEditLink(object $dbConn, int $userid, int $categorySafe, int $idSafe, string $textUnsafe, string $linkUnsafe): bool {
@@ -138,24 +147,14 @@
   } elseif ($doSafe == 1) { // present links of one category, have category name as text field
     printStartOfHtml($dbConn);
     printCategoryForm($dbConn, $categorySafe, $userid);
-    echo '<div class="row twelve columns"><h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,42).'</span></h3></div>';          
-    printSingleLinkFields($dbConn, true, $categorySafe, 0, 'https://', 'text');
-    echo '<div class="row twelve columns"><hr></div>';
-    // print one form per row, an edit form for every link
-    if ($result = $dbConn->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
-      while ($row = $result->fetch_assoc()) {        
-        printSingleLinkFields($dbConn, false, 0, (int)$row['id'], $row['link'], $row['text']); // category 0 means I'm editing an existing link
-      } // while
-    } // query ok
-  } elseif ($doSafe == 2) { // add or edit a link
-    // distinction between adding or editing is done by the category: category = 0 means I'm editing a link
-    if (addOrEditLink($dbConn, $userid, $categorySafe, $idSafe, $textUnsafe, $linkUnsafe)) {
+  } elseif ($doSafe == 2) { // add or edit a link    
+    if (addOrEditLink($dbConn, $userid, $categorySafe, $idSafe, $textUnsafe, $linkUnsafe)) { // distinction between adding or editing is done by the category: category = 0 means I'm editing a link
       if ($categorySafe == 0) { // update one link
         redirectRelative('links.php?msg=1');
-      } else { // I'm adding a new link
+      } else { // add a new link
         redirectRelative('links.php?msg=5');
       }
-    } // else do nothing
+    }
   } elseif ($doSafe == 3) { // I want to reset all the link counters to 0          
     if ($dbConn->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
       redirectRelative('links.php?msg=4');            
@@ -163,11 +162,11 @@
   } elseif ($doSafe == 4) { // delete a link. Displaying a confirmation message
     if (deleteLink($dbConn, $userid, $idSafe)) {
       redirectRelative('links.php?msg=3');
-    } // else do nothing
+    }
   } elseif ($doSafe == 5) { // update a category name    
     if (updateCategoryName($dbConn, $textUnsafe, $userid, $categorySafe)) {
       redirectRelative('links.php?msg=2');
-    } // else do nothing
+    }
   } else {
     error($dbConn, 160000);
   } // switch
