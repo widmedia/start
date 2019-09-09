@@ -36,7 +36,8 @@ Larger than Desktop HD @media (min-width: 1200px) {}
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .brightness {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  height: 100%;
 }
 .container {
   position: relative;
