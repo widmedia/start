@@ -23,8 +23,7 @@
       } else {
         $counter = 0;
         while ($row = $result->fetch_assoc()) {
-          $link = $row['link'];
-          if (strlen($link) > 26) { $link = substr($link,0,23).'...'; }
+          $link = (strlen($row['link']) > 26) ? $link = substr($row['link'],0,23).'...' : $row['link'];
           echo $divClass.'<a href="link.php?id='.$row['id'].'" target="_blank" class="button tooltip linksButton">'.$row['text'].'<span class="tooltiptext">'.$link.'</span></a><span class="counter">'.$row['cntTot'].'</span></div>';
           $counter++;
 

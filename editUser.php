@@ -46,6 +46,20 @@
     </form>';
   } // function
   
+  function updateStyleId(object $dbConn, int $userid, int $styleIdFromGet) {
+    if (!($userid > 0)) { // have a valid userid, testuser may change it as well
+      return error($dbConn, 150301);
+    }
+    if (!(($styleIdFromGet < 8) and ($styleIdFromGet > 0))) { // currently valid image IDs from 1 to 7
+      return error($dbConn, 150302);
+    }
+    if (!($dbConn->query('UPDATE `user` SET `styleId` = "'.$styleIdFromGet.'" WHERE `id` = "'.$userid.'"'))) {
+      return error($dbConn, 150300);
+    }
+    return true;
+  }
+ 
+  
   // possible actions: 
   // 0=> edit an existing user: present the form
   // 1=> delete an existing user: db operations
@@ -57,7 +71,7 @@
   $doSafe = safeIntFromExt('GET', 'do', 1); // this is an integer (range 0 to 2)
 
   if ($doSafe == 0) { // edit an existing user: present the form
-    if ($userid) { // have a valid userid
+    if ($userid > 0) { // have a valid userid
       if ($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"')) {              
         $row = $result->fetch_assoc(); // guaranteed to get only one row
         printStartOfHtml($dbConn);
@@ -78,14 +92,10 @@
       } else { error($dbConn, 150200); }
     } else { error($dbConn, 150201); } // have a valid userid         
   } elseif ($doSafe == 3) { // update an existing user: styleId link
-    if ($userid > 0) { // have a valid userid, testuser may change it as well
-      $styleIdFromGet = safeIntFromExt('GET', 'styleId', 2); // this is an integer, range 0 to 99
-      if ($styleIdFromGet < 8) { // currently the only valid image ids
-        if ($result = $dbConn->query('UPDATE `user` SET `styleId` = "'.$styleIdFromGet.'" WHERE `id` = "'.$userid.'"')) {
-          redirectRelative('editUser.php'); // stay on the page
-        } else { error($dbConn, 150300); } // query
-      } else { error($dbConn, 150301); } // valid image id
-    } else { error($dbConn, 150301); } // valid userid
+    $styleIdFromGet = safeIntFromExt('GET', 'styleId', 2); // this is an integer, range 0 to 99
+    if (updateStyleId($dbConn, $userid, $styleIdFromGet)) {
+      redirectRelative('editUser.php'); // stay on the page (without any do-command).
+    } // else: I don't do anything. Error msgs are printed on-screen already
   } else { 
     error($dbConn, 150002);
   } // switch  
