@@ -114,11 +114,12 @@ function printStartOfHtml (object $dbConn): void {
   } else {
     echo '<body>';
   }
+  echo '<div class="brightness">';
   printNavMenu($dbConn);
   $userid = getUserid();
   if ($userid == 2) { overlayDiv(false, 3, getLanguage($dbConn,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConn,32).'</a>'); }  
   printOverlayAccountVerify($dbConn, $userid);  
-  echo '<div class="section categories noBottom brightness"><div class="container">';
+  echo '<div class="section categories noBottom"><div class="container">';
 }
  
 // function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
@@ -159,6 +160,7 @@ function printFooter (object $dbConn): void {
       </div>
     </div>
   </div>
+</div>
 </div>
 </body>
 </html>'; 
