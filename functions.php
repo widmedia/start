@@ -617,48 +617,71 @@ function safeStrFromExt (string $source, string $varName, int $length): string {
 
 // returns the style item (an image name or a color code) 
 function getStyle(object $dbConn, int $userid, string $item): string {  
-  if (isset($_SESSION['styleId'])) {
-    $styleId = $_SESSION['styleId'];
+  if (isset($_SESSION['style'])) {
+    $style = $_SESSION['style'];
   } else {
-    $styleId = rand(1,7); // default value, also for all non-logged in users
-    $_SESSION['styleId'] = $styleId; // store it for this session. Otherwise every new site needs to load a new bgImg
+    $style = '0'.rand(1,7).'/00/00'; // default value, also for all non-logged in users
+    $_SESSION['style'] = $style; // store it for this session. Otherwise every new site needs to load a new bgImg
   }
   
   if ($userid > 0) { // logged in users, overrides the session info
-    if ($result = $dbConn->query('SELECT `styleId` FROM `user` WHERE `id` = "'.$userid.'"')) {
-      $row = $result->fetch_row();    
-      $styleId = (int)$row[0];
+    if ($result = $dbConn->query('SELECT `style` FROM `user` WHERE `id` = "'.$userid.'"')) {
+      $row = $result->fetch_row();
+      $style = $row[0];
     }
   }
-  return styleDef($styleId, $item);
+  $styles = explode('/', $style); // style is divided into 3 pieces (img-bri-txt = 00/00/00), two digit numbers, divided by /
+  
+  if ($item == 'bgImg') {
+    return styleDefBgImg((int)$styles[0]);
+  } elseif ($item == 'brightness') {
+    return styleDefBri((int)$styles[1]);  
+  } else {
+    return styleDefTxt((int)$styles[2], $item);
+  }
 }
 
 // input: a style id (number from 1 to 7, 0 is valid as well), output: a string (either a color-string or a background image string)
-function styleDef(int $styleId, string $item): string {
+function styleDefTxt(int $subStyle, string $item): string {
   // following styles items are defined. The default values of the items are:
   $bgNorm   = '  0,113,255, 0.40';
   $bgNorm2  = '  0,113,255, 0.80';
   $bgDiff   = '255, 47, 25, 0.30';
   $bgDiff2  = '255, 47, 25, 0.60';
   $txtLight = '250,255, 59, 0.85';
-  $txtDark  = '182,189,  0, 0.85';
-  $bgCol    = '  0,  0,  0, 0.30';
+  $txtDark  = '182,189,  0, 0.85';  
     
   $styles = // two dimensional array. First dimension is working with keys, second one with index.
-    array(// 0 = undefined, same as 1        2                  3                  4          5                  6                  7
-      'bgNorm'   => array($bgNorm,  $bgNorm,  '117, 89,217,0.60','0,113,255,0.40',  $bgNorm,   '191,23,37,0.40',  '0,  0,  0,0.50',  $bgNorm),
-      'bgNorm2'  => array($bgNorm2, $bgNorm2, '117, 89,217,0.80','0,113,255,0.80',  $bgNorm2,  '191,23,37,0.80',  '0,  0,  0,0.80',  $bgNorm2),
-      'bgDiff'   => array($bgDiff,  $bgDiff,  '210,242,141,0.50',$bgDiff,           $bgDiff,   ' 0, 0, 0,0.30',   '71,95,36,0.60',   $bgDiff),
-      'bgDiff2'  => array($bgDiff2, $bgDiff2, '210,242,141,0.60',$bgDiff2,          $bgDiff2,  ' 0, 0, 0,0.60',   '71,95,36,0.80',   $bgDiff2),
-      'txtLight' => array($txtLight,$txtLight,'240,240,240,0.85','250,255, 65,0.85',$txtLight ,'240,222,134,0.85','250,232,148,0.90',$txtLight),
-      'txtDark'  => array($txtDark ,$txtDark ,'180,180,180,0.85','192,199, 10,0.85',$txtDark  ,'174,158,81,0.85' ,'174,158,81,0.85' ,$txtDark),
-      'bgImg'    => array('ice.jpg','ice.jpg','bamboo.jpg'      ,'water.jpg'       ,'pigs.jpg','monk.jpg'        ,'stone.jpg'       ,'smoke.jpg'),
-      'brightness'=>array($bgCol   ,$bgCol   ,$bgCol            ,$bgCol            ,$bgCol    ,$bgCol            ,$bgCol            ,$bgCol)
+    array(// 0 = undefined, same as 1          2                  3                  4                  5                 
+      'bgNorm'   => array($bgNorm,  $bgNorm,  '117, 89,217,0.60','0,113,255,0.40',  '191,23,37,0.40',  '0,  0,  0,0.50'),
+      'bgNorm2'  => array($bgNorm2, $bgNorm2, '117, 89,217,0.80','0,113,255,0.80',  '191,23,37,0.80',  '0,  0,  0,0.80'),
+      'bgDiff'   => array($bgDiff,  $bgDiff,  '210,242,141,0.50',$bgDiff,           ' 0, 0, 0,0.30',   '71,95,36,0.60'),
+      'bgDiff2'  => array($bgDiff2, $bgDiff2, '210,242,141,0.60',$bgDiff2,          ' 0, 0, 0,0.60',   '71,95,36,0.80'),
+      'txtLight' => array($txtLight,$txtLight,'240,240,240,0.85','250,255, 65,0.85','240,222,134,0.85','250,232,148,0.90'),
+      'txtDark'  => array($txtDark ,$txtDark ,'180,180,180,0.85','192,199, 10,0.85','174,158,81,0.85' ,'174,158,81,0.85')
     );
-    
-  if ($styleId < 8) { // only 0..7 are defined    
-    return $styles[$item][$styleId];        
-  }
-  return '';  // error case, should not reach this point
+  return $styles[$item][$subStyle];          
 }
 
+// returns the image name matching the style number
+function styleDefBgImg(int $subStyle): string {
+  //               0         1         2            3           4          5          6           7        
+  $styles = array('ice.jpg','ice.jpg','bamboo.jpg','water.jpg','pigs.jpg','monk.jpg','stone.jpg','smoke.jpg');
+  return $styles[$subStyle];
+}
+function styleDefBri(int $subStyle): string {
+  if ($subStyle == 0) { // the default, more dark. Same as styleDefBri(35);
+    return '0,0,0,0.30';
+  } else { // steps in 2% range, from dark to bright
+    // input:  |  1        ... 25        ... 50  ... 75          ... 99          |
+    // output: |  98%dark, ... 50% dark, ... 0%  ... 50% bright, ... 98% bright  |
+    if ($subStyle < 51) { // from 1 to 50. darker
+      $color = 0;
+      $intensity = 1 - ($subStyle * 0.02);
+    } else { // 51 to 99. brighter
+      $color = 255;
+      $intensity = ($subStyle - 50) * 0.02;
+    }
+    return $color.','.$color.','.$color.','.$intensity;
+  }
+}

@@ -5,35 +5,47 @@
   function printUserEdit (object $dbConn, $row): void {    
     $notSel = 'border: 2px dotted #000;';        
     $bgBorderSel = array($notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel); // 1..7 are valid selectors, 0=undefined is valid as well
-    $bgBorderSel[$row['styleId']] = 'border: 2px solid #faff3b;';  // some bright color (not related to the designs)
+    $styles = explode('/', $row['style']);
+    $bgBorderSel[$styles[0]] = 'border: 2px solid #faff3b;';  // some bright color (not related to the designs)
+    $currentBrightness = ($styles[1] == 0) ? 35 : $styles[1];
     
     echo '
     <h3 class="section-heading"><span class="bgCol">Email / '.getLanguage($dbConn,84).'</span></h3>
     <form action="editUser.php?do=2" method="post">        
-    <div class="row"><div class="twelve columns">&nbsp;</div></div>
-    <div class="row">
-      <div class="four columns"><span class="bgCol">Email:</span> </div>
-      <div class="eight columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20" /></div>
-    </div>
-    <div class="row" id="pwOldRow">
-      <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,49).':</span></div>
-      <div class="eight columns"><input name="password" type="password" maxlength="63" value="" required size="20" /></div>
-    </div>
-    <div class="row" id="pwRow">
-      <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,50).':</span></div>
-      <div class="eight columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20" /></div>
-    </div>
-    <div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,51).'" /></div>    
+      <div class="row"><div class="twelve columns">&nbsp;</div></div>
+      <div class="row">
+        <div class="four columns"><span class="bgCol">Email:</span> </div>
+        <div class="eight columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20" /></div>
+      </div>
+      <div class="row" id="pwOldRow">
+        <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,49).':</span></div>
+        <div class="eight columns"><input name="password" type="password" maxlength="63" value="" required size="20" /></div>
+      </div>
+      <div class="row" id="pwRow">
+        <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,50).':</span></div>
+        <div class="eight columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20" /></div>
+      </div>
+      <div class="row twelve columns">&nbsp;</div>
+      <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,51).'" /></div>
+    </form>
     <div class="row twelve columns"><hr /></div>    
     <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>';
-    for ($i = 0; $i < 7; $i++) {
+    for ($i = 0; $i < 7; $i++) { // 7 different bg images, 0=default, 1..7 are selectable
       if (($i % 4) == 0) { echo '<div class="row">'; }
-      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=3&styleId='.($i+1).'" style="background-color:transparent;"><img src="images/bg/'.styleDef(($i+1),'bgImg').'" alt="default background image" style="'.$bgBorderSel[($i+1)].' width:100%; vertical-align:middle;"></a></div>';
+      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=3&styleBgImg='.($i+1).'" style="background-color:transparent;"><img src="images/bg/'.styleDefBgImg(($i+1)).'" alt="default background image" style="'.$bgBorderSel[($i+1)].' width:100%; vertical-align:middle;"></a></div>';
       if (($i == 3) or ($i == 6)) { // last one does not fit into modulo function ($i % 4) == 3
         echo '</div><div class="row twelve columns">&nbsp;</div>'; 
       } 
     }
+    echo '
+    <div class="row twelve columns">&nbsp;</div>
+    <div class="row">
+      <div class="three columns"><span class="bgCol">'.getLanguage($dbConn,124).':</span></div>
+      <div class="nine columns">
+        <div class="slidecontainer"><form action="editUser.php?do=3" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>
+      </div>
+    </div><div class="row twelve columns">&nbsp;</div>';
+    
     echo '<div class="row twelve columns"><hr /></div>    
     <h3 class="section-heading"><span class="bgCol">Sprache / Language</span></h3>
     <div class="row">
@@ -43,19 +55,35 @@
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns"><a href="editUser.php?do=1" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon/delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>
-    </form>';
+    ';
   } // function
   
-  function updateStyleId(object $dbConn, int $userid, int $styleIdFromGet) {
+  // updates the 'style' column in the data base
+  function updateStyleId(object $dbConn, int $userid, int $subStyleFromGet, int $subStyleNr) {
     if (!($userid > 0)) { // have a valid userid, testuser may change it as well
-      return error($dbConn, 150301);
-    }
-    if (!(($styleIdFromGet < 8) and ($styleIdFromGet > 0))) { // currently valid image IDs from 1 to 7
-      return error($dbConn, 150302);
-    }
-    if (!($dbConn->query('UPDATE `user` SET `styleId` = "'.$styleIdFromGet.'" WHERE `id` = "'.$userid.'"'))) {
       return error($dbConn, 150300);
     }
+    if (!(    
+    (($subStyleNr == 0) and ($subStyleFromGet <= 7) and ($subStyleFromGet > 0)) or // currently valid image IDs from 1 to 7
+    (($subStyleNr == 1) and ($subStyleFromGet <= 99) and ($subStyleFromGet > 0)) or // brightness 1 to 99 is ok
+    (($subStyleNr == 2) and ($subStyleFromGet <= 5) and ($subStyleFromGet > 0))
+    )) { 
+      return error($dbConn, 150301);
+    }
+    if (!($result = $dbConn->query('SELECT `style` FROM `user` WHERE `id` = "'.$userid.'"'))) {
+      return error($dbConn, 150302);
+    }
+    if (!($result->num_rows == 1)) {
+      return error($dbConn, 150303);
+    }
+    $row = $result->fetch_assoc();
+    $styles = explode('/', $row['style']);
+    $styles[$subStyleNr] = $subStyleFromGet; // the update operation
+    $style = implode('/', $styles);
+    
+    if (!($result = $dbConn->query('UPDATE `user` SET `style` = "'.$style.'" WHERE `id` = "'.$userid.'"'))) {
+      return error($dbConn, 150304);
+    }    
     return true;
   }
  
@@ -92,8 +120,16 @@
       } else { error($dbConn, 150200); }
     } else { error($dbConn, 150201); } // have a valid userid         
   } elseif ($doSafe == 3) { // update an existing user: styleId link
-    $styleIdFromGet = safeIntFromExt('GET', 'styleId', 2); // this is an integer, range 0 to 99
-    if (updateStyleId($dbConn, $userid, $styleIdFromGet)) {
+    // only one out of below 3 variables is set. Others will be 0
+    $styleBgImgFromGet = safeIntFromExt('GET', 'styleBgImg', 1);
+    $styleBriFromPost = safeIntFromExt('POST', 'styleBri', 2);
+    $styleTxtFromGet = safeIntFromExt('GET', 'styleTxt', 1);
+    if (
+         (($styleBgImgFromGet > 0) and updateStyleId($dbConn, $userid, $styleBgImgFromGet, 0)) or 
+         (($styleBriFromPost > 0) and updateStyleId($dbConn, $userid, $styleBriFromPost, 1)) or // range 1..99
+         (($styleTxtFromGet > 0) and updateStyleId($dbConn, $userid, $styleTxtFromGet, 2))
+       ) 
+    {
       redirectRelative('editUser.php'); // stay on the page (without any do-command).
     } // else: I don't do anything. Error msgs are printed on-screen already
   } else { 
