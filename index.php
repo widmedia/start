@@ -48,7 +48,7 @@
   }
  
   // function to do the login. Several options are available to log in
-  function verifyCredentials ($dbConn, int $authMethod, int $userid, $passwordUnsafe, $randCookieInput) : bool {
+  function verifyCredentials (object $dbConn, int $authMethod, int $userid, $passwordUnsafe, $randCookieInput) : bool {
     $_SESSION['userid'] = 0; // clear it just to make sure    
     
     if (!($result = $dbConn->query('SELECT `pwHash`, `randCookie` FROM `user` WHERE `id` = "'.$userid.'"'))) {
@@ -81,7 +81,7 @@
   
   
   // inserts some example values into `links` and `categories` tables
-  function newUserLinks ($dbConn, int $newUserid) : bool {
+  function newUserLinks (object $dbConn, int $newUserid) : bool {
     $result0 = $dbConn->query('INSERT INTO `categories` (`userid`, `category`, `text`) VALUES ("'.$newUserid.'", "1", "News")');
     $result1 = $dbConn->query('INSERT INTO `categories` (`userid`, `category`, `text`) VALUES ("'.$newUserid.'", "2", "Work")');
     $result2 = $dbConn->query('INSERT INTO `categories` (`userid`, `category`, `text`) VALUES ("'.$newUserid.'", "3", "Div")');
@@ -141,7 +141,7 @@
   }
   
   // prints some graph with the user statistics 
-  function printUserStat ($dbConn): void {
+  function printUserStat (object $dbConn): void {
     $currentTime = time();
     $year = 2019; // date('Y', $currentTime); // TODO: provide option to select another year
     
@@ -173,7 +173,7 @@
     
   
   // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
-  function printNewUserForm ($dbConn): void {
+  function printNewUserForm (object $dbConn): void {
     echo '<h3 class="section-heading"><span id="newUser" class="bgCol">'.getLanguage($dbConn,32).'</span></h3>
     <form action="index.php?do=3" method="post">
     <div class="row">
@@ -192,7 +192,7 @@
     ';   
   } // function
   
-  function printTitle($dbConn): void {    
+  function printTitle(object $dbConn): void {    
     echo '<h2 class="section-heading"><span class="bgCol">widmedia.ch/start</span></h2>
     <div class="row twelve columns" style="font-size: larger; text-align: left"><span class="bgCol">'.getLanguage($dbConn,65).'</span></div>';
     echo '<div class="row twelve columns"><hr></div>';
@@ -249,7 +249,7 @@
     <div class="row twelve columns"><hr></div>';
   } // function
   
-  function printLogin($dbConn, bool $forgotPw): void {
+  function printLogin(object $dbConn, bool $forgotPw): void {
     if ($forgotPw) {
       $title = getLanguage($dbConn,87);
       $doAction = '8';

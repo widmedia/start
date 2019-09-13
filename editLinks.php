@@ -111,6 +111,48 @@
     }
     return true;
   }
+  
+  function printClickRanking (object $dbConn, int $userid): void {
+    if (!($result = $dbConn->query('SELECT SUM(`cntTot`), `userid` FROM `links` WHERE `cntTot` > 0 GROUP BY `userid` ORDER BY SUM(`cntTot`) DESC'))) { //  LIMIT 3
+      return; // cannot do much meaningful
+    }
+    $numRows = $result->num_rows;
+    
+    $sumCntTot = array(0,0,0); // might have less than 3 users with non-zero values. Need to initialize
+    $sumUserIds = array(0,0,0);
+    $myRanking = 0;
+    $myClicks = 0;
+    $totalClicks = 0;
+    for ($i = 0; $i < $numRows; $i++) {
+      $row = $result->fetch_row();
+      if ($i < 3) { // save the podium 
+        $sumCntTot[$i] = $row[0];
+        $sumUserIds[$i] = $row[1];
+      }
+      if ($userid == $row[1]) {
+        $myClicks = $row[0];
+        $myRanking = $i + 1; // results are ordered        
+      }
+      $totalClicks += $row[0]; // maybe TODO: could also be done by SQL
+    } // while
+    
+    // print a table with the podium. TODO: design of the podium?
+    echo '<div class="row twelve columns"><hr></div>';
+    echo '<h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,127).'</span></h3>'; // Klick-Rangliste
+    echo '
+    <div class="row">
+      <div class="four columns" style="vertical-align: bottom;"><span style="font-weight: 600;">User-ID: '.$sumUserIds[1].'</span><br><span class="userStatBar" style="min-height:60px; min-width:40px;">'.$sumCntTot[1].'</span></div>
+      <div class="four columns" style="vertical-align: bottom;"><span style="font-weight: 600;">User-ID: '.$sumUserIds[0].'</span><br><span class="userStatBar" style="min-height:80px; min-width:40px;">'.$sumCntTot[0].'</span></div>
+      <div class="four columns" style="vertical-align: bottom;"><span style="font-weight: 600;">User-ID: '.$sumUserIds[2].'</span><br><span class="userStatBar" style="min-height:40px; min-width:40px;">'.$sumCntTot[2].'</span></div>
+    </div>
+    <div class="row twelve columns">&nbsp;</div>
+    <div class="row">
+      <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,128).': '.$myClicks.'</span></div>
+      <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,129).': '.$myRanking.'</span></div>
+      <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,130).': '.$totalClicks.'</span></div>
+    </div>';    
+  }
+
     
   // page number for errorCode: 16
   // possible actions:
@@ -143,7 +185,8 @@
   
   if ($doSafe == 0) { // entry point of this site
     printStartOfHtml($dbConn);
-    printEntryPoint($dbConn, $userid);        
+    printEntryPoint($dbConn, $userid);
+    printClickRanking($dbConn, $userid);
   } elseif ($doSafe == 1) { // present links of one category, have category name as text field
     printStartOfHtml($dbConn);
     printCategoryForm($dbConn, $categorySafe, $userid);
