@@ -3,11 +3,17 @@
   $dbConn = initialize();
   
   function printUserEdit (object $dbConn, $row): void {    
-    $notSel = 'border: 2px dotted #000;';        
-    $bgBorderSel = array($notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel,$notSel); // 1..7 are valid selectors, 0=undefined is valid as well
     $styles = explode('/', $row['style']);
+    $notSelBg = 'border: 2px dotted #000;';        
+    $notSelTxt = getLanguage($dbConn,125); // "select this"
+    
+    $bgBorderSel = array($notSelBg,$notSelBg,$notSelBg,$notSelBg,$notSelBg,$notSelBg,$notSelBg,$notSelBg); // 1..7 are valid selectors, 0=undefined is valid as well
+    $txtSel = array($notSelTxt,$notSelTxt,$notSelTxt,$notSelTxt,$notSelTxt,$notSelTxt); // // 1..5 are valid selectors, 0=undefined is valid as well
+    
     $bgBorderSel[$styles[0]] = 'border: 2px solid #faff3b;';  // some bright color (not related to the designs)
-    $currentBrightness = ($styles[1] == 0) ? 35 : $styles[1];
+    $currentBrightness = ($styles[1] == 0) ? 35 : $styles[1]; // default value is zero which matches to a brightness of 35
+    if ($styles[2] == 0) { $styles[2] = 1; } // not yet set, default is style 1
+    $txtSel[$styles[2]] = getLanguage($dbConn,126); // selected
     
     echo '
     <h3 class="section-heading"><span class="bgCol">Email / '.getLanguage($dbConn,84).'</span></h3>
@@ -15,18 +21,18 @@
       <div class="row"><div class="twelve columns">&nbsp;</div></div>
       <div class="row">
         <div class="four columns"><span class="bgCol">Email:</span> </div>
-        <div class="eight columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20" /></div>
+        <div class="eight columns"><input name="email" type="email" maxlength="127" value="'.$row['email'].'" required size="20"></div>
       </div>
       <div class="row" id="pwOldRow">
         <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,49).':</span></div>
-        <div class="eight columns"><input name="password" type="password" maxlength="63" value="" required size="20" /></div>
+        <div class="eight columns"><input name="password" type="password" maxlength="63" value="" required size="20"></div>
       </div>
       <div class="row" id="pwRow">
         <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,50).':</span></div>
-        <div class="eight columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20" /></div>
+        <div class="eight columns"><input name="passwordNew" type="password" maxlength="63" value="" size="20"></div>
       </div>
       <div class="row twelve columns">&nbsp;</div>
-      <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,51).'" /></div>
+      <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,51).'"></div>
     </form>
     <div class="row twelve columns"><hr /></div>    
     <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>';
@@ -39,12 +45,20 @@
     }
     echo '
     <div class="row twelve columns">&nbsp;</div>
-    <div class="row">
-      <div class="three columns"><span class="bgCol">'.getLanguage($dbConn,124).':</span></div>
-      <div class="nine columns">
-        <div class="slidecontainer"><form action="editUser.php?do=3" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>
-      </div>
-    </div><div class="row twelve columns">&nbsp;</div>';
+    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,124).'</span></h3>    
+    <div class="row twelve columns slidecontainer"><form action="editUser.php?do=3" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>
+    ';
+    
+    echo '
+    <div class="row twelve columns">&nbsp;</div>
+    <h3 class="section-heading"><span class="bgCol">Text</span></h3>        
+    <div class="row">';
+    for ($i = 1; $i < 5; $i++) { // 1..5 are selectable
+      if ($i == 4) { echo '</div><div class="row">'; }
+      echo '<div class="four columns"><a href="editUser.php?do=3&styleTxt='.$i.'" style="background-color:transparent;"><input name="create" type="submit" value="'.$txtSel[$i].'" 
+      style="background-color: rgba('.styleDefTxt($i, 'bgNorm').'); color: rgba('.styleDefTxt($i, 'txtLight').');"></a></div>';
+    }
+    echo '</div>'; // row
     
     echo '<div class="row twelve columns"><hr /></div>    
     <h3 class="section-heading"><span class="bgCol">Sprache / Language</span></h3>
@@ -59,7 +73,7 @@
   } // function
   
   // updates the 'style' column in the data base
-  function updateStyleId(object $dbConn, int $userid, int $subStyleFromGet, int $subStyleNr) {
+  function updateSubStyle(object $dbConn, int $userid, int $subStyleFromGet, int $subStyleNr) {
     if (!($userid > 0)) { // have a valid userid, testuser may change it as well
       return error($dbConn, 150300);
     }
@@ -119,15 +133,15 @@
         redirectRelative('links.php?msg=6');
       } else { error($dbConn, 150200); }
     } else { error($dbConn, 150201); } // have a valid userid         
-  } elseif ($doSafe == 3) { // update an existing user: styleId link
+  } elseif ($doSafe == 3) { // update an existing user: style link
     // only one out of below 3 variables is set. Others will be 0
     $styleBgImgFromGet = safeIntFromExt('GET', 'styleBgImg', 1);
     $styleBriFromPost = safeIntFromExt('POST', 'styleBri', 2);
     $styleTxtFromGet = safeIntFromExt('GET', 'styleTxt', 1);
     if (
-         (($styleBgImgFromGet > 0) and updateStyleId($dbConn, $userid, $styleBgImgFromGet, 0)) or 
-         (($styleBriFromPost > 0) and updateStyleId($dbConn, $userid, $styleBriFromPost, 1)) or // range 1..99
-         (($styleTxtFromGet > 0) and updateStyleId($dbConn, $userid, $styleTxtFromGet, 2))
+         (($styleBgImgFromGet > 0) and updateSubStyle($dbConn, $userid, $styleBgImgFromGet, 0)) or 
+         (($styleBriFromPost > 0) and updateSubStyle($dbConn, $userid, $styleBriFromPost, 1)) or // range 1..99
+         (($styleTxtFromGet > 0) and updateSubStyle($dbConn, $userid, $styleTxtFromGet, 2))
        ) 
     {
       redirectRelative('editUser.php'); // stay on the page (without any do-command).

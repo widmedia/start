@@ -454,12 +454,12 @@
     printTitle($dbConn);
     printLogin($dbConn, false);
     printUserStat($dbConn);
-  } elseif ($doSafe == 1) { // log out    
+  } elseif ($doSafe == 1) { // log out
     $userid = getUserid();
-    if (($userid > 0) and ($result = $dbConn->query('SELECT `styleId` FROM `user` WHERE `id` = "'.$userid.'"'))) {
-      $row = $result->fetch_row();    
-      $styleId = (int)$row[0]; // safe the current style and store it into the session var, so the user still sees his style
-      $_SESSION['styleId'] = $styleId;      
+    if (($userid > 0) and ($result = $dbConn->query('SELECT `style` FROM `user` WHERE `id` = "'.$userid.'"'))) {
+      $row = $result->fetch_row();
+      $style = $row[0]; // safe the current style and store it into the session var, so the user still sees his style
+      $_SESSION['style'] = $style;
     }
     logOut();
   } elseif ($doSafe == 2) { // present the new user form

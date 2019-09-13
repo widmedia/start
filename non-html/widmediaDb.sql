@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 06. Sep 2019 um 17:00
+-- Erstellungszeit: 13. Sep 2019 um 09:59
 -- Server-Version: 10.1.41-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -173,7 +173,10 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (120, 'Reset password', 'Passwort zurücksetzen'),
 (121, 'Your password has been updated. You may log in again', 'Dein Passwort wurde aktualisiert, du kannst dich neu einloggen'),
 (122, 'Background', 'Hintergrund'),
-(123, 'Add your own link to ', 'Deinen eigenen Link hinzufügen zur ');
+(123, 'Add your own link to ', 'Deinen eigenen Link hinzufügen zur '),
+(124, 'Brightness', 'Helligkeit'),
+(125, 'select this', 'diesen Stil wählen'),
+(126, 'Selected', 'selektiert');
 
 -- --------------------------------------------------------
 
@@ -219,7 +222,7 @@ CREATE TABLE `user` (
   `verCode` char(64) NOT NULL,
   `verDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ln` char(2) NOT NULL DEFAULT 'de',
-  `styleId` int(2) NOT NULL DEFAULT '0'
+  `style` char(8) NOT NULL DEFAULT '00/00/00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -289,7 +292,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

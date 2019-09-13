@@ -29,8 +29,11 @@
 // 44 - updateUser ($dbConn, int $userid, bool $forgotPw): bool  
 // 45 - safeIntFromExt (string $source, string $varName, int $length): int
 // 46 - safeHexFromExt (string $source, string $varName, int $length): string
-// 47 - getStyle($dbConn, int $userid, string $item): string
-// 48 - styleDef(int $styleId, string $item): string
+// 47 - getStyle(object $dbConn, int $userid, string $item): string {  
+// 48 - styleDefTxt(int $subStyle, string $item): string {
+// 49 - styleDefBgImg(int $subStyle): string {
+// 50 - styleDefBri(int $subStyle): string {
+
   
 // this function is called on every (user related) page on the very start  
 // it does the session start and opens connection to the data base. Returns the dbConn variable or a boolean
@@ -641,7 +644,7 @@ function getStyle(object $dbConn, int $userid, string $item): string {
   }
 }
 
-// input: a style id (number from 1 to 7, 0 is valid as well), output: a string (either a color-string or a background image string)
+// input: a style id (number from 1 to x, 0 is valid as well), output: a color string
 function styleDefTxt(int $subStyle, string $item): string {
   // following styles items are defined. The default values of the items are:
   $bgNorm   = '  0,113,255, 0.40';
@@ -652,13 +655,13 @@ function styleDefTxt(int $subStyle, string $item): string {
   $txtDark  = '182,189,  0, 0.85';  
     
   $styles = // two dimensional array. First dimension is working with keys, second one with index.
-    array(// 0 = undefined, same as 1          2                  3                  4                  5                 
-      'bgNorm'   => array($bgNorm,  $bgNorm,  '117, 89,217,0.60','0,113,255,0.40',  '191,23,37,0.40',  '0,  0,  0,0.50'),
-      'bgNorm2'  => array($bgNorm2, $bgNorm2, '117, 89,217,0.80','0,113,255,0.80',  '191,23,37,0.80',  '0,  0,  0,0.80'),
-      'bgDiff'   => array($bgDiff,  $bgDiff,  '210,242,141,0.50',$bgDiff,           ' 0, 0, 0,0.30',   '71,95,36,0.60'),
-      'bgDiff2'  => array($bgDiff2, $bgDiff2, '210,242,141,0.60',$bgDiff2,          ' 0, 0, 0,0.60',   '71,95,36,0.80'),
-      'txtLight' => array($txtLight,$txtLight,'240,240,240,0.85','250,255, 65,0.85','240,222,134,0.85','250,232,148,0.90'),
-      'txtDark'  => array($txtDark ,$txtDark ,'180,180,180,0.85','192,199, 10,0.85','174,158,81,0.85' ,'174,158,81,0.85')
+    array(// 0 = undefined, same as 1          2                  3                  4                
+      'bgNorm'   => array($bgNorm,  $bgNorm,  '117, 89,217,0.60','191,23,37,0.40',  '0,  0,  0,0.50'),
+      'bgNorm2'  => array($bgNorm2, $bgNorm2, '117, 89,217,0.80','191,23,37,0.80',  '0,  0,  0,0.80'),
+      'bgDiff'   => array($bgDiff,  $bgDiff,  '210,242,141,0.50',' 0, 0, 0,0.30',   '71,95,36,0.60'),
+      'bgDiff2'  => array($bgDiff2, $bgDiff2, '210,242,141,0.60',' 0, 0, 0,0.60',   '71,95,36,0.80'),
+      'txtLight' => array($txtLight,$txtLight,'240,240,240,0.85','240,222,134,0.85','250,232,148,0.90'),
+      'txtDark'  => array($txtDark ,$txtDark ,'180,180,180,0.85','174,158,81,0.85' ,'174,158,81,0.85')
     );
   return $styles[$item][$subStyle];          
 }
@@ -669,6 +672,7 @@ function styleDefBgImg(int $subStyle): string {
   $styles = array('ice.jpg','ice.jpg','bamboo.jpg','water.jpg','pigs.jpg','monk.jpg','stone.jpg','smoke.jpg');
   return $styles[$subStyle];
 }
+// returns the brightness of the background-overlay. May be more dark or more bright.
 function styleDefBri(int $subStyle): string {
   if ($subStyle == 0) { // the default, more dark. Same as styleDefBri(35);
     return '0,0,0,0.30';
