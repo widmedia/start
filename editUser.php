@@ -35,27 +35,27 @@
       <div class="row twelve columns"><input name="create" type="submit" value="'.getLanguage($dbConn,51).'"></div>
     </form>
     <div class="row twelve columns"><hr /></div>    
-    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,122).'</span></h3>';
+    <h3 class="section-heading"><span class="bgCol" id="bgImg">'.getLanguage($dbConn,122).'</span></h3>';
     for ($i = 0; $i < 7; $i++) { // 7 different bg images, 0=default, 1..7 are selectable
       if (($i % 4) == 0) { echo '<div class="row">'; }
-      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=3&styleBgImg='.($i+1).'" style="background-color:transparent;"><img src="images/bg/'.styleDefBgImg(($i+1)).'" alt="default background image" style="'.$bgBorderSel[($i+1)].' width:100%; vertical-align:middle;"></a></div>';
+      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=3&styleBgImg='.($i+1).'#bgImg" style="background-color:transparent;"><img src="images/bg/'.styleDefBgImg(($i+1)).'" alt="default background image" style="'.$bgBorderSel[($i+1)].' width:100%; vertical-align:middle;"></a></div>';
       if (($i == 3) or ($i == 6)) { // last one does not fit into modulo function ($i % 4) == 3
         echo '</div><div class="row twelve columns">&nbsp;</div>'; 
       } 
     }
     echo '
     <div class="row twelve columns">&nbsp;</div>
-    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,124).'</span></h3>    
-    <div class="row twelve columns slidecontainer"><form action="editUser.php?do=3" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>
+    <h3 class="section-heading"><span class="bgCol" id="brightness">'.getLanguage($dbConn,124).'</span></h3>    
+    <div class="row twelve columns slidecontainer"><form action="editUser.php?do=3#brightness" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>
     ';
     
     echo '
     <div class="row twelve columns">&nbsp;</div>
-    <h3 class="section-heading"><span class="bgCol">Text</span></h3>        
+    <h3 class="section-heading"><span class="bgCol" id="textStyle">Text</span></h3>        
     <div class="row">';
     for ($i = 1; $i < 5; $i++) { // 1..5 are selectable
       if ($i == 4) { echo '</div><div class="row">'; }
-      echo '<div class="four columns"><a href="editUser.php?do=3&styleTxt='.$i.'" style="background-color:transparent;"><input name="create" type="submit" value="'.$txtSel[$i].'" 
+      echo '<div class="four columns"><a href="editUser.php?do=3&styleTxt='.$i.'#textStyle" style="background-color:transparent;"><input name="create" type="submit" value="'.$txtSel[$i].'" 
       style="background-color: rgba('.styleDefTxt($i, 'bgNorm').'); color: rgba('.styleDefTxt($i, 'txtLight').');"></a></div>';
     }
     echo '</div>'; // row
