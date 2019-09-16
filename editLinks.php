@@ -12,11 +12,14 @@
       <input name="categoryInput" type="hidden" value="'.$i.'">
       <input name="submit" type="submit" value="'.getLanguage($dbConn,36).getCategory($dbConn, $userid, $i).'"></form></div>';         
     }                
-    echo '</div><div class="row twelve columns">&nbsp;</div><div class="row twelve columns"><hr></div>
-    <div class="row twelve columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
+    echo '</div>
     <div class="row twelve columns"><hr></div>
-    <div class="row twelve columns"><a class="button differentColor" href="editUser.php"><img src="images/icon/db.png" alt="icon data base" class="logoImg"> '.getLanguage($dbConn,28).'</a></div>';    
-  } // function 
+    <div class="row twelve columns"><a class="button differentColor" href="editUser.php"><img src="images/icon/db.png" alt="icon data base" class="logoImg"> '.getLanguage($dbConn,28).'</a></div>
+    <div class="row twelve columns"><hr></div>';
+    printClickRanking($dbConn, $userid);
+    echo '
+    <div class="row twelve columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>';
+  } // function
   
   // prints 1 row to either add a new link or edit an existing one  
   function printSingleLinkFields (object $dbConn, bool $doAdd, int $category, int $linkId, string $link, string $text): void {
@@ -136,8 +139,7 @@
       $totalClicks += $row[0]; // maybe TODO: could also be done by SQL
     } // while
     
-    // print a table with the podium. TODO: design of the podium?
-    echo '<div class="row twelve columns"><hr></div>';
+    // print a table with the podium. TODO: design of the podium?    
     echo '<h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,127).'</span></h3>'; // Klick-Rangliste
     echo '
     <div class="row">
@@ -150,7 +152,8 @@
       <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,128).': '.$myClicks.'</span></div>
       <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,129).': '.$myRanking.'</span></div>
       <div class="four columns"><span class="bgCol">'.getLanguage($dbConn,130).': '.$totalClicks.'</span></div>
-    </div>';    
+    </div>
+    <div class="row twelve columns">&nbsp;</div><div class="row twelve columns">&nbsp;</div>';
   }
 
     
@@ -185,8 +188,7 @@
   
   if ($doSafe == 0) { // entry point of this site
     printStartOfHtml($dbConn);
-    printEntryPoint($dbConn, $userid);
-    printClickRanking($dbConn, $userid);
+    printEntryPoint($dbConn, $userid);    
   } elseif ($doSafe == 1) { // present links of one category, have category name as text field
     printStartOfHtml($dbConn);
     printCategoryForm($dbConn, $categorySafe, $userid);
