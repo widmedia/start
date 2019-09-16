@@ -164,7 +164,7 @@
     for ($i = 0; $i < 12; $i++) {       
       $height = round($userStatPerMonth[$i] / $maxVal * 100)+1; // maxVal corresponds to 100 px min-height
       if ($userStatPerMonth[$i] > 0) { // I started mid-year, omit the early 0-months and the future ones...
-        echo '<div class="one columns" style="vertical-align: bottom;"><span style="font-weight: 600;">'.$months[$i].'</span><br><span class="userStatBar" style="min-height: '.$height.'px;">'.$userStatPerMonth[$i].'</span></div>';
+        echo '<div class="one columns" style="vertical-align: bottom;"><b>'.$months[$i].'</b><br><span class="userStatBar" style="min-height: '.$height.'px;">'.$userStatPerMonth[$i].'</span></div>';
       }
     }
     echo '</div>

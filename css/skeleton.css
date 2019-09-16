@@ -492,6 +492,7 @@ hr {
   padding: 0 8px;  
   border-radius: 3px; 
   border: 1px solid #80b466;
+  white-space: nowrap;
 }
 .imgBorder {
   border: 1px solid #80b466;  
