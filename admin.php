@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-  require_once('../functions.php');
+  require_once('functions.php');
   $dbConn = initialize();
   
   
@@ -107,39 +107,19 @@
     } // query    
   }
 
-  echo '
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Admin page</title>
-  <meta name="author" content="Daniel Widmer">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="../css/font.css" type="text/css">
-  <link rel="stylesheet" href="../css/normalize.css" type="text/css">
-  <link rel="stylesheet" href="../css/skeleton.css" type="text/css">';
-  printInlineCss($dbConn, true);  
-  echo '  
-  <style>
-    html { background: url("../images/bg/ice.jpg") no-repeat center center fixed; }    
-  </style>  
-  <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon.png">
-  </head>
-  <body>';
+  printStartOfHtml($dbConn);
 
   
   $userid = getUserid();
   if ($userid != 1) { // admin has the userid 1...
-    die('sorry, only the admin may visit this site</body></html>');    
+    die('sorry, only the admin may visit this site');
   }
   
   $num = 0;
   if($result = $dbConn->query('SELECT `lastLogin` FROM `user` WHERE 1')) {
     $num = $result->num_rows;
   }
-  
-  echo '<div class="section categories noBottom"><div class="container">'; 
+    
   echo '<h3 class="section-heading"><span class="bgCol">'.$num.' Accounts</span></h3>';
   echo '<div class="row twelve columns" style="background-color: rgba(0, 113, 255, 0.3);">';
   printUserTable($dbConn);
@@ -195,7 +175,7 @@
   <div class="section noBottom">
     <div class="container">
       <div class="row twelve columns"><hr /></div>
-      <div class="row twelve columns"><a class="button differentColor" href="../links.php"><img src="../images/icon/home.png" class="logoImg"> back to links</a></div>
+      <div class="row twelve columns"><a class="button differentColor" href="links.php"><img src="images/icon/home.png" class="logoImg"> back to links</a></div>
     </div>
   </div>                
   </div> <!-- /section categories -->

@@ -84,7 +84,7 @@ function printErrorAndDie (string $heading, string $text): void {
   <link rel="stylesheet" href="css/font.css" type="text/css" />
   <link rel="stylesheet" href="css/normalize.css" type="text/css" />
   <link rel="stylesheet" href="css/skeleton.css" type="text/css" />';
-  printInlineCss('', false);
+  printInlineCss((object)'', false);
   echo '</head><body><div class="row twelve columns textBox"><h4>'.$heading.'</h4><p>'.$text.'</p></div></body></html>';
   die();  
 }
@@ -206,6 +206,7 @@ function getCurrentSite (): string {
   $siteUnsafe = substr($_SERVER['SCRIPT_NAME'],7); // SERVER[...] is something like /start/links.php (without any parameters)   
   if (
       ($siteUnsafe == 'about.php') or
+      ($siteUnsafe == 'admin.php') or
       ($siteUnsafe == 'editLinks.php') or
       ($siteUnsafe == 'editUser.php') or
       ($siteUnsafe == 'index.php') or 
@@ -387,7 +388,10 @@ function printStatic (object $dbConn): void {
   if ($siteSafe == 'about.php') {
     $title = getLanguage($dbConn,1);
     $description = getLanguage($dbConn,107);    
-  } elseif ($siteSafe == 'editLinks.php') {
+  } elseif ($siteSafe == 'admin.php') {
+    $title = 'Adminseite';
+    $description = 'Adminseite, nicht öffentlich';
+    } elseif ($siteSafe == 'editLinks.php') {
     $title = getLanguage($dbConn,27);
     $description = getLanguage($dbConn,108);
   } elseif ($siteSafe == 'editUser.php') {
