@@ -343,7 +343,7 @@
       return error($dbConn, 110402);
     }
     if ($setCookieSafe == 1) {
-      $expire = time() + (3600 * 24 * 7 * 4); // valid for 4 weeks
+      $expire = time() + (3600 * 24 * 7 * 26); // valid for half a year
       setcookie('userIdCookie', (string)$userid, $expire, '/start/', 'widmedia.ch', true, true); 
       if (!($result = $dbConn->query('SELECT `randCookie` FROM `user` WHERE `id` = "'.$userid.'"' ))) { // this is just a random number which has been set at user creation
         return error($dbConn, 110400); 
