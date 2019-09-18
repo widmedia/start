@@ -15,7 +15,7 @@
 // 30 - printOverlayAccountVerify ($dbConn, int $userid): void
 // 31 - getCurrentSite ()
 // 32 - printNavMenu ($dbConn): void
-// 33 - testUserCheck ($dbConn, int $userid): bool
+// 33 - isNotTestUser ($dbConn, int $userid): bool
 // 34 - sessionAndCookieDelete (): void
 // 35 - deleteUser ($dbConn, int $userid): bool
 // 36 - getUserid (): int
@@ -293,8 +293,8 @@ function printNavMenu (object $dbConn): void {
   </nav>';
 }
 
-// checks whether userid is 2 (= test user). Actually it is returning true, if it is NOT the testUser
-function testUserCheck (object $dbConn, int $userid): bool {
+// checks whether userid is not 2 (= not test user)
+function isNotTestUser (object $dbConn, int $userid): bool {
   if ($userid == 2) {    
     printConfirm($dbConn, getLanguage($dbConn,30), getLanguage($dbConn,31).' <a href="index.php?do=2#newUser">'.getLanguage($dbConn,32).'</a>');
     return false;
@@ -320,7 +320,7 @@ function deleteUser (object $dbConn, int $userid): bool {
   }
   // make sure this id actually exists and it's not id=1 (admin user) or id=2 (test user)
   $rowCnt = $result->num_rows;
-  if (!(testUserCheck($dbConn, $userid) and ($userid != 1))) { // admin has userid 1, test user has userid 2
+  if (!(isNotTestUser($dbConn, $userid) and ($userid != 1))) { // admin has userid 1, test user has userid 2
     return false; // for userid = 1 there is no meaningful error message. But that's ok, it only affects the admin    
   }  
   if (!($rowCnt == 1)) {                
@@ -530,7 +530,7 @@ function getLanguage (object $dbConn, int $textId): string { // NB: ln and id va
 
 // 44. used in editUser to update email and password and in index to set a new pw when it has been forgotten.
 function updateUser (object $dbConn, int $userid, bool $forgotPw): bool {  
-  if (!(testUserCheck($dbConn, $userid))) {
+  if (!(isNotTestUser($dbConn, $userid))) {
     return false;
   }
   if (!($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"'))) {

@@ -73,7 +73,7 @@
   } // function
   
   // updates the 'style' column in the data base
-  function updateSubStyle(object $dbConn, int $userid, int $subStyleFromGet, int $subStyleNr) {
+  function updateSubStyle(object $dbConn, int $userid, int $subStyleFromGet, int $subStyleNr): bool {
     if (!($userid > 0)) { // have a valid userid, testuser may change it as well
       return error($dbConn, 150300);
     }
@@ -81,8 +81,14 @@
     (($subStyleNr == 0) and ($subStyleFromGet <= 7) and ($subStyleFromGet > 0)) or // currently valid image IDs from 1 to 7
     (($subStyleNr == 1) and ($subStyleFromGet <= 99) and ($subStyleFromGet > 0)) or // brightness 1 to 99 is ok
     (($subStyleNr == 2) and ($subStyleFromGet <= 5) and ($subStyleFromGet > 0))
-    )) { 
+    )) {
       return error($dbConn, 150301);
+    }
+    // testUser may not set the brightness to extreme values
+    if (($subStyleNr == 1) and (($subStyleFromGet > 80) or ($subStyleFromGet < 20))) {
+      if (!(isNotTestUser($dbConn, $userid))) {
+        return false;
+      }
     }
     if (!($result = $dbConn->query('SELECT `style` FROM `user` WHERE `id` = "'.$userid.'"'))) {
       return error($dbConn, 150302);

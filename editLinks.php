@@ -63,7 +63,7 @@
     }
     $linkSqlSafe = mysqli_real_escape_string($dbConn, $linkUnsafe); // filtering it for sqli insertion        
     $textSqlSafe = mysqli_real_escape_string($dbConn, $textUnsafe); // cannot verify anything for the text itself (just cut it to 63 characters)     
-    if (!(testUserCheck($dbConn, $userid))) {
+    if (!(isNotTestUser($dbConn, $userid))) {
       return false;
     }
     if ($categorySafe == 0) { // I update one link
@@ -86,7 +86,7 @@
     if (!($idSafe > 0)) {
       return error($dbConn, 160403);
     }
-    if (!(testUserCheck($dbConn, $userid))) {
+    if (!(isNotTestUser($dbConn, $userid))) {
       return false;
     }
     if (!($result = $dbConn->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `id` = "'.$idSafe.'"'))) {
@@ -102,7 +102,7 @@
   }
 
   function updateCategoryName(object $dbConn, string $textUnsafe, int $userid, int $categorySafe): bool {    
-    if (!(testUserCheck($dbConn, $userid))) {
+    if (!(isNotTestUser($dbConn, $userid))) {
       return false;
     }
     if (!($categorySafe > 0)) {
