@@ -489,10 +489,14 @@ hr {
 }
 .userStatBar {
   display: inline-block; 
-  padding: 0 8px;  
+  padding: 0 8px;
+  margin: 10px 0;
   border-radius: 3px; 
   border: 1px solid #80b466;
   white-space: nowrap;
+  min-height: 20px;
+  float: left; 
+  text-align: left;
 }
 .imgBorder {
   border: 1px solid #80b466;  

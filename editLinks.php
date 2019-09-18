@@ -146,8 +146,8 @@
     $maxWidth = 300; // max width on mobile is about 300px, otherwise it messes up all the layout
     $widths = array($maxWidth, round($sumCntTot[1] / $sumCntTot[0] * $maxWidth)+1, round($sumCntTot[2] / $sumCntTot[0] * $maxWidth)+1);    
     for ($i = 0; $i < 3; $i++) {
-      echo '<div class="row twelve columns" style="min-height:40px;">
-      <span class="userStatBar" style="min-height:20px; width:'.$widths[$i].'px; float:left; text-align:left;">'.($i+1).'. '.getLanguage($dbConn,131).': User-ID '.$sumUserIds[$i].' <b>'.$sumCntTot[$i].'</b> Klicks</span></div>';
+      echo '<div class="row twelve columns">
+      <span class="userStatBar" style="width:'.$widths[$i].'px;">'.($i+1).'. '.getLanguage($dbConn,131).': User-ID '.$sumUserIds[$i].' <b>'.$sumCntTot[$i].'</b> Klicks</span></div>';
     }
     echo '    
     <div class="row twelve columns">&nbsp;</div>

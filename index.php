@@ -160,17 +160,18 @@
     // print a table with the twelve months
     echo '<div class="row twelve columns">&nbsp;</div>';
     echo '<div class="row twelve columns"><hr></div>';
-    echo '<h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,56).$year.'</span></h3><div class="row">';
-    for ($i = 0; $i < 12; $i++) {       
-      $height = round($userStatPerMonth[$i] / $maxVal * 100)+1; // maxVal corresponds to 100 px min-height
+    echo '<h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,56).$year.'</span></h3>';
+    $maxWidth = 300; // max width on mobile is about 300px, otherwise it messes up all the layout
+
+    for ($i = 0; $i < 12; $i++) {
+      $width = round($userStatPerMonth[$i] / $maxVal * $maxWidth)+1;
       if ($userStatPerMonth[$i] > 0) { // I started mid-year, omit the early 0-months and the future ones...
-        echo '<div class="one columns" style="vertical-align: bottom;"><b>'.$months[$i].'</b><br><span class="userStatBar" style="min-height: '.$height.'px;">'.$userStatPerMonth[$i].'</span></div>';
+        echo '<div class="row twelve columns">
+        <span class="userStatBar" style="width:'.$width.'px;"><b>'.$months[$i].':</b> '.$userStatPerMonth[$i].' User</span></div>';
       }
     }
-    echo '</div>
-    <div class="row twelve columns"><span class="bgCol">'.getLanguage($dbConn,57).'</span></div>';
+    echo '<div class="row twelve columns"><span class="bgCol">'.getLanguage($dbConn,57).'</span></div>';
   }
-    
   
   // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
   function printNewUserForm (object $dbConn): void {
