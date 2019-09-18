@@ -158,9 +158,10 @@
     } // while
     
     // print a table with the twelve months
-    echo '<div class="row twelve columns">&nbsp;</div>';
-    echo '<div class="row twelve columns"><hr></div>';
-    echo '<h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,56).$year.'</span></h3>';
+    echo '
+    <div class="row twelve columns">&nbsp;</div>
+    <div class="row twelve columns"><hr></div>
+    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,56).$year.'</span></h3>';
     $maxWidth = 300; // max width on mobile is about 300px, otherwise it messes up all the layout
 
     for ($i = 0; $i < 12; $i++) {

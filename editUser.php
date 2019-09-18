@@ -43,11 +43,45 @@
         echo '</div><div class="row twelve columns">&nbsp;</div>'; 
       } 
     }
+    // have some inline CSS as it's used only on this site. NB: unclear whether all the browser directives are necessary
     echo '
+    <style>
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 12px;
+      border: 1px solid black;
+      border-radius: 5px;    
+      background: linear-gradient(to right, black, white);
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+    .slider:hover {
+      opacity: 1; /* Fully shown on mouse-over */
+    }
+    /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border: 0;
+      background: url("images/icon/brightness.png");
+      cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      background: url("images/icon/brightness.png");
+      cursor: pointer;
+    }
+    </style>
     <div class="row twelve columns">&nbsp;</div>
     <h3 class="section-heading"><span class="bgCol" id="brightness">'.getLanguage($dbConn,124).'</span></h3>    
-    <div class="row twelve columns slidecontainer"><form action="editUser.php?do=3#brightness" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>
-    ';
+    <div class="row twelve columns" style="width:100%;"><form action="editUser.php?do=3#brightness" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>';
     
     echo '
     <div class="row twelve columns">&nbsp;</div>
