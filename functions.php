@@ -24,7 +24,7 @@
 // 39 - makeSafeStr ($unsafe, int $length): string
 // 40 - redirectRelative (string $page): void
 // 41 - printStatic ($dbConn): void
-// 42 - printInlineCss ($dbConn, bool $haveDb): void   
+// 42 - printInlineCss ($dbConn): void   
 // 43 - getLanguage ($dbConn, int $textId): string // NB: ln and id variables are safe
 // 44 - updateUser ($dbConn, int $userid, bool $forgotPw): bool  
 // 45 - safeIntFromExt (string $source, string $varName, int $length): int
@@ -84,7 +84,7 @@ function printErrorAndDie (string $heading, string $text): void {
   <link rel="stylesheet" href="css/font.css" type="text/css" />
   <link rel="stylesheet" href="css/normalize.css" type="text/css" />
   <link rel="stylesheet" href="css/skeleton.css" type="text/css" />';
-  printInlineCss((object)'', false);
+  printInlineCss((object)'');
   echo '</head><body><div class="row twelve columns textBox"><h4>'.$heading.'</h4><p>'.$text.'</p></div></body></html>';
   die();  
 }
@@ -437,7 +437,7 @@ function printStatic (object $dbConn): void {
   <link rel="stylesheet" href="css/font.css" type="text/css" />
   <link rel="stylesheet" href="css/normalize.css" type="text/css" />
   <link rel="stylesheet" href="css/skeleton.css" type="text/css" />';
-  printInlineCss($dbConn, true);
+  printInlineCss($dbConn);
   
   echo '
   <script>  
@@ -459,7 +459,7 @@ function printStatic (object $dbConn): void {
 }
 
 // defines all the styles with color in it. NB: borders are defined with the 1px solid #color shortcut in the skeleton css. Color attribute is then overwritten here
-function printInlineCss (object $dbConn, bool $haveDb): void {  
+function printInlineCss (object $dbConn): void {  
   $userid = getUserid();
   
   $txtLight = 'rgba('.getStyle($dbConn, $userid, 'txtLight').')'; // yellowish (works good on blue, works on gray as well) = #faff3b;
