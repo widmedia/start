@@ -476,33 +476,33 @@ function printInlineCss (object $dbConn): void {
   // 
   echo '
   <style>
-    body { color: '.$txtLight.'; background-image: url("images/bg/'.$bgImg.'"); } 
-    .brightness { background-color: rgba('.$brightness.'); }        
+    body { color: '.$txtLight.'; background-image: url("images/bg/'.$bgImg.'"); border-color: '.$txtDark.';}
+    .brightness { background-color: rgba('.$brightness.'); }
     .button,
     button,
-    input[type="submit"],    
-    input[type="button"] { background-color: '.$bg_norm.'; border-color: '.$txtDark.'; } 
+    input[type="submit"],
+    input[type="button"] { background-color: '.$bg_norm.'; }
     .button:hover,
     button:hover,
-    input[type="submit"]:hover,    
+    input[type="submit"]:hover,
     input[type="button"]:hover,
     .button:focus,
     button:focus,
-    input[type="submit"]:focus,    
-    input[type="button"]:focus { color: '.$txtDark.'; background-color: '.$bg_diff.'; border-color: '.$bg_diff2.'; }        
+    input[type="submit"]:focus,
+    input[type="button"]:focus { color: '.$txtDark.'; background-color: '.$bg_diff.'; border-color: '.$bg_diff2.'; }
     .differentColor { background-color: '.$bg_diff.'; }
-    .textBox { background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }    
+    .textBox { background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }
     .overlayMessage { background-color: '.$bg_diff2.'; }
     .userStatBar { background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }
     .imgBorder { border-color: '.$txtDark.'; }
     .tooltip,
-    .tooltiptext { background-color: '.$bg_norm.'; }
-    #menu { background-color: '.$bg_norm2.'; border-color: '.$txtDark.'; }    
+    .tooltiptext { color: '.$txtLight.'; background-color: '.$bg_norm.'; }
+    #menu { background-color: '.$bg_norm2.'; border-color: '.$txtDark.'; }
     #menu a:hover, #menu a:focus { color: '.$txtDark.'; }
     .menuCurrentPage { color: '.$txtDark.'; }
     #menuToggle input:checked ~ span { background: '.$txtLight.'; }
     .bgCol { background-color: '.$bg_norm.'; }
-  </style>'; 
+  </style>';
 }
 
 // returns various text in the session-stored language. language-db organized as follows: id(int_11) / en(text) / de(text)
