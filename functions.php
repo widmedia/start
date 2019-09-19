@@ -465,14 +465,10 @@ function printInlineCss (object $dbConn): void {
   $txtLight = 'rgba('.getStyle($dbConn, $userid, 'txtLight').')'; // yellowish (works good on blue, works on gray as well) = #faff3b;
   $txtDark =  'rgba('.getStyle($dbConn, $userid, 'txtDark').')'; // darker version of above settings  
   
-  $font_link     = '#8d3a53'; // some red  
-  $borders_lines = '#e1e1e1'; // whitish  
-  
   $bg_norm  = 'rgba('.getStyle($dbConn, $userid, 'bgNorm').')'; // default blueish
   $bg_norm2 = 'rgba('.getStyle($dbConn, $userid, 'bgNorm2').')'; // same color, different transparency for navMenu
   $bg_diff  = 'rgba('.getStyle($dbConn, $userid, 'bgDiff').')'; // default reddish 
-  $bg_diff2 = 'rgba('.getStyle($dbConn, $userid, 'bgDiff2').')'; // same color, different transparency for overlay and borders
-  $bg_link  = 'rgba(180, 180, 180, 0.6)'; // grayish
+  $bg_diff2 = 'rgba('.getStyle($dbConn, $userid, 'bgDiff2').')'; // same color, different transparency for overlay and borders  
   
   $bgImg = getStyle($dbConn, $userid, 'bgImg');
   $brightness = getStyle($dbConn, $userid, 'brightness');
@@ -480,8 +476,7 @@ function printInlineCss (object $dbConn): void {
   echo '
   <style>
     body { color: '.$txtLight.'; background-image: url("images/bg/'.$bgImg.'"); } 
-    .brightness { background-color: rgba('.$brightness.'); }
-    a { color: '.$font_link.'; background-color: '.$bg_link.';}
+    .brightness { background-color: rgba('.$brightness.'); }    
     a:hover { color: '.$txtLight.'; }
     .button,
     button,
@@ -494,10 +489,7 @@ function printInlineCss (object $dbConn): void {
     .button:focus,
     button:focus,
     input[type="submit"]:focus,    
-    input[type="button"]:focus { color: '.$txtDark.'; background-color: '.$bg_diff.'; border-color: '.$bg_diff2.'; }
-    th,
-    td { border-color: '.$borders_lines.'; }
-    hr { border-color: '.$borders_lines.'; }
+    input[type="button"]:focus { color: '.$txtDark.'; background-color: '.$bg_diff.'; border-color: '.$bg_diff2.'; }        
     .differentColor { color: '.$txtLight.'; background-color: '.$bg_diff.'; }
     .textBox { color: '.$txtLight.'; background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }
     .noPwWarning { color: '.$txtLight.'; background-color: '.$bg_diff.'; }

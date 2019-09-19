@@ -135,6 +135,8 @@ p { margin-top: 0; }
 a {
   padding: 2px 4px 1px 1px;  
   text-decoration: none;
+  color: #8d3a53;
+  background-color: rgba(180, 180, 180, 0.6);
   transition: color 0.3s ease;
 }
 
@@ -183,7 +185,7 @@ select {
   height: 38px;
   padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
   background-color: #fff;
-  border: 1px solid #D1D1D1;
+  border: 1px solid #d1d1d1;
   border-radius: 4px;
   box-shadow: none;
   box-sizing: border-box; 
@@ -213,7 +215,7 @@ input[type="url"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
-  border: 1px solid #33C3F0;
+  border: 1px solid #33c3f0;
   outline: 0; }
 label,
 legend {
@@ -255,7 +257,8 @@ th,
 td {
   padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #E1E1E1; }
+  border-color: #e1e1e1;
+  border-bottom: 1px solid; }
 th:first-child,
 td:first-child {
   padding-left: 0; }
@@ -299,10 +302,10 @@ form {
 
 /* Misc */
 hr {
-  margin-top: 3rem;
-  margin-bottom: 3.5rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   border-width: 0;
-  border-top: 1px solid #E1E1E1; }
+  border-top: 1px solid #e1e1e1; }
 
 
 /* Clearing */
