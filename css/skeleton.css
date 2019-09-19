@@ -146,6 +146,7 @@ a {
 button,
 input[type="submit"],
 input[type="button"] {
+  color: inherit; 
   display: inline-block;
   height: 38px;
   padding: 0 20px;  
@@ -372,20 +373,6 @@ hr {
   padding: 2px 5px;
   border-radius: 4px;  
 }
-.noPwWarning {
-  display: block;
-  min-height: 38px;
-  padding: 0 20px;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 38px;
-  letter-spacing: .1rem;
-  text-decoration: none;
-  border-radius: 4px;
-  box-sizing: border-box; 
-  border: none;
-}
 .overlayMessage {
   width: 100%; 
   margin: auto; 
@@ -487,7 +474,7 @@ hr {
   transform: translate(-100%, 0);
   transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
 }
-#menu a { background: transparent; }
+#menu a { background: transparent; color: inherit; }
 #menu li { padding: 5px 0; font-size: 18px; margin-bottom: 0rem; }
 #menu ul { margin-bottom: 0rem; }
 #menuToggle input:checked ~ ul { transform: none; }    
