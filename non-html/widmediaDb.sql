@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 13. Sep 2019 um 09:59
+-- Erstellungszeit: 20. Sep 2019 um 08:41
 -- Server-Version: 10.1.41-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -58,7 +58,7 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (4, 'is developed by Daniel Widmer. Please find the complete code at', 'wird durch Daniel Widmer entwickelt. Den gesamten source code findet man unter'),
 (5, 'Contact (German, English)', 'Kontakt (Deutsch, Englisch)'),
 (6, 'Data privacy', 'Datenschutz'),
-(7, 'Be aware: without password protection for your account, all your user data are openly visible and may be edited. When using the password protection, widmedia tries to secure your data as good as possible, however, widmedia cannot guarantee full protection.', 'Achtung: ohne Passwortschutz sind all deine Daten öffentlich zugänglich und können editiert oder gelöscht werden. Mit Passwortschutz versucht widmedia diese Daten so gut es geht vor unberechtigten Zugriffen zu schützen. Leider kann widmedia darauf keine Garantie erteilen.'),
+(7, 'widmedia tries to secure your data as good as possible, however, widmedia cannot guarantee full protection.', 'widmedia versucht deine Daten so gut es geht vor unberechtigten Zugriffen zu schützen. Leider kann widmedia darauf keine Garantie erteilen.'),
 (8, 'Only data required for the functionality of this website is stored. The data base layout and structure as well as the underlying code is available for inspection on the open source', 'Gespeichert werden nur Daten, die für diese Website nötig sind. Sowohl das Datenbanklayout und die Struktur als auch der verwendete Code sind öffentlich zugänglich als open source'),
 (9, 'project', 'Projekt'),
 (10, 'The data will not be sold or transferred otherwise to any external party.', 'Deine Daten werden nicht verkauft oder andersweitig an Drittpersonen weitergegeben.'),
@@ -136,7 +136,7 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (82, 'Try it first', 'Zuerst mal ausprobieren'),
 (83, 'log in as the test user', 'Login als Testuser'),
 (84, 'Password', 'Passwort'),
-(85, 'save log in information for 4 weeks in a cookie', 'Login Infos während 4 Wochen in einem Cookie speichern'),
+(85, 'store log in information', 'Login speichern'),
 (86, '(This might me a good moment to store this page as your browser starting page. Unfortunately I cannot provide you a link to do so. Modern browsers will not allow it.)', '(Das wäre jetzt ein guter Moment um diese Seite als deine Browser-Startseite zu setzen. Leider kann ich das nicht automatisch, kein halbwegs moderner Browser erlaubt das.)'),
 (87, 'Forgot my password', 'Passwort vergessen'),
 (88, 'go to login page', ' Zur Loginseite'),
@@ -176,7 +176,12 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (123, 'Add your own link to ', 'Deinen eigenen Link hinzufügen zur '),
 (124, 'Brightness', 'Helligkeit'),
 (125, 'select this', 'diesen Stil wählen'),
-(126, 'Selected', 'selektiert');
+(126, 'Selected', 'selektiert'),
+(127, 'Click Ranking', 'Klick-Rangliste'),
+(128, 'Your clicks', 'Deine Klicks'),
+(129, 'Your ranking', 'Dein Rang'),
+(130, 'Total number of clicks', 'Anzahl aller Klicks'),
+(131, 'Place', 'Platz');
 
 -- --------------------------------------------------------
 
@@ -292,7 +297,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`
