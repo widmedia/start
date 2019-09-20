@@ -475,12 +475,12 @@ function printInlineCss (object $dbConn): void {
     
   echo '
   <style>
-    body { color: '.$txtLight.'; background-image: url("images/bg/'.$bgImg.'"); border-color: '.$txtDark.';}
+    body { color: '.$txtLight.'; background-image: url("images/bg/'.$bgImg.'");}
     .brightness { background-color: rgba('.$brightness.'); }
     .button,
     button,
     input[type="submit"],
-    input[type="button"] { background-color: '.$bg_norm.'; }
+    input[type="button"] { background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }
     .button:hover,
     button:hover,
     input[type="submit"]:hover,
@@ -490,12 +490,13 @@ function printInlineCss (object $dbConn): void {
     input[type="submit"]:focus,
     input[type="button"]:focus { color: '.$txtDark.'; background-color: '.$bg_diff.'; border-color: '.$bg_diff2.'; }
     .differentColor { background-color: '.$bg_diff.'; }
-    .textBox { background-color: '.$bg_norm.'; }
+    .textBox { background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }
     .overlayMessage { background-color: '.$bg_diff2.'; }
-    .userStatBar { background-color: '.$bg_norm.'; }
+    .userStatBar { background-color: '.$bg_norm.'; border-color: '.$txtDark.'; }
+    .imgBorder { border-color: '.$txtDark.'; }
     .tooltip,
     .tooltiptext { color: '.$txtLight.'; background-color: '.$bg_norm.'; }
-    #menu { background-color: '.$bg_norm2.'; }
+    #menu { background-color: '.$bg_norm2.'; border-color: '.$txtDark.'; }
     #menu a:hover, #menu a:focus { color: '.$txtDark.'; }
     .menuCurrentPage { color: '.$txtDark.'; }
     #menuToggle input:checked ~ span { background: '.$txtLight.'; }
