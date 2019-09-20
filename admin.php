@@ -169,15 +169,6 @@
     } else {
       error($dbConn, 170400);
     }
-  }     
+  }
+  printFooter($dbConn);
 ?>
-  </div> <!-- /container -->
-  <div class="section noBottom">
-    <div class="container">
-      <div class="row twelve columns"><hr /></div>
-      <div class="row twelve columns"><a class="button differentColor" href="links.php"><img src="images/icon/home.png" class="logoImg"> back to links</a></div>
-    </div>
-  </div>                
-  </div> <!-- /section categories -->
-</body>
-</html>

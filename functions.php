@@ -125,48 +125,50 @@ function printStartOfHtml (object $dbConn): void {
   echo '<div class="section categories noBottom"><div class="container">';
 }
  
-// function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at, given as input  
+// function does not return anything. Prints the footer at the end of a page. Output depends on the page we are at and whether the user is logged in  
 function printFooter (object $dbConn): void {
   echo '</div>'; // close the container
-  $siteSafe = getCurrentSite(); 
-  $edit   = '<a class="button differentColor" href="editLinks.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
-  $home   = '<a class="button differentColor" href="links.php"><img src="images/icon/home.png" class="logoImg" alt="icon home"> Links</a>';
-  $about  = '<a class="button differentColor" href="about.php"><img src="images/icon/info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
-  $logout = '<a class="button differentColor" href="index.php?do=1"><img src="images/icon/logout.png" class="logoImg" alt="icon logout"> Log out</a>';
-  
-  // default values. For links.php as current site   
-  $linkLeft   = $edit;
-  $linkMiddle = $about;
-  $linkRight  = $logout;
-  if (($siteSafe == 'editLinks.php') or ($siteSafe == 'editUser.php')) {
-    $linkLeft   = $home; 
-    $linkMiddle = $about;
-    $linkRight  = $logout;
-  } elseif ($siteSafe == 'about.php') {
-    $linkLeft   = '&nbsp;';
-    $linkMiddle = $home;
-    $linkRight  = '&nbsp;';
-  }  elseif ($siteSafe == 'index.php') {
-    $linkLeft   = $home;  // always have a home button. Even if I'm already on index page
-    $linkMiddle = '&nbsp;';
-    $linkRight  = $about;
+  $siteSafe = getCurrentSite();
+  if ($siteSafe == '') { // return value of getCurrentSite if not on a valid page
+    echo '</div></div></body></html>'; // close the html page correctly
+    return;
   }
-
+  $linkBegin = '<a class="button differentColor" href=';
+  $editLinks = $linkBegin.'"editLinks.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
+  $editUser  = $linkBegin.'"editUser.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,28).'</a>';
+  $links     = $linkBegin.'"links.php"><img src="images/icon/links.png" class="logoImg" alt="icon links"> Links</a>';
+  $about     = $linkBegin.'"about.php"><img src="images/icon/info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
+  $logout    = $linkBegin.'"index.php?do=1"><img src="images/icon/logout.png" class="logoImg" alt="icon logout"> Log out</a>';
+  $login     = $linkBegin.'"index.php#login"><img src="images/icon/login.png" class="logoImg" alt="icon login"> Log in</a>';
+  $newUser   = $linkBegin.'"index.php?do=2#newUser"><img src="images/icon/plus.png" class="logoImg" alt="icon new user"> '.getLanguage($dbConn,29).'</a>';
+  $index     = $linkBegin.'"index.php?do=6"><img src="images/icon/home.png" class="logoImg" alt="icon home"> Home</a>';
+  
+  $loggedOut = (getUserid() == 0);  
+  $loginOrLogout  = ($loggedOut) ? $login : $logout;
+  $linksOrBlank   = ($loggedOut) ? '&nbsp;' : $links;
+  $newUserOrBlank = ($loggedOut) ? $newUser : '&nbsp;';
+  
+  $footerLinks = // two dimensional array. First dimension is working with keys, second one with index
+    array( // current page    left        middle           right
+      'index.php'    => array($about,     $newUserOrBlank, $loginOrLogout),
+      'about.php'    => array($index,     $linksOrBlank,   $loginOrLogout),
+      'links.php'    => array($editLinks, $editUser,       $logout),
+      'editLinks.php'=> array($editUser,  $links,          $logout),
+      'editUser.php' => array($editLinks, $links,          $logout),
+      'admin.php'    => array($editLinks, $editUser,       $logout)
+    );  
   echo '      
   <div class="section noBottom">
     <div class="container">
       <div class="row twelve columns"><hr /></div>
       <div class="row">
-        <div class="four columns">'.$linkLeft.'</div>
-        <div class="four columns">'.$linkMiddle.'</div>
-        <div class="four columns">'.$linkRight.'</div>
+        <div class="four columns">'.$footerLinks[$siteSafe][0].'</div>
+        <div class="four columns">'.$footerLinks[$siteSafe][1].'</div>
+        <div class="four columns">'.$footerLinks[$siteSafe][2].'</div>
       </div>
     </div>
   </div>
-</div>
-</div>
-</body>
-</html>'; 
+</div></div></body></html>';
 } // function
 
 // displays a red-colored div, either disappearing or not
