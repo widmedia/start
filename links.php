@@ -5,7 +5,7 @@
   // function to output several links in a formatted way
   // creating a div for every link and div-rows for every $module-th entry
   // has a limit of 100 links per category
-  function printLinks(object $dbConn, int $userid, int $category): void {
+  function printLinks(object $dbConn, int $userid, int $category, bool $hideLinkCnt): void {
     echo '<div class="row">';
     
     // Have 12 columns. Means with modulo 3, I have 'class four columns' and vice versa
@@ -24,7 +24,8 @@
         $counter = 0;
         while ($row = $result->fetch_assoc()) {
           $link = (strlen($row['link']) > 26) ? $link = substr($row['link'],0,23).'...' : $row['link'];
-          echo $divClass.'<a href="link.php?id='.$row['id'].'" target="_blank" class="button tooltip linksButton">'.$row['text'].'<span class="tooltiptext">'.$link.'</span></a><span class="counter">'.$row['cntTot'].'</span></div>';
+          $linkCnt = ($hideLinkCnt) ? '' : '<span class="counter">'.$row['cntTot'].'</span>';
+          echo $divClass.'<a href="link.php?id='.$row['id'].'" target="_blank" class="button tooltip linksButton">'.$row['text'].'<span class="tooltiptext">'.$link.'</span></a>'.$linkCnt.'</div>';
           $counter++;
 
           if (($counter % $modulo) == 0) {
@@ -40,9 +41,17 @@
   $userid = getUserid();
   printStartOfHtml($dbConn);
   
+  $hideLinkCnt = false;
+  if ($result = $dbConn->query('SELECT `hideLinkCnt` FROM `user` WHERE `id` = "'.$userid.'" LIMIT 1')) {      
+    if ($result->num_rows == 1) {
+      $row = $result->fetch_row(); 
+      $hideLinkCnt = ($row[0] == 1);
+    }
+  }
+  
   for ($category = 1; $category <= 3; $category++) {
     echo '<h3 class="section-heading">'.getCategory($dbConn, $userid, $category).'</h3>';
-    printLinks($dbConn, $userid, $category);    
+    printLinks($dbConn, $userid, $category, $hideLinkCnt);    
   }
   
   printFooter($dbConn);

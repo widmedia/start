@@ -18,7 +18,23 @@
     <div class="row twelve columns"><hr></div>';
     printClickRanking($dbConn, $userid);
     echo '
-    <div class="row twelve columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>';
+    <div class="row twelve columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
+    <div class="row twelve columns"><hr></div>';
+    if (!($result = $dbConn->query('SELECT `hideLinkCnt` FROM `user` WHERE `id` = "'.$userid.'" LIMIT 1'))) {
+      return;
+    }
+    if (!($result->num_rows == 1)) {
+      return;
+    }
+    $row = $result->fetch_row(); 
+    $borderHideLinkCnt = array('border: 2px dotted #000;', 'border: 2px dotted #000;'); // hideLinkCnt may be 0 or 1. Initialize array with both being not selected
+    $borderHideLinkCnt[$row[0]] = 'border: 2px solid #faff3b;';  // some bright color (not related to the designs)
+    echo '
+    <div class="row" id="linkCounters">   
+      <div class="halbeReihe six columns linktext" style="'.$borderHideLinkCnt[0].'"><a href="editLinks.php?do=6&hideLinkCnt=0#linkCounters" class="button tooltip linksButton">display the link counter<span class="tooltiptext">show the link counter</span></a><span class="counter">27</span></div>
+      <div class="halbeReihe six columns linktext" style="'.$borderHideLinkCnt[1].'"><a href="editLinks.php?do=6&hideLinkCnt=1#linkCounters" class="button tooltip linksButton">do NOT display the link counter<span class="tooltiptext">hide the link counter</span></a></div>
+    </div>
+    ';
   } // function
   
   // prints 1 row to either add a new link or edit an existing one  
@@ -115,6 +131,19 @@
     return true;
   }
   
+  function storeLinkCounterSetting(object $dbConn, int $hideLinkCntSafe, int $userid): bool {
+    if (!(isNotTestUser($dbConn, $userid))) {
+      return false;
+    }
+    if (!(($hideLinkCntSafe == 0) or ($hideLinkCntSafe == 1))) {
+      return error($dbConn, 160600);
+    }
+    if (!($dbConn->query('UPDATE `user` SET `hideLinkCnt` = "'.$hideLinkCntSafe.'" WHERE `id` = "'.$userid.'" LIMIT 1'))) {
+      return error($dbConn, 160601);
+    }
+    return true;
+  }
+  
   // generates a table output with the click ranking. Listed are the first three
   function printClickRanking (object $dbConn, int $userid): void {
     if (!($result = $dbConn->query('SELECT SUM(`cntTot`), `userid` FROM `links` WHERE `cntTot` > 0 GROUP BY `userid` ORDER BY SUM(`cntTot`) DESC'))) { //  LIMIT 3
@@ -168,6 +197,7 @@
   // 3 - reset all cnt to 0
   // 4 - delete one link
   // 5 - do the update of a category (of action 1)
+  // 6 - store the linkCounterSetting
 
   // function list:
   // 20 - printEntryPoint (object $dbConn, int $userid): void
@@ -183,6 +213,7 @@
   $doSafe = safeIntFromExt('GET', 'do', 1); // this is an integer (range 1 to 5) or non-existing
   $categorySafe = safeIntFromExt('POST', 'categoryInput', 1); // this is an integer (range 0 to 3) or non-existing
   $idSafe = safeIntFromExt('GET', 'id', 11); // this is an integer (max 11 characters) or non-existing. The link id
+  $hideLinkCntSafe = safeIntFromExt('GET', 'hideLinkCnt', 1);
   
   // non-integer values are more complicated, text may be HTML-safe or sqli-safe
   $linkUnsafe = filter_var(safeStrFromExt('POST','link', 1023), FILTER_SANITIZE_URL);  // this is an url (max 1023 characters) or non-existing
@@ -191,11 +222,11 @@
   
   if ($doSafe == 0) { // entry point of this site
     printStartOfHtml($dbConn);
-    printEntryPoint($dbConn, $userid);    
+    printEntryPoint($dbConn, $userid);
   } elseif ($doSafe == 1) { // present links of one category, have category name as text field
     printStartOfHtml($dbConn);
     printCategoryForm($dbConn, $categorySafe, $userid);
-  } elseif ($doSafe == 2) { // add or edit a link    
+  } elseif ($doSafe == 2) { // add or edit a link
     if (addOrEditLink($dbConn, $userid, $categorySafe, $idSafe, $textUnsafe, $linkUnsafe)) { // distinction between adding or editing is done by the category: category = 0 means I'm editing a link
       if ($categorySafe == 0) { // update one link
         redirectRelative('links.php?msg=1');
@@ -203,17 +234,23 @@
         redirectRelative('links.php?msg=5');
       }
     }
-  } elseif ($doSafe == 3) { // I want to reset all the link counters to 0          
+  } elseif ($doSafe == 3) { // I want to reset all the link counters to 0
     if ($dbConn->query('UPDATE `links` SET `cntTot` = "0" WHERE `userid` = "'.$userid.'"')) { // should return true
-      redirectRelative('links.php?msg=4');            
-    } else { error($dbConn, 160300); } // update query did work        
+      redirectRelative('links.php?msg=4');
+    } else { error($dbConn, 160300); } // update query did work
   } elseif ($doSafe == 4) { // delete a link. Displaying a confirmation message
     if (deleteLink($dbConn, $userid, $idSafe)) {
       redirectRelative('links.php?msg=3');
     }
-  } elseif ($doSafe == 5) { // update a category name    
+  } elseif ($doSafe == 5) { // update a category name
     if (updateCategoryName($dbConn, $textUnsafe, $userid, $categorySafe)) {
       redirectRelative('links.php?msg=2');
+    }
+  } elseif ($doSafe == 6) { // store the link counter setting
+    if (storeLinkCounterSetting($dbConn, $hideLinkCntSafe, $userid)) {
+      // TODO: maybe redirection to links.php is better? Result is visible but cannot change back directly
+      printStartOfHtml($dbConn);
+      printEntryPoint($dbConn, $userid);
     }
   } else {
     error($dbConn, 160000);
