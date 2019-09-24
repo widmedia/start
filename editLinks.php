@@ -32,8 +32,8 @@
     // bold part does not work
     echo '
     <div class="row" id="linkCounters">   
-      <div class="halbeReihe six columns linktext" style="'.$borderHideLinkCnt[0].'"><a href="editLinks.php?do=6&hideLinkCnt=0#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,133).'</span></a><span class="counter">27</span></div>
-      <div class="halbeReihe six columns linktext" style="'.$borderHideLinkCnt[1].'"><a href="editLinks.php?do=6&hideLinkCnt=1#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,134).' <span style="color:white">'.getLanguage($dbConn,135).'</span> '.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,136).'</span></a></div>
+      <div class="six columns linktext" style="'.$borderHideLinkCnt[0].'"><a href="editLinks.php?do=6&hideLinkCnt=0#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,133).'</span></a><span class="counter">27</span></div>
+      <div class="six columns linktext" style="'.$borderHideLinkCnt[1].'"><a href="editLinks.php?do=6&hideLinkCnt=1#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,134).' <span style="color:white">'.getLanguage($dbConn,135).'</span> '.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,136).'</span></a></div>
     </div>';
   } // function
   
