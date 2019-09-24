@@ -29,12 +29,12 @@
     $row = $result->fetch_row(); 
     $borderHideLinkCnt = array('border: 2px dotted #000;', 'border: 2px dotted #000;'); // hideLinkCnt may be 0 or 1. Initialize array with both being not selected
     $borderHideLinkCnt[$row[0]] = 'border: 2px solid #faff3b;';  // some bright color (not related to the designs)
+    // bold part does not work
     echo '
     <div class="row" id="linkCounters">   
-      <div class="halbeReihe six columns linktext" style="'.$borderHideLinkCnt[0].'"><a href="editLinks.php?do=6&hideLinkCnt=0#linkCounters" class="button tooltip linksButton">display the link counter<span class="tooltiptext">show the link counter</span></a><span class="counter">27</span></div>
-      <div class="halbeReihe six columns linktext" style="'.$borderHideLinkCnt[1].'"><a href="editLinks.php?do=6&hideLinkCnt=1#linkCounters" class="button tooltip linksButton">do NOT display the link counter<span class="tooltiptext">hide the link counter</span></a></div>
-    </div>
-    ';
+      <div class="halbeReihe six columns linktext" style="'.$borderHideLinkCnt[0].'"><a href="editLinks.php?do=6&hideLinkCnt=0#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,133).'</span></a><span class="counter">27</span></div>
+      <div class="halbeReihe six columns linktext" style="'.$borderHideLinkCnt[1].'"><a href="editLinks.php?do=6&hideLinkCnt=1#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,134).' <span style="color:white">'.getLanguage($dbConn,135).'</span> '.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,136).'</span></a></div>
+    </div>';
   } // function
   
   // prints 1 row to either add a new link or edit an existing one  
