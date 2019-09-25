@@ -8,7 +8,7 @@
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
-      echo '<div class="four columns"><form action="editLinks.php?do=1" method="post">
+      echo '<div class="four columns"><form action="edit.php?do=1" method="post">
       <input name="categoryInput" type="hidden" value="'.$i.'">
       <input name="submit" type="submit" value="'.getLanguage($dbConn,36).getCategory($dbConn, $userid, $i).'"></form></div>';         
     }                
@@ -18,7 +18,7 @@
     <div class="row twelve columns"><hr></div>';
     printClickRanking($dbConn, $userid);
     echo '
-    <div class="row twelve columns"><a class="button differentColor" href="editLinks.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
+    <div class="row twelve columns"><a class="button differentColor" href="edit.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
     <div class="row twelve columns"><hr></div>';
     if (!($result = $dbConn->query('SELECT `hideLinkCnt` FROM `user` WHERE `id` = "'.$userid.'" LIMIT 1'))) {
       return;
@@ -32,8 +32,8 @@
     // bold part does not work
     echo '
     <div class="row" id="linkCounters">   
-      <div class="six columns linktext" style="'.$borderHideLinkCnt[0].'"><a href="editLinks.php?do=6&hideLinkCnt=0#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,133).'</span></a><span class="counter">27</span></div>
-      <div class="six columns linktext" style="'.$borderHideLinkCnt[1].'"><a href="editLinks.php?do=6&hideLinkCnt=1#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,134).' <span style="color:white">'.getLanguage($dbConn,135).'</span> '.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,136).'</span></a></div>
+      <div class="six columns linktext" style="'.$borderHideLinkCnt[0].'"><a href="edit.php?do=6&hideLinkCnt=0#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,133).'</span></a><span class="counter">27</span></div>
+      <div class="six columns linktext" style="'.$borderHideLinkCnt[1].'"><a href="edit.php?do=6&hideLinkCnt=1#linkCounters" class="button tooltip linksButton" style="margin:5px 0px;">'.getLanguage($dbConn,134).' <span style="color:white">'.getLanguage($dbConn,135).'</span> '.getLanguage($dbConn,132).'<span class="tooltiptext">'.getLanguage($dbConn,136).'</span></a></div>
     </div>';
   } // function
   
@@ -44,10 +44,10 @@
       $deleteText = '';
     } else {
       $submitText = getLanguage($dbConn,39);
-      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="editLinks.php?id='.$linkId.'&do=4"><img src="images/icon/delete.png" alt="icon delete" class="logoImg"> '.getLanguage($dbConn,40).'</a>';
+      $deleteText = '&nbsp;&nbsp;&nbsp;<a href="edit.php?id='.$linkId.'&do=4"><img src="images/icon/delete.png" alt="icon delete" class="logoImg"> '.getLanguage($dbConn,40).'</a>';
     }
     echo '
-    <form action="editLinks.php?do=2&id='.$linkId.'" method="post">      
+    <form action="edit.php?do=2&id='.$linkId.'" method="post">      
       <div class="row">
         <div class="four columns"><input name="link" type="url"  maxlength="1023" value="'.$link.'" required></div>
         <div class="four columns"><input name="text" type="text" maxlength="63"  value="'.$text.'" required></div>
@@ -59,7 +59,7 @@
   function printCategoryForm (object $dbConn, int $categorySafe, int $userid): void { 
     $heading = htmlspecialchars(getCategory($dbConn, $userid, $categorySafe)); // returns an empty string if it did not work correctly
     echo '<div class="row twelve columns">
-    <form action="editLinks.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
+    <form action="edit.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConn,41).'"></form><div>';
     echo '<div class="row twelve columns"><h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,42).'</span></h3></div>';
     printSingleLinkFields($dbConn, true, $categorySafe, 0, 'https://', 'text');

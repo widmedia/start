@@ -134,7 +134,7 @@ function printFooter (object $dbConn): void {
     return;
   }
   $linkBegin = '<a class="button differentColor" href=';
-  $editLinks = $linkBegin.'"editLinks.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
+  $editLinks = $linkBegin.'"edit.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
   $editUser  = $linkBegin.'"editUser.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,28).'</a>';
   $links     = $linkBegin.'"links.php"><img src="images/icon/links.png" class="logoImg" alt="icon links"> Links</a>';
   $about     = $linkBegin.'"about.php"><img src="images/icon/info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
@@ -153,7 +153,7 @@ function printFooter (object $dbConn): void {
       'index.php'    => array($about,     $newUserOrBlank, $loginOrLogout),
       'about.php'    => array($index,     $linksOrBlank,   $loginOrLogout),
       'links.php'    => array($editLinks, $editUser,       $logout),
-      'editLinks.php'=> array($editUser,  $links,          $logout),
+      'edit.php'     => array($editUser,  $links,          $logout),
       'editUser.php' => array($editLinks, $links,          $logout),
       'admin.php'    => array($editLinks, $editUser,       $logout)
     );  
@@ -209,7 +209,7 @@ function getCurrentSite (): string {
   if (
       ($siteUnsafe == 'about.php') or
       ($siteUnsafe == 'admin.php') or
-      ($siteUnsafe == 'editLinks.php') or
+      ($siteUnsafe == 'edit.php') or
       ($siteUnsafe == 'editUser.php') or
       ($siteUnsafe == 'index.php') or 
       ($siteUnsafe == 'link.php') or
@@ -256,7 +256,7 @@ function printNavMenu (object $dbConn): void {
   if ($notLoggedIn) { $newAcc = '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConn,29).'</a></li>'; } else { $newAcc = ''; }
   if ($siteSafe == 'about.php') { $about = '<li class="menuCurrentPage">'.getLanguage($dbConn,1).'</li>'; }  else { $about = '<li><a href="about.php">'.getLanguage($dbConn,1).'</a></li>'; } 
   if ($siteSafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; } else { $links = '<li><a href="links.php">Links</a></li>'; }
-  if ($siteSafe == 'editLinks.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConn,27).'</li>'; } else { $editLinks = '<li><a href="editLinks.php">- '.getLanguage($dbConn,27).'</a></li>'; }
+  if ($siteSafe == 'edit.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConn,27).'</li>'; } else { $editLinks = '<li><a href="edit.php">- '.getLanguage($dbConn,27).'</a></li>'; }
   if ($siteSafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConn,28).'</li>'; } else { $editUser = '<li><a href="editUser.php">- '.getLanguage($dbConn,28).'</a></li>'; }
   
   if ($notLoggedIn) { // remove the link, replace it with a strikethrough for those site where a login is a must
@@ -393,7 +393,7 @@ function printStatic (object $dbConn): void {
   } elseif ($siteSafe == 'admin.php') {
     $title = 'Adminseite';
     $description = 'Adminseite, nicht öffentlich';
-    } elseif ($siteSafe == 'editLinks.php') {
+  } elseif ($siteSafe == 'edit.php') {
     $title = getLanguage($dbConn,27);
     $description = getLanguage($dbConn,108);
   } elseif ($siteSafe == 'editUser.php') {
