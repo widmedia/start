@@ -132,7 +132,7 @@
   }
   
   function storeLinkCounterSetting(object $dbConn, int $hideLinkCntSafe, int $userid): bool {
-    if (!(isNotTestUser($dbConn, $userid))) {
+    if (!($userid > 0)) {
       return false;
     }
     if (!(($hideLinkCntSafe == 0) or ($hideLinkCntSafe == 1))) {
@@ -176,7 +176,7 @@
     $widths = array($maxWidth, round($sumCntTot[1] / $sumCntTot[0] * $maxWidth)+1, round($sumCntTot[2] / $sumCntTot[0] * $maxWidth)+1);    
     for ($i = 0; $i < 3; $i++) {
       echo '<div class="row twelve columns">
-      <span class="userStatBar" style="width:'.$widths[$i].'px;">'.($i+1).'. '.getLanguage($dbConn,131).': User-ID '.$sumUserIds[$i].' <b>'.$sumCntTot[$i].'</b> Klicks</span></div>';
+      <span class="userStatBar" style="width:'.$widths[$i].'px;">'.($i+1).'. '.getLanguage($dbConn,131).': User-ID '.$sumUserIds[$i].'.&nbsp; <b>'.$sumCntTot[$i].'</b> Klicks</span></div>';
     }
     echo '    
     <div class="row twelve columns">&nbsp;</div>
