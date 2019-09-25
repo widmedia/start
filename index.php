@@ -174,7 +174,7 @@
     echo '<div class="row twelve columns"><span class="bgCol">'.getLanguage($dbConn,57).'</span></div>';
   }
   
-  // there is a similar function (printUserEdit) in editUser.php. However, differs too heavy to merge those two  
+  // there is a similar function (printUserEdit) in edit.php. However, differs too heavy to merge those two  
   function printNewUserForm (object $dbConn): void {
     echo '<h3 class="section-heading"><span id="newUser" class="bgCol">'.getLanguage($dbConn,32).'</span></h3>
     <form action="index.php?do=3" method="post">

@@ -28,9 +28,8 @@ following files do NOT require a logged-in user:
 following files do require a logged-in user:
 13 - links.php
 14 - link.php
-15 - editUser.php
-16 - editLink.php
-17 - admin/admin.php (logged-in user must have userid 1)
+16 - edit.php
+17 - admin.php (logged-in user must have userid 1)
 
 10 - functions.php: pure function definition file
 

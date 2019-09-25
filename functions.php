@@ -134,28 +134,27 @@ function printFooter (object $dbConn): void {
     return;
   }
   $linkBegin = '<a class="button differentColor" href=';
-  $editLinks = $linkBegin.'"edit.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';
-  $editUser  = $linkBegin.'"editUser.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,28).'</a>';
+  $editLinks = $linkBegin.'"edit.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';  
   $links     = $linkBegin.'"links.php"><img src="images/icon/links.png" class="logoImg" alt="icon links"> Links</a>';
   $about     = $linkBegin.'"about.php"><img src="images/icon/info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
   $logout    = $linkBegin.'"index.php?do=1"><img src="images/icon/logout.png" class="logoImg" alt="icon logout"> Log out</a>';
   $login     = $linkBegin.'"index.php#login"><img src="images/icon/login.png" class="logoImg" alt="icon login"> Log in</a>';
   $newUser   = $linkBegin.'"index.php?do=2#newUser"><img src="images/icon/plus.png" class="logoImg" alt="icon new user"> '.getLanguage($dbConn,29).'</a>';
   $index     = $linkBegin.'"index.php?do=6"><img src="images/icon/home.png" class="logoImg" alt="icon home"> Home</a>';
+  $blank     = '&nbsp;'; // I need at least a space because otherwise the div is not printed
   
   $loggedOut = (getUserid() == 0);  
   $loginOrLogout  = ($loggedOut) ? $login : $logout;
-  $linksOrBlank   = ($loggedOut) ? '&nbsp;' : $links;
-  $newUserOrBlank = ($loggedOut) ? $newUser : '&nbsp;';
+  $linksOrBlank   = ($loggedOut) ? $blank : $links;
+  $newUserOrBlank = ($loggedOut) ? $newUser : $blank;
   
   $footerLinks = // two dimensional array. First dimension is working with keys, second one with index
     array( // current page    left        middle           right
       'index.php'    => array($about,     $newUserOrBlank, $loginOrLogout),
       'about.php'    => array($index,     $linksOrBlank,   $loginOrLogout),
-      'links.php'    => array($editLinks, $editUser,       $logout),
-      'edit.php'     => array($editUser,  $links,          $logout),
-      'editUser.php' => array($editLinks, $links,          $logout),
-      'admin.php'    => array($editLinks, $editUser,       $logout)
+      'links.php'    => array($editLinks, $blank,          $logout),
+      'edit.php'     => array($links,     $blank,          $logout),      
+      'admin.php'    => array($editLinks, $blank,          $logout)
     );  
   echo '      
   <div class="section noBottom">
@@ -209,8 +208,7 @@ function getCurrentSite (): string {
   if (
       ($siteUnsafe == 'about.php') or
       ($siteUnsafe == 'admin.php') or
-      ($siteUnsafe == 'edit.php') or
-      ($siteUnsafe == 'editUser.php') or
+      ($siteUnsafe == 'edit.php') or      
       ($siteUnsafe == 'index.php') or 
       ($siteUnsafe == 'link.php') or
       ($siteUnsafe == 'links.php')
@@ -256,14 +254,12 @@ function printNavMenu (object $dbConn): void {
   if ($notLoggedIn) { $newAcc = '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConn,29).'</a></li>'; } else { $newAcc = ''; }
   if ($siteSafe == 'about.php') { $about = '<li class="menuCurrentPage">'.getLanguage($dbConn,1).'</li>'; }  else { $about = '<li><a href="about.php">'.getLanguage($dbConn,1).'</a></li>'; } 
   if ($siteSafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; } else { $links = '<li><a href="links.php">Links</a></li>'; }
-  if ($siteSafe == 'edit.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConn,27).'</li>'; } else { $editLinks = '<li><a href="edit.php">- '.getLanguage($dbConn,27).'</a></li>'; }
-  if ($siteSafe == 'editUser.php')  { $editUser   = '<li class="menuCurrentPage">- '.getLanguage($dbConn,28).'</li>'; } else { $editUser = '<li><a href="editUser.php">- '.getLanguage($dbConn,28).'</a></li>'; }
+  if ($siteSafe == 'edit.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConn,27).'</li>'; } else { $editLinks = '<li><a href="edit.php">- '.getLanguage($dbConn,27).'</a></li>'; }  
   
   if ($notLoggedIn) { // remove the link, replace it with a strikethrough for those site where a login is a must
     $strikeThrough = ' style="text-decoration: line-through;"';
     $links     = '<li'.$strikeThrough.'>Links</li>';
     $editLinks = '<li'.$strikeThrough.'>- '.getLanguage($dbConn,27).'</li>';
-    $editUser  = '<li'.$strikeThrough.'>- '.getLanguage($dbConn,28).'</li>';    
   } 
   if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">log out</a></li>'; }
     
@@ -287,7 +283,6 @@ function printNavMenu (object $dbConn): void {
         '.$about.'
         '.$links.'
         '.$editLinks.'
-        '.$editUser.'
         '.$logOut.'
         '.$languageSelection.'
       </ul>
@@ -386,7 +381,8 @@ function redirectRelative (string $page): void {
 function printStatic (object $dbConn): void {
   // description tag and title are different for every site  
   $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a HTML site is generated
-    
+  
+  // TODO: rewrite this as 2d-array
   if ($siteSafe == 'about.php') {
     $title = getLanguage($dbConn,1);
     $description = getLanguage($dbConn,107);    
@@ -396,9 +392,6 @@ function printStatic (object $dbConn): void {
   } elseif ($siteSafe == 'edit.php') {
     $title = getLanguage($dbConn,27);
     $description = getLanguage($dbConn,108);
-  } elseif ($siteSafe == 'editUser.php') {
-    $title = getLanguage($dbConn,28);
-    $description = getLanguage($dbConn,109);    
   } elseif ($siteSafe == 'index.php') {  
     $title = 'Startpage';
     $description = getLanguage($dbConn,65);    
