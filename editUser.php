@@ -17,7 +17,7 @@
     
     echo '
     <h3 class="section-heading"><span class="bgCol">Email / '.getLanguage($dbConn,84).'</span></h3>
-    <form action="editUser.php?do=2" method="post">        
+    <form action="editUser.php?do=8" method="post">        
       <div class="row"><div class="twelve columns">&nbsp;</div></div>
       <div class="row">
         <div class="four columns"><span class="bgCol">Email:</span> </div>
@@ -38,7 +38,7 @@
     <h3 class="section-heading"><span class="bgCol" id="bgImg">'.getLanguage($dbConn,122).'</span></h3>';
     for ($i = 0; $i < 7; $i++) { // 7 different bg images, 0=default, 1..7 are selectable
       if (($i % 4) == 0) { echo '<div class="row">'; }
-      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=3&styleBgImg='.($i+1).'#bgImg" style="background-color:transparent;"><img src="images/bg/'.styleDefBgImg(($i+1)).'" alt="default background image" style="'.$bgBorderSel[($i+1)].' width:100%; vertical-align:middle;"></a></div>';
+      echo '<div class="three columns u-max-full-width"><a href="editUser.php?do=9&styleBgImg='.($i+1).'#bgImg" style="background-color:transparent;"><img src="images/bg/'.styleDefBgImg(($i+1)).'" alt="default background image" style="'.$bgBorderSel[($i+1)].' width:100%; vertical-align:middle;"></a></div>';
       if (($i == 3) or ($i == 6)) { // last one does not fit into modulo function ($i % 4) == 3
         echo '</div><div class="row twelve columns">&nbsp;</div>'; 
       } 
@@ -81,7 +81,7 @@
     </style>
     <div class="row twelve columns">&nbsp;</div>
     <h3 class="section-heading"><span class="bgCol" id="brightness">'.getLanguage($dbConn,124).'</span></h3>    
-    <div class="row twelve columns" style="width:100%;"><form action="editUser.php?do=3#brightness" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>';
+    <div class="row twelve columns" style="width:100%;"><form action="editUser.php?do=9#brightness" method="post"><input onchange="this.form.submit()" type="range" min="1" max="99" value="'.$currentBrightness.'" class="slider" name="styleBri"></form></div>';
     
     echo '
     <div class="row twelve columns">&nbsp;</div>
@@ -89,7 +89,7 @@
     <div class="row">';
     for ($i = 1; $i < 5; $i++) { // 1..5 are selectable
       if ($i == 4) { echo '</div><div class="row">'; }
-      echo '<div class="four columns"><a href="editUser.php?do=3&styleTxt='.$i.'#textStyle" style="background-color:transparent;"><input name="create" type="submit" value="'.$txtSel[$i].'" 
+      echo '<div class="four columns"><a href="editUser.php?do=9&styleTxt='.$i.'#textStyle" style="background-color:transparent;"><input name="create" type="submit" value="'.$txtSel[$i].'" 
       style="background-color: rgba('.styleDefTxt($i, 'bgNorm').'); color: rgba('.styleDefTxt($i, 'txtLight').');"></a></div>';
     }
     echo '</div>'; // row
@@ -102,7 +102,7 @@
     </div>
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><a href="editUser.php?do=1" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon/delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>
+    <div class="row twelve columns"><a href="editUser.php?do=7" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon/delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>
     ';
   } // function
   
@@ -160,20 +160,20 @@
         printUserEdit($dbConn, $row);              
       } else { error($dbConn, 150000); } // select query did work
     } else { error($dbConn, 150001); } // have a valid userid
-  } elseif ($doSafe == 1) { // delete an existing user
+  } elseif ($doSafe == 7) { // delete an existing user
     // TODO: might want to verify the pw before deleting an account?
     if (deleteUser($dbConn, $userid)) {
       sessionAndCookieDelete();
       printStartOfHtml($dbConn);
       printConfirm($dbConn, getLanguage($dbConn,53), getLanguage($dbConn,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConn,55).' index.php</a>');
     } else { error($dbConn, 150100); } // deleteUser function did return false
-  } elseif ($doSafe == 2) { // update an existing user: db operations
+  } elseif ($doSafe == 8) { // update an existing user: db operations
     if ($userid > 0) { // have a valid userid
       if (updateUser($dbConn, $userid, false)) { 
         redirectRelative('links.php?msg=6');
       } else { error($dbConn, 150200); }
     } else { error($dbConn, 150201); } // have a valid userid         
-  } elseif ($doSafe == 3) { // update an existing user: style link
+  } elseif ($doSafe == 9) { // update an existing user: style link
     // only one out of below 3 variables is set. Others will be 0
     $styleBgImgFromGet = safeIntFromExt('GET', 'styleBgImg', 1);
     $styleBriFromPost = safeIntFromExt('POST', 'styleBri', 2);

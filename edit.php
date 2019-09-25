@@ -210,7 +210,7 @@
   $userid = getUserid();
   
   // Form processing
-  $doSafe = safeIntFromExt('GET', 'do', 1); // this is an integer (range 1 to 5) or non-existing
+  $doSafe = safeIntFromExt('GET', 'do', 2); // this is an integer (range 1 to 99) or non-existing
   $categorySafe = safeIntFromExt('POST', 'categoryInput', 1); // this is an integer (range 0 to 3) or non-existing
   $idSafe = safeIntFromExt('GET', 'id', 11); // this is an integer (max 11 characters) or non-existing. The link id
   $hideLinkCntSafe = safeIntFromExt('GET', 'hideLinkCnt', 1);
