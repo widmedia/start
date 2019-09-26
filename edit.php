@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
   require_once('functions.php');
   $dbConn = initialize();
-  
-  // TODO: re-arrange
+    
   // TODO: some error numbers are 15xxxx -> change to 16xxxx
   function printEntryPoint (object $dbConn, int $userid): void {
     echo '
@@ -10,8 +9,7 @@
     <div class="row twelve columns">&nbsp;</div>
     <div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
-      echo '<div class="four columns"><form action="edit.php?do=1" method="post">
-      <input name="categoryInput" type="hidden" value="'.$i.'">
+      echo '<div class="four columns"><form action="edit.php?do=1&categoryInput='.$i.'" method="post">      
       <input name="submit" type="submit" value="'.getLanguage($dbConn,36).getCategory($dbConn, $userid, $i).'"></form></div>';         
     }                
     echo '</div>
@@ -159,11 +157,11 @@
       $deleteText = '&nbsp;&nbsp;&nbsp;<a href="edit.php?id='.$linkId.'&do=4"><img src="images/icon/delete.png" alt="icon delete" class="logoImg"> '.getLanguage($dbConn,40).'</a>';
     }
     echo '
-    <form action="edit.php?do=2&id='.$linkId.'" method="post">      
+    <form action="edit.php?do=2&id='.$linkId.'&categoryInput='.$category.'" method="post">      
       <div class="row">
         <div class="four columns"><input name="link" type="url"  maxlength="1023" value="'.$link.'" required></div>
         <div class="four columns"><input name="text" type="text" maxlength="63"  value="'.$text.'" required></div>
-        <div class="four columns"><input name="categoryInput" type="hidden" value="'.$category.'"><input name="submit" type="submit" value="'.$submitText.'">'.$deleteText.'</div>
+        <div class="four columns"><input name="submit" type="submit" value="'.$submitText.'">'.$deleteText.'</div>
       </div>
     </form>';   
   } // function
@@ -171,7 +169,7 @@
   function printCategoryForm (object $dbConn, int $categorySafe, int $userid): void { 
     $heading = htmlspecialchars(getCategory($dbConn, $userid, $categorySafe)); // returns an empty string if it did not work correctly
     echo '<div class="row twelve columns">
-    <form action="edit.php?do=5" method="post"><input name="categoryInput" type="hidden" value="'.$categorySafe.'">
+    <form action="edit.php?do=5&categoryInput='.$categorySafe.'" method="post">
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConn,41).'"></form><div>';
     echo '<div class="row twelve columns"><h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,42).'</span></h3></div>';
     printSingleLinkFields($dbConn, true, $categorySafe, 0, 'https://', 'text');
@@ -303,14 +301,14 @@
   // updates the 'style' column in the data base
   function updateSubStyle(object $dbConn, int $userid, int $subStyleFromGet, int $subStyleNr): bool {
     if (!($userid > 0)) { // have a valid userid, testuser may change it as well
-      return error($dbConn, 150300);
+      return error($dbConn, 160900);
     }
     if (!(    
     (($subStyleNr == 0) and ($subStyleFromGet <= 7) and ($subStyleFromGet > 0)) or // currently valid image IDs from 1 to 7
     (($subStyleNr == 1) and ($subStyleFromGet <= 99) and ($subStyleFromGet > 0)) or // brightness 1 to 99 is ok
     (($subStyleNr == 2) and ($subStyleFromGet <= 5) and ($subStyleFromGet > 0))
     )) {
-      return error($dbConn, 150301);
+      return error($dbConn, 160901);
     }
     // testUser may not set the brightness to extreme values
     if (($subStyleNr == 1) and (($subStyleFromGet > 80) or ($subStyleFromGet < 20))) {
@@ -319,10 +317,10 @@
       }
     }
     if (!($result = $dbConn->query('SELECT `style` FROM `user` WHERE `id` = "'.$userid.'"'))) {
-      return error($dbConn, 150302);
+      return error($dbConn, 160902);
     }
     if (!($result->num_rows == 1)) {
-      return error($dbConn, 150303);
+      return error($dbConn, 160903);
     }
     $row = $result->fetch_assoc();
     $styles = explode('/', $row['style']);
@@ -330,7 +328,7 @@
     $style = implode('/', $styles);
     
     if (!($result = $dbConn->query('UPDATE `user` SET `style` = "'.$style.'" WHERE `id` = "'.$userid.'"'))) {
-      return error($dbConn, 150304);
+      return error($dbConn, 160904);
     }    
     return true;
   }
@@ -361,7 +359,7 @@
   
   // Form processing
   $doSafe = safeIntFromExt('GET', 'do', 2); // this is an integer (range 1 to 99) or non-existing
-  $categorySafe = safeIntFromExt('POST', 'categoryInput', 1); // this is an integer (range 0 to 3) or non-existing
+  $categorySafe = safeIntFromExt('GET', 'categoryInput', 1); // this is an integer (range 0 to 3) or non-existing
   $idSafe = safeIntFromExt('GET', 'id', 11); // this is an integer (max 11 characters) or non-existing. The link id
   $hideLinkCntSafe = safeIntFromExt('GET', 'hideLinkCnt', 1);
   
@@ -408,13 +406,13 @@
       sessionAndCookieDelete();
       printStartOfHtml($dbConn);
       printConfirm($dbConn, getLanguage($dbConn,53), getLanguage($dbConn,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConn,55).' index.php</a>');
-    } else { error($dbConn, 150100); } // deleteUser function did return false
+    } else { error($dbConn, 160700); } // deleteUser function did return false
   } elseif ($doSafe == 8) { // update an existing user: db operations
     if ($userid > 0) { // have a valid userid
       if (updateUser($dbConn, $userid, false)) { 
         redirectRelative('links.php?msg=6');
-      } else { error($dbConn, 150200); }
-    } else { error($dbConn, 150201); } // have a valid userid         
+      } else { error($dbConn, 160800); }
+    } else { error($dbConn, 160801); } // have a valid userid         
   } elseif ($doSafe == 9) { // update an existing user: style link
     // only one out of below 3 variables is set. Others will be 0
     $styleBgImgFromGet = safeIntFromExt('GET', 'styleBgImg', 1);
