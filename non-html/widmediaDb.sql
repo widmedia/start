@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 20. Sep 2019 um 08:41
+-- Erstellungszeit: 26. Sep 2019 um 11:18
 -- Server-Version: 10.1.41-MariaDB
 -- PHP-Version: 7.1.14
 
@@ -78,8 +78,7 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (24, 'user account has been updated', 'User account wurde aktualisiert'),
 (25, 'logout successful, cookie has been deleted as well', 'Logout ok, Cookies wurden ebenfalls gelöscht'),
 (26, 'updated', 'aktualisiert'),
-(27, 'edit links', 'Links anpassen'),
-(28, 'edit user account ', 'Nutzerkonto'),
+(27, 'Settings', 'Einstellungen'),
 (29, 'new account', 'neuer Account'),
 (30, 'Testuser cannot be changed', 'Testuser kann nicht angepasst werden'),
 (31, 'I am sorry but when logged in as the testuser, you cannot change any settings. Might want to open your own account?', 'Sorry aber als Testuser darf man nichts anpassen. Könnte ich dich eventuell für einen eigenen Account begeistern?'),
@@ -96,7 +95,6 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (42, 'Add a new link', 'Neuen Link hinzufügen'),
 (43, 'Wrong URL', 'Falsche URL'),
 (44, 'For the URL input, you need to have something in the format \"http://somewebsite.ch\" or \"https://somewebsite.ch\"', 'Als URL brauche ich etwas im Stil von \"http://somewebsite.ch\" oder \"https://somewebsite.ch\"'),
-(45, 'Edit', 'Anpassen'),
 (46, 'last login: ', 'letzter Login: '),
 (47, 'password protection for this account', 'Passwortschutz für diesen Account'),
 (48, 'Please be aware: when not using a password, everybody can log into this account and edit information or delete the account itself', 'Achtung: falls du kein Passwort verwendest, kann jeder auf deinen Account zugreifen und Sachen ändern oder den Account löschen'),
@@ -181,7 +179,12 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (128, 'Your clicks', 'Deine Klicks'),
 (129, 'Your ranking', 'Dein Rang'),
 (130, 'Total number of clicks', 'Anzahl aller Klicks'),
-(131, 'Place', 'Platz');
+(131, 'Place', 'Platz'),
+(132, 'display the link counter', 'Link-Zähler anzeigen'),
+(133, 'show the link counter', 'zeige den Link-Zähler'),
+(134, 'do', ''),
+(135, 'not', 'keinen'),
+(136, 'hide the link counter', 'Link-Zähler verstecken');
 
 -- --------------------------------------------------------
 
@@ -227,7 +230,8 @@ CREATE TABLE `user` (
   `verCode` char(64) NOT NULL,
   `verDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ln` char(2) NOT NULL DEFAULT 'de',
-  `style` char(8) NOT NULL DEFAULT '00/00/00'
+  `style` char(8) NOT NULL DEFAULT '00/00/00',
+  `hideLinkCnt` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -297,7 +301,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

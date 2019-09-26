@@ -118,8 +118,9 @@ function printStartOfHtml (object $dbConn): void {
     echo '<body>';
   }
   echo '<div class="brightness">';
-  printNavMenu($dbConn);
   $userid = getUserid();
+  $siteSafe = getCurrentSite();
+  printNavMenu($dbConn, $userid, $siteSafe);  
   if ($userid == 2) { overlayDiv(false, 3, getLanguage($dbConn,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConn,32).'</a>'); }  
   printOverlayAccountVerify($dbConn, $userid);  
   echo '<div class="section categories noBottom"><div class="container">';
@@ -134,7 +135,7 @@ function printFooter (object $dbConn): void {
     return;
   }
   $linkBegin = '<a class="button differentColor" href=';
-  $editLinks = $linkBegin.'"edit.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,45).'</a>';  
+  $edit      = $linkBegin.'"edit.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,27).'</a>';  
   $links     = $linkBegin.'"links.php"><img src="images/icon/links.png" class="logoImg" alt="icon links"> Links</a>';
   $about     = $linkBegin.'"about.php"><img src="images/icon/info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
   $logout    = $linkBegin.'"index.php?do=1"><img src="images/icon/logout.png" class="logoImg" alt="icon logout"> Log out</a>';
@@ -149,12 +150,12 @@ function printFooter (object $dbConn): void {
   $newUserOrBlank = ($loggedOut) ? $newUser : $blank;
   
   $footerLinks = // two dimensional array. First dimension is working with keys, second one with index
-    array( // current page    left        middle           right
-      'index.php'    => array($about,     $newUserOrBlank, $loginOrLogout),
-      'about.php'    => array($index,     $linksOrBlank,   $loginOrLogout),
-      'links.php'    => array($editLinks, $blank,          $logout),
-      'edit.php'     => array($links,     $blank,          $logout),      
-      'admin.php'    => array($editLinks, $blank,          $logout)
+    array( // current page    left    middle           right
+      'index.php'    => array($about, $newUserOrBlank, $loginOrLogout),
+      'about.php'    => array($index, $linksOrBlank,   $loginOrLogout),
+      'links.php'    => array($edit,  $blank,          $logout),
+      'edit.php'     => array($links, $blank,          $logout),      
+      'admin.php'    => array($edit,  $blank,          $logout)
     );  
   echo '      
   <div class="section noBottom">
@@ -220,9 +221,7 @@ function getCurrentSite (): string {
 
 // prints the navigation menu on top left corner. Output depends on current_site and wheter one is logged in or not
 // does set the language session variable as well
-function printNavMenu (object $dbConn): void {
-  $siteSafe = getCurrentSite();
-  $userid = getUserid();
+function printNavMenu (object $dbConn, int $userid, string $siteSafe): void {   
   $notLoggedIn = ($userid == 0);
   
   if (isset($_GET['ln'])) { // this means the user is changing the language. This has precedence over whatever    
@@ -248,18 +247,18 @@ function printNavMenu (object $dbConn): void {
       }
     }    
   }  
-  
-  if ($siteSafe == 'index.php') { $home = '<li class="menuCurrentPage">Home</li>'; } else { $home = '<li><a href="index.php?do=6">Home</a></li>'; }
-  if ($notLoggedIn) { $login = '<li><a href="index.php#login">- log in</a></li>'; } else { $login = ''; }
-  if ($notLoggedIn) { $newAcc = '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConn,29).'</a></li>'; } else { $newAcc = ''; }
-  if ($siteSafe == 'about.php') { $about = '<li class="menuCurrentPage">'.getLanguage($dbConn,1).'</li>'; }  else { $about = '<li><a href="about.php">'.getLanguage($dbConn,1).'</a></li>'; } 
-  if ($siteSafe == 'links.php')     { $links      = '<li class="menuCurrentPage">Links</li>'; } else { $links = '<li><a href="links.php">Links</a></li>'; }
-  if ($siteSafe == 'edit.php') { $editLinks  = '<li class="menuCurrentPage">- '.getLanguage($dbConn,27).'</li>'; } else { $editLinks = '<li><a href="edit.php">- '.getLanguage($dbConn,27).'</a></li>'; }  
+    
+  $home   = ($siteSafe == 'index.php') ? '<li class="menuCurrentPage">Home</li>' : '<li><a href="index.php?do=6">Home</a></li>';
+  $login  = ($notLoggedIn)             ? '<li><a href="index.php#login">- log in</a></li>' : '';
+  $newAcc = ($notLoggedIn)             ? '<li><a href="index.php?do=2#newUser">- '.getLanguage($dbConn,29).'</a></li>' : '';
+  $about  = ($siteSafe == 'about.php') ? '<li class="menuCurrentPage">'.getLanguage($dbConn,1).'</li>' : '<li><a href="about.php">'.getLanguage($dbConn,1).'</a></li>';
+  $links  = ($siteSafe == 'links.php') ? '<li class="menuCurrentPage">Links</li>' : '<li><a href="links.php">Links</a></li>';
+  $edit   = ($siteSafe == 'edit.php')  ? '<li class="menuCurrentPage">'.getLanguage($dbConn,27).'</li>' :  '<li><a href="edit.php">'.getLanguage($dbConn,27).'</a></li>';
   
   if ($notLoggedIn) { // remove the link, replace it with a strikethrough for those site where a login is a must
     $strikeThrough = ' style="text-decoration: line-through;"';
-    $links     = '<li'.$strikeThrough.'>Links</li>';
-    $editLinks = '<li'.$strikeThrough.'>- '.getLanguage($dbConn,27).'</li>';
+    $links = '<li'.$strikeThrough.'>Links</li>';
+    $edit  = '<li'.$strikeThrough.'>'.getLanguage($dbConn,27).'</li>';
   } 
   if ($notLoggedIn) { $logOut = ''; } else { $logOut = '<li><a href="index.php?do=1">log out</a></li>'; }
     
@@ -282,7 +281,7 @@ function printNavMenu (object $dbConn): void {
         '.$newAcc.'
         '.$about.'
         '.$links.'
-        '.$editLinks.'
+        '.$edit.'
         '.$logOut.'
         '.$languageSelection.'
       </ul>
