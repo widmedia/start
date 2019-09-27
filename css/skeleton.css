@@ -354,9 +354,8 @@ hr {
 }
 .logoImg {
   width: 16px;
-  height: 16px; 
-  border: none; 
-  vertical-align: sub;
+  height: 16px;
+  vertical-align: sub;  
 }
 .textBox {
   display: inline-block;
