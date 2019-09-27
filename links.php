@@ -50,7 +50,7 @@
   }
   
   for ($category = 1; $category <= 3; $category++) {
-    echo '<h3 class="section-heading">'.getCategory($dbConn, $userid, $category).' &nbsp;<span class="counter"><a href="edit.php?do=1&categoryInput='.$category.'" style="background-color:transparent;"><img src="images/icon/edit.png" style="width:14px; height:14px; vertical-align:sub;" alt="icon edit"></a></span></h3>';
+    echo '<h3 class="section-heading"><a href="edit.php?do=1&categoryInput='.$category.'" style="background-color:transparent; color:inherit;">'.getCategory($dbConn, $userid, $category).'</a></h3>';
     printLinks($dbConn, $userid, $category, $hideLinkCnt);    
   }
   

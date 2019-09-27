@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
   require_once('functions.php');
   $dbConn = initialize();
-    
-  // TODO: some error numbers are 15xxxx -> change to 16xxxx
+      
   function printEntryPoint (object $dbConn, int $userid): void {
     echo '
     <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,35).'</span></h3>

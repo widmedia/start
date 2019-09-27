@@ -108,7 +108,8 @@ function getCategory (object $dbConn, int $userid, int $category): string {
 
 // required for most use cases but for some I cannot print any HTML output before redirecting
 function printStartOfHtml (object $dbConn): void {
-  printStatic($dbConn);     
+  $siteSafe = getCurrentSite();
+  printStatic($dbConn, $siteSafe);     
   $msgSafe = safeIntFromExt('GET', 'msg', 1);
   
   if ($msgSafe > 0) {
@@ -118,8 +119,7 @@ function printStartOfHtml (object $dbConn): void {
     echo '<body>';
   }
   echo '<div class="brightness">';
-  $userid = getUserid();
-  $siteSafe = getCurrentSite();
+  $userid = getUserid();  
   printNavMenu($dbConn, $userid, $siteSafe);  
   if ($userid == 2) { overlayDiv(false, 3, getLanguage($dbConn,105).' &nbsp;<a href="index.php?do=2#newUser" style="background-color:transparent; color:#000; text-decoration:underline;">'.getLanguage($dbConn,32).'</a>'); }  
   printOverlayAccountVerify($dbConn, $userid);  
@@ -377,30 +377,21 @@ function redirectRelative (string $page): void {
 }
 
 // prints static header information and sets title and description depending on the page
-function printStatic (object $dbConn): void {
-  // description tag and title are different for every site  
-  $siteSafe = getCurrentSite(); // NB: link.php is special as only in the error case a HTML site is generated
-  
-  // TODO: rewrite this as 2d-array
-  if ($siteSafe == 'about.php') {
-    $title = getLanguage($dbConn,1);
-    $description = getLanguage($dbConn,107);    
-  } elseif ($siteSafe == 'admin.php') {
-    $title = 'Adminseite';
-    $description = 'Adminseite, nicht öffentlich';
-  } elseif ($siteSafe == 'edit.php') {
-    $title = getLanguage($dbConn,27);
-    $description = getLanguage($dbConn,108);
-  } elseif ($siteSafe == 'index.php') {  
-    $title = 'Startpage';
-    $description = getLanguage($dbConn,65);    
-  } elseif ($siteSafe == 'links.php') {  
-    $title = 'Links';
-    $description = getLanguage($dbConn,110);    
-  } else {
-    $title = 'Error page';
-    $description = 'page not found';    
-  }
+function printStatic (object $dbConn, string $siteSafe): void {  
+  // NB: link.php is special as only in the error case a HTML site is generated
+    
+  $siteDescriptions = // two dimensional array. First dimension is working with keys, second one with index.
+    array(
+      'about.php' => array(getLanguage($dbConn,1),  getLanguage($dbConn,107)),
+      'admin.php' => array('Adminseite',            'Adminseite, nicht öffentlich'),
+      'edit.php'  => array(getLanguage($dbConn,27), getLanguage($dbConn,108)),
+      'index.php' => array('Startpage',             getLanguage($dbConn,65)),
+      'link.php'  => array('Link',                  'forwarding error'),      
+      'links.php' => array('Links',                 getLanguage($dbConn,110)),      
+      ''          => array('Error page',            'page not found') // return value if page is not one of the known sites
+    );
+  $title = $siteDescriptions[$siteSafe][0];
+  $description = $siteDescriptions[$siteSafe][1];  
   
   $url = 'https://widmedia.ch/start/'.$siteSafe;
 
@@ -651,7 +642,7 @@ function styleDefTxt(int $subStyle, string $item): string {
       'txtLight' => array($txtLight,$txtLight,'240,240,240,0.85','240,222,134,0.85','250,232,148,0.90'),
       'txtDark'  => array($txtDark ,$txtDark ,'180,180,180,0.85','174,158,81,0.85' ,'174,158,81,0.85')
     );
-  return $styles[$item][$subStyle];          
+  return $styles[$item][$subStyle];
 }
 
 // returns the image name matching the style number
