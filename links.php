@@ -18,8 +18,8 @@
 
     if ($result = $dbConn->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
       if ($result->num_rows == 0) { // most probably a new user        
-        echo '<div class="twelve columns linktext"><form action="edit.php?do=1" method="post"><input name="categoryInput" type="hidden" value="'.$category.'">
-              <input name="submit" type="submit" value="'.getLanguage($dbConn,123).getLanguage($dbConn,36).getCategory($dbConn, $userid, $category).'"></form></div>';        
+        echo '<div class="twelve columns linktext"><div class="button"><a href="edit.php?do=1&categoryInput='.$category.'" style="color:inherit; background-color:transparent;">
+              '.getLanguage($dbConn,123).getLanguage($dbConn,36).getCategory($dbConn, $userid, $category).'</a></div></div>';        
       } else {
         $counter = 0;
         while ($row = $result->fetch_assoc()) {
