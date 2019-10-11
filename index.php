@@ -202,12 +202,12 @@
     <div class="row">
       <div class="eight columns">
         <div class="slideshow-container">
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_01.png" alt="your startpage with all the links" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,74).'</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_02.png" alt="click your external link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,75).'</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_03.png" alt="the link opens in a new tab" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,76).'</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_04.png" alt="edit your links, add a new one" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,77).'</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_05.png" alt="there it is, your new link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,78).'</div></div>
-          <div class="mySlides fade u-max-full-width"><img src="images/teaser_06.png" alt="your new start page" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,79).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser/01.png" alt="your startpage with all the links" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,74).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser/02.png" alt="click your external link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,75).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser/03.png" alt="the link opens in a new tab" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,76).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser/04.png" alt="edit your links, add a new one" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,77).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser/05.png" alt="there it is, your new link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,78).'</div></div>
+          <div class="mySlides fade u-max-full-width"><img src="images/teaser/06.png" alt="your new start page" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">'.getLanguage($dbConn,79).'</div></div>
         </div>
         <br>
         <div style="text-align:center">

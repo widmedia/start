@@ -490,7 +490,7 @@ hr {
   bottom: 8px;
   width: 100%;
   text-align: center;
-  background-color: rgba(120, 120, 120, 0.6);
+  background-color: rgba(80, 80, 80, 0.8);
   box-sizing: border-box;
 }
 .dot {
