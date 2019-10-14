@@ -234,7 +234,7 @@
             setTimeout(showSlides, 4000); 
           }
         </script>
-        </div>
+      </div>
       <div class="four columns textBox"><br><ul>
         <li>'.getLanguage($dbConn,66).'</li>
         <li>'.getLanguage($dbConn,67).'</li>

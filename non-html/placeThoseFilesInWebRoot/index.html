@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>widmedia.ch</title>
+<meta name="author" content="Daniel Widmer">
+<meta name="description" content="simpel, gratis und frei konfigurierbar: deine Linksammlung als neue Startseite">    
+<meta name="keywords" content="startpage, links, linklist, gratis, einfach, konfigurierbar, widmedia, widmedia.ch, start, list, persönlich">
+<meta name="robots" content="index, follow">
+<meta name="revisit-after" content="20 days">
+<meta name="audience" content="all">
+<meta name="distribution" content="global">
+<meta name="content-language" content="de">
+<meta name="language" content="deutsch, de">
+
+<!-- Mobile Specific Metas -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="96x96" href="start/images/favicon.png">
+<link rel="stylesheet" href="start/css/font.css" type="text/css" />
+<link rel="stylesheet" href="start/css/normalize.css" type="text/css" />
+<link rel="stylesheet" href="start/css/skeleton.css" type="text/css" />
+<style type="text/css">
+body {
+	background-color: #666;
+	margin-left: 20%;
+	margin-top: 15%;
+	margin-right: 20%;  
+	color: #F90;
+	text-align: center;  
+}
+a {
+  padding: 2px 4px 1px 1px;
+  color: #7d2a43;  
+  text-decoration: none;}
+a:hover {
+  color: #0FA0CE; 
+  text-decoration: none;}
+</style>
+</head>
+<body>
+<h1 style="font-size: 150%">mein neustes Projekt: <a href="/start/index.php">widmedia.ch/start</a></h1>
+<div class="slideshow-container">
+  <div class="mySlides fade u-max-full-width"><img src="start/images/teaser/01.png" alt="your startpage with all the links" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Alle deine Links</div></div>
+  <div class="mySlides fade u-max-full-width"><img src="start/images/teaser/02.png" alt="click your external link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Klick drauf</div></div>
+  <div class="mySlides fade u-max-full-width"><img src="start/images/teaser/03.png" alt="the link opens in a new tab" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Die Seite öffnet sich in einem neuen Tab</div></div>
+  <div class="mySlides fade u-max-full-width"><img src="start/images/teaser/04.png" alt="edit your links, add a new one" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Editier deine Links, füge einen neuen hinzu</div></div>
+  <div class="mySlides fade u-max-full-width"><img src="start/images/teaser/05.png" alt="there it is, your new link" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">Et voilà, dein neuer Link</div></div>
+  <div class="mySlides fade u-max-full-width"><img src="start/images/teaser/06.png" alt="your new start page" class="imgBorder" style="width:100%; vertical-align:middle;"><div class="captionText">...und er funktioniert</div></div>
+</div>
+<br>
+<div style="text-align:center">
+  <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+</div>
+<script type="text/javascript">
+  var slideIndex = 0;
+  showSlides();
+
+  function showSlides() {
+    var i;
+    var slides = document.getElementsByClassName("mySlides");
+    var dots = document.getElementsByClassName("dot");
+    for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+    }
+    slideIndex++;
+    if (slideIndex > slides.length) {slideIndex = 1}    
+    for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+    }
+    slides[slideIndex-1].style.display = "block";  
+    dots[slideIndex-1].className += " active";
+    setTimeout(showSlides, 4000); 
+  }
+</script>
+</body>
+</html>
