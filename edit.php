@@ -40,9 +40,6 @@
       <div class="six columns"><span class="bgCol">Deutsch:</span><a href="edit.php?ln=de">&nbsp;DE&nbsp;</a></div>
     </div>
     <div class="row twelve columns"><hr /></div>
-    <div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><a href="edit.php?do=7" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon/delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>
-    <div class="row twelve columns"><hr /></div>
     ';
         
     if (!($result = $dbConn->query('SELECT * FROM `user` WHERE `id` = "'.$userid.'"'))) {
@@ -141,7 +138,10 @@
     </div>';
     
     echo '<div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><a class="button differentColor" href="edit.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>
+    <div class="row twelve columns"><a class="button differentColor" href="edit.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>   
+    <div class="row twelve columns"><hr /></div>
+    <div class="row twelve columns">&nbsp;</div>
+    <div class="row twelve columns"><a href="edit.php?do=7" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon/delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>    
     ';
     
   } // function
