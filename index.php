@@ -332,7 +332,7 @@
       return error($dbConn, 110300);
     }
     $loginText = getLanguage($dbConn,88).' <a href="index.php#login">https://widmedia.ch/start/index.php#login</a>';
-    printConfirm($dbConn, getLanguage($dbConn,89), getLanguage($dbConn,90).$loginText.'<br><br>'.getLanguage($dbConn,86));
+    printConfirm($dbConn, getLanguage($dbConn,89), getLanguage($dbConn,90).$loginText.'<br><br>'.getLanguage($dbConn,86).'<span id="accountCreateOkSpan">&nbsp;</span>');
     return true;
   }
   
