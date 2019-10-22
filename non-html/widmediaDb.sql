@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 26. Sep 2019 um 11:18
--- Server-Version: 10.1.41-MariaDB
+-- Erstellungszeit: 22. Okt 2019 um 09:54
+-- Server-Version: 10.2.27-MariaDB
 -- PHP-Version: 7.1.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -184,7 +184,8 @@ INSERT INTO `language` (`id`, `en`, `de`) VALUES
 (133, 'show the link counter', 'zeige den Link-Zähler'),
 (134, 'do', ''),
 (135, 'not', 'keinen'),
-(136, 'hide the link counter', 'Link-Zähler verstecken');
+(136, 'hide the link counter', 'Link-Zähler verstecken'),
+(137, 'wrong password and/or email. Back to login page: ', 'Falsches Passwort und/oder Email. Zurück zur Loginseite: ');
 
 -- --------------------------------------------------------
 
@@ -198,7 +199,7 @@ CREATE TABLE `links` (
   `category` int(11) NOT NULL,
   `text` text NOT NULL,
   `link` text NOT NULL,
-  `cntTot` int(11) NOT NULL DEFAULT '0'
+  `cntTot` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -223,15 +224,15 @@ CREATE TABLE `pwForgot` (
 CREATE TABLE `user` (
   `id` int(11) NOT NULL,
   `email` text NOT NULL,
-  `lastLogin` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastLogin` timestamp NOT NULL DEFAULT current_timestamp(),
   `pwHash` char(255) NOT NULL,
   `randCookie` char(64) NOT NULL,
-  `verified` tinyint(1) NOT NULL DEFAULT '0',
+  `verified` tinyint(1) NOT NULL DEFAULT 0,
   `verCode` char(64) NOT NULL,
-  `verDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `verDate` timestamp NOT NULL DEFAULT current_timestamp(),
   `ln` char(2) NOT NULL DEFAULT 'de',
   `style` char(8) NOT NULL DEFAULT '00/00/00',
-  `hideLinkCnt` int(1) NOT NULL DEFAULT '0'
+  `hideLinkCnt` int(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -301,7 +302,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `language`
 --
 ALTER TABLE `language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=138;
 
 --
 -- AUTO_INCREMENT für Tabelle `links`

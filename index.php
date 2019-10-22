@@ -64,7 +64,8 @@
 
     if ($authMethod == 1) { // with a pw
       if (!(($userid == 2) or (password_verify($passwordUnsafe, $pwHash)))) {
-        return error($dbConn, 112000);
+        printConfirm($dbConn, 'Error',getLanguage($dbConn,137).'<a href="index.php#login">login</a>'); // wrong password and/or email
+        return false;        
       } 
     } elseif ($authMethod == 2) { // with a Cookie
       if (!(($randCookie) and ($randCookie == $randCookieInput))) { // there is no zero in the data base and 64hex value is correct
@@ -342,7 +343,8 @@
     }
     $userid = mail2userid($dbConn, $emailUnsafe);
     if (!(($userid > 0) and (verifyCredentials($dbConn, 1, $userid, $passwordUnsafe, '')))) { // email found in db and verification ok
-      return error($dbConn, 110402);
+      // I already get an error message if this is false. Do not want another one
+      return false; 
     }
     if ($setCookieSafe == 1) {
       $expire = time() + (3600 * 24 * 7 * 26); // valid for half a year
