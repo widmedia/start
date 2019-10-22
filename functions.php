@@ -490,7 +490,8 @@ function printInlineCss (object $dbConn): void {
 }
 
 // returns various text in the session-stored language. language-db organized as follows: id(int_11) / en(text) / de(text)
-function getLanguage (object $dbConn, int $textId): string { // NB: ln and id variables are safe
+// $description is usually not required, it serves as a code help to know what's returned
+function getLanguage (object $dbConn, int $textId, string $description = ''): string { // NB: ln and id variables are safe
   $lang = 'de';
   if (isset($_SESSION['ln'])) {
     $lang = $_SESSION['ln'];
@@ -499,8 +500,8 @@ function getLanguage (object $dbConn, int $textId): string { // NB: ln and id va
   if ($result = $dbConn->query('SELECT `'.$lang.'` FROM `language` WHERE `id` = "'.$textId.'"')) {
     $row = $result->fetch_row();    
     return $row[0];
-  } // no else case because can't do that much otherwise
-  return '';
+  } 
+  return $description; // only meaningful value to be returned when db is not available
 }
 
 // 44. used in editUser to update email and password and in index to set a new pw when it has been forgotten.

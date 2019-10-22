@@ -64,7 +64,7 @@
 
     if ($authMethod == 1) { // with a pw
       if (!(($userid == 2) or (password_verify($passwordUnsafe, $pwHash)))) {
-        printConfirm($dbConn, 'Error',getLanguage($dbConn,137).'<a href="index.php#login">login</a>'); // wrong password and/or email
+        printConfirm($dbConn, 'Error',getLanguage($dbConn,137,'wrong password').'<a href="index.php#login">login</a>');
         return false;        
       } 
     } elseif ($authMethod == 2) { // with a Cookie
