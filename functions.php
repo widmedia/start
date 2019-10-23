@@ -135,7 +135,7 @@ function printFooter (object $dbConn): void {
     return;
   }
   $linkBegin = '<a class="button differentColor" href=';
-  $edit      = $linkBegin.'"edit.php"><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,27).'</a>';  
+  $edit      = $linkBegin.'"edit.php" id="footerEditLink">><img src="images/icon/edit.png" class="logoImg" alt="icon edit"> '.getLanguage($dbConn,27).'</a>';  
   $links     = $linkBegin.'"links.php"><img src="images/icon/links.png" class="logoImg" alt="icon links"> Links</a>';
   $about     = $linkBegin.'"about.php" id="footerAboutLink"><img src="images/icon/info.png" class="logoImg" alt="icon info"> '.getLanguage($dbConn,1).'</a>'; 
   $logout    = $linkBegin.'"index.php?do=1" id="footerLogoutLink"><img src="images/icon/logout.png" class="logoImg" alt="icon logout"> Log out</a>';

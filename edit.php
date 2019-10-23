@@ -141,7 +141,7 @@
     <div class="row twelve columns"><a class="button differentColor" href="edit.php?do=3"><img src="images/icon/zero.png" alt="icon zero" class="logoImg"> '.getLanguage($dbConn,37).'</a></div>   
     <div class="row twelve columns"><hr /></div>
     <div class="row twelve columns">&nbsp;</div>
-    <div class="row twelve columns"><a href="edit.php?do=7" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon/delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>    
+    <div class="row twelve columns"><a href="edit.php?do=7" id="editPageDeleteLink" class="button differentColor" style="white-space:normal; height:auto; min-height:38px;"><img src="images/icon/delete.png" class="logoImg" alt="icon delete"> '.getLanguage($dbConn,52).'</a></div>    
     ';
     
   } // function
@@ -404,7 +404,7 @@
     if (deleteUser($dbConn, $userid)) {
       sessionAndCookieDelete();
       printStartOfHtml($dbConn);
-      printConfirm($dbConn, getLanguage($dbConn,53), getLanguage($dbConn,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConn,55).' index.php</a>');
+      printConfirm($dbConn, getLanguage($dbConn,53), getLanguage($dbConn,54).$userid.' <br/><br/><a class="button differentColor" href="index.php">'.getLanguage($dbConn,55).' index.php</a><span id="accountDeleteOkMessageSpan">&nbsp;</span>');
     } else { error($dbConn, 160700); } // deleteUser function did return false
   } elseif ($doSafe == 8) { // update an existing user: db operations
     if ($userid > 0) { // have a valid userid
