@@ -11,6 +11,7 @@ driver.get("https://widmedia.ch/start/index.php?do=2") # this page contains the 
 print (driver.title) # initial page title (with the login fields)
 
 # want to verify following procedure
+### TODO: not yet working
 # action                     | test against
 #------------------------------------------------------------------------------
 # 1) open a new account      | id accountCreateOkSpan is present
