@@ -8,13 +8,13 @@ An example implementation can be seen on https://widmedia.ch/start
 
 ### 1) missing files
 To get a working setup, you need an additional file with data base connection information. File is called:
-<pre>
+```
 "root folder"/php/dbConn.php
-</pre>
+```
 and needs to set the variable $dbConn (like this):
-<pre>
-    "see Readme.txt file for the php code"
-</pre>   
+```php
+    $dbConn = new mysqli("localhost", <your data base login information>);
+```  
 
 
 ### 2) data base
