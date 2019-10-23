@@ -5,20 +5,22 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # returns a boolean
-def checkSiteTitle (driver, expectedSiteTitle):
+def checkSiteTitle (driver, expectedSiteTitle, outputOnFail=True):
   try:
     # we have to wait for the page to refresh, the last thing that seems to be updated is the title
     WebDriverWait(driver, 5).until(EC.title_contains(expectedSiteTitle))  # timeout in seconds    
     # print("Site title as expected: " + driver.title)
     return True
   except: # most probably the timeout exception. TODO: check on just the timeout exception
-    print("Site title not as expected: " + driver.title)
+    if (outputOnFail):
+      print("Site title not as expected: " + driver.title)
     return False
   # end try/except
 # end def
 
 #returns a boolean
 def siteHasId(driver, idToSearchFor):
+  time.sleep(1) # this is required. Otherwise the id is not found. Don't really know why (WebDriverWait(driver, 5) does not help)
   try:    
     element = driver.find_element_by_id(idToSearchFor)
     return True
@@ -47,7 +49,7 @@ def doLogout (driver):
   logoutLink.click()
 # end def
 
-# TODO: this is currently exactly the same as the doLogin function
+# TODO: this is currently exactly the same as the doLogin function (just on another page)
 def doCreateNewAccount(driver, username, password): 
   # find the elements I want to control
   emailField    = driver.find_element_by_name("email")

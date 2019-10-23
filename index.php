@@ -342,9 +342,12 @@
       return error($dbConn, 110403);
     }
     $userid = mail2userid($dbConn, $emailUnsafe);
-    if (!(($userid > 0) and (verifyCredentials($dbConn, 1, $userid, $passwordUnsafe, '')))) { // email found in db and verification ok
-      // I already get an error message if this is false. Do not want another one
+    if (!($userid > 0) ) { // email found in db
+      printConfirm($dbConn, 'Error',getLanguage($dbConn,137,'wrong password').'<a href="index.php#login">login</a>');
       return false; 
+    }
+    if (!(verifyCredentials($dbConn, 1, $userid, $passwordUnsafe, ''))) { // verification ok
+      return false; // This already prints an error message
     }
     if ($setCookieSafe == 1) {
       $expire = time() + (3600 * 24 * 7 * 26); // valid for half a year

@@ -11,58 +11,50 @@ driver.set_window_size(500, 700) # about mobile size, portrait style
 # 2) login with this account | page title is "Links"
 # 3) goto edit               | page title is "Einstellungen"
 # 4) delete this account     | id accountDeleteOkMessageSpan is present
-# TODO: 5) try to login again      | (login fails)
+# 5) try to login again      | page title is not "Links"
 
-if (True):
-  # go to the new user page (page title is Startpage)
-  driver.get("https://widmedia.ch/start/index.php?do=2") # this page contains the newUser fields
-  print (driver.title)
+if (True): # if something is not working below while deleting the account, I still have it and don't want to create a new one  
+  driver.get("https://widmedia.ch/start/index.php?do=2") # this page contains the newUser fields (page title is Startpage)  
 
-  doCreateNewAccount(driver, username="test.email@widmedia.ch", password="correctPassword")
-  ## TODO: don't know whether those 2 waits below are really necessary
-  WebDriverWait(driver, 5) 
-  time.sleep(1) 
-
+  doCreateNewAccount(driver, username="test.email@widmedia.ch", password="correctPassword")  
   if (not(siteHasId(driver, idToSearchFor="accountCreateOkSpan"))):
     print("ERROR. doCreateNewAccount was not successful")
     finish(driver)
   # end if
-  print("OK. doCreateNewAccount was successful")
-
-  time.sleep(2) # not needed, to admire the page
+  print(".OK. doCreateNewAccount was successful")
 # end if
 
-driver.get("https://widmedia.ch/start/index.php") # 
+driver.get("https://widmedia.ch/start/index.php") # back to the main page again
 doLogin(driver, username="test.email@widmedia.ch", password="correctPassword")
 if (not(checkSiteTitle(driver, "Links"))):
   print("ERROR. Login test with correct password not successful")
   finish(driver)
 # end if
-print("OK. Login test with correct password successful") # we are now on the links page
+print("..OK. Login test with correct password successful") # we are now on the links page
 
-footerEditLink = driver.find_element_by_id("footerEditLink")
-footerEditLink.click()
+driver.find_element_by_id("footerEditLink").click()
 if (not(checkSiteTitle(driver, "Einstellungen"))):
   print("ERROR. Going to edit page was not successful")
   finish(driver)
 # end if
-print("OK. Going to edit page test successful") # we are now on the edit page
-# print (driver.title)
+print("...OK. Going to edit page test successful") # we are now on the edit page
 
-
-editPageDeleteLink = driver.find_element_by_id("editPageDeleteLink")
-editPageDeleteLink.click()
-
-## TODO: don't know whether those 2 waits below are really necessary
-WebDriverWait(driver, 5) 
-time.sleep(1) 
+driver.find_element_by_id("editPageDeleteLink").click()
 if (not(siteHasId(driver, idToSearchFor="accountDeleteOkMessageSpan"))):
   print("ERROR. deleteAccount was not successful")
   finish(driver)
 # end if
-print("OK. deleteAccount was successful")
+print("....OK. deleteAccount was successful")
+
+driver.get("https://widmedia.ch/start/index.php") # back to the main page again
+doLogin(driver, username="test.email@widmedia.ch", password="correctPassword") # this should fail now
+if (checkSiteTitle(driver, "Links", outputOnFail=False)):
+  print("ERROR. Login test on non-existing account not successful")
+  finish(driver)
+# end if
+print(".....OK. Login test on non-existing account successful") 
 
 
 
-time.sleep(5) 
+time.sleep(2) # not required, to admire the page
 finish(driver)
