@@ -13,13 +13,13 @@
     $divClass = '<div class="halbeReihe four columns linktext">';
     if ($category == 2) { // this category prints more dense
       $modulo = 4;
-      $divClass = '<div class="halbeReihe three columns linktext">';      
+      $divClass = '<div class="halbeReihe three columns linktext">';
     }
 
     if ($result = $dbConn->query('SELECT * FROM `links` WHERE userid = "'.$userid.'" AND category = "'.$category.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
-      if ($result->num_rows == 0) { // most probably a new user        
+      if ($result->num_rows == 0) { // most probably a new user
         echo '<div class="twelve columns linktext"><div class="button"><a href="edit.php?do=1&categoryInput='.$category.'" style="color:inherit; background-color:transparent;">
-              '.getLanguage($dbConn,123).getLanguage($dbConn,36).getCategory($dbConn, $userid, $category).'</a></div></div>';        
+              '.getLanguage($dbConn,123,'addOwnLink').getLanguage($dbConn,36,'category').getCategory($dbConn, $userid, $category).'</a></div></div>';
       } else {
         $counter = 0;
         while ($row = $result->fetch_assoc()) {
