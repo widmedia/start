@@ -1,5 +1,5 @@
 from selenium import webdriver
-from functions import finish
+from functions import finish, printOkOrNot
 from loginLogout import doLoginLogout
 from newUser import doNewUser
 
@@ -15,14 +15,13 @@ driver.set_window_size(500, 700) # about mobile size, portrait style
 
 
 # default mode: starting all tests, one after the other
-# 1) loginLogout
-if (not(doLoginLogout(driver))):
+testNum = 1 # loginLogout
+if (not(doLoginLogout(driver, testNum))):
   finish(driver)
 
-# 2) newUser
-if (not(doNewUser(driver))):
+testNum = 2 # newUser
+if (not(doNewUser(driver, testNum))):
   finish(driver)
 
-
-print("OK. All tests have been executed successfully")
+printOkOrNot(ok=True, testNum="0.0    ", text="All tests have been executed successfully")
 finish(driver)

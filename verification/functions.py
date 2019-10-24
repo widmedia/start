@@ -8,8 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 def checkSiteTitle (driver, expectedSiteTitle, outputOnFail=True):
   try:
     # we have to wait for the page to refresh, the last thing that seems to be updated is the title
-    WebDriverWait(driver, 5).until(EC.title_contains(expectedSiteTitle))  # timeout in seconds    
-    # print("Site title as expected: " + driver.title)
+    WebDriverWait(driver, 3).until(EC.title_contains(expectedSiteTitle))  # timeout in seconds
     return True
   except: # most probably the timeout exception. TODO: check on just the timeout exception
     if (outputOnFail):
@@ -41,7 +40,7 @@ def doLogin (driver, username, password):
   passwordField.send_keys(password)  
 
   # and submit
-  passwordField.submit()  # could also use a command like: driver.find_element_by_name("login").click() 
+  passwordField.submit() # could also use a command like: driver.find_element_by_name("login").click() 
 # end def
 
 def doLogout (driver):
@@ -70,6 +69,14 @@ def finish (driver):
   sys.exit()
 # end def
 
+def printOkOrNot(ok, testNum, text):
+  successPre = "ERROR"
+  successPost = " was not successful."  
+  if(ok):
+    successPre = "OK"
+    successPost = " was successful."
+  print(testNum + " " + successPre + " " + text + successPost)
+# end def
 
 # element = driver.find_element_by_id("element_id")
 # element.text

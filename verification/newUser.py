@@ -8,49 +8,59 @@
 # 3) goto edit                    | page title is "Einstellungen"
 # 4) delete this account          | id accountDeleteOkMessageSpan is present
 # 5) try to login again           | page title is not "Links"
-def doNewUser(driver):
-  from functions import doCreateNewAccount, siteHasId, doLogin, checkSiteTitle
+def doNewUser(driver, testNum):
+  from functions import doCreateNewAccount, siteHasId, doLogin, checkSiteTitle, printOkOrNot
 
+  moduleTestNum = str(testNum)+".1"
+  moduleText = "doCreateNewAccount"
   if (True): # if something is not working below while deleting the account, I still have it and don't want to create a new one  
     driver.get("https://widmedia.ch/start/index.php?do=2") # this page contains the newUser fields (page title is Startpage)  
 
     doCreateNewAccount(driver, username="test.email@widmedia.ch", password="correctPassword")  
     if (not(siteHasId(driver, idToSearchFor="accountCreateOkSpan"))):
-      print("ERROR. doCreateNewAccount was not successful")
+      printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
       return False
     # end if
-    print(".OK. doCreateNewAccount was successful")
+    printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText)
   # end if
 
+  moduleTestNum = str(testNum)+".2"
+  moduleText = "Login test with correct password"
   driver.get("https://widmedia.ch/start/index.php") # back to the main page again
   doLogin(driver, username="test.email@widmedia.ch", password="correctPassword")
   if (not(checkSiteTitle(driver, "Links"))):
-    print("ERROR. Login test with correct password not successful")
+    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
     return False
   # end if
-  print("..OK. Login test with correct password successful") # we are now on the links page
+  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are now on the links page
 
+  moduleTestNum = str(testNum)+".3"
+  moduleText = "Going to edit page"
   driver.find_element_by_id("footerEditLink").click()
   if (not(checkSiteTitle(driver, "Einstellungen"))):
-    print("ERROR. Going to edit page was not successful")
+    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
     return False
   # end if
-  print("...OK. Going to edit page test successful") # we are now on the edit page
+  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are now on the edit page
 
+  moduleTestNum = str(testNum)+".4"
+  moduleText = "deleteAccount"
   driver.find_element_by_id("editPageDeleteLink").click()
   if (not(siteHasId(driver, idToSearchFor="accountDeleteOkMessageSpan"))):
-    print("ERROR. deleteAccount was not successful")
+    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
     return False
   # end if
-  print("....OK. deleteAccount was successful")
+  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText)
 
+  moduleTestNum = str(testNum)+".5"
+  moduleText = "Login test on non-existing account"
   driver.get("https://widmedia.ch/start/index.php") # back to the main page again
   doLogin(driver, username="test.email@widmedia.ch", password="correctPassword") # this should fail now
   if (checkSiteTitle(driver, "Links", outputOnFail=False)):
-    print("ERROR. Login test on non-existing account not successful")
+    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)    
     return False
   # end if
-  print(".....OK. Login test on non-existing account successful") 
+  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText)
 
   return True
 # end def
