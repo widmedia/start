@@ -1,4 +1,4 @@
-README (TODO: include this in the github md file)
+README
 -----------------------
 
 1) missing files
