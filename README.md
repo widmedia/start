@@ -35,5 +35,5 @@ following files do require a logged-in user:
 * functions.php: pure function definition file
 
 ### 4) Test & verification
-Selenium test scripts (written in python) may be found in the verify-folder. 
-Still in an early stage and most probably will change its file location later on.
+Selenium test scripts (written in python) may be found in the verification-folder. 
+Still in an early stage
