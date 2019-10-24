@@ -1,45 +1,7 @@
-README
+Notes
 -----------------------
 
-1) missing files
------------------------
-To get a working setup, you need an additional file with data base connection information. File is called:
-<root folder>/php/dbConn.php
-
-and needs to set the variable $dbConn (like this):
-<?php
-    $dbConn = new mysqli("localhost", <your data base login information>);
-?>
-
-
-2) data base
------------------------
-create a data base by executing the SQL command given in the file "widmediaDb.sql". This will create several tables
-the admin of the site must have userid = 1, the test user must have userid = 2 (those two users are treated differently)
-
-
-3) Site structure
------------------------
-following files do NOT require a logged-in user:
-11 - index.php
-12 - about.php
-
-following files do require a logged-in user:
-13 - links.php
-14 - link.php
-16 - edit.php
-17 - admin.php (logged-in user must have userid 1)
-
-10 - functions.php: pure function definition file
-
-
-4) Test & verification
------------------------
-Selenium test scripts (written in python) may be found in the verify-folder. 
-Still in an early stage and most probably will change its file location later on.
-
-
-5) External sources 
+A) External sources 
 -----------------------
 NB: all external sources are used in an 'offline' way, meaning something has been generated but is now part of the checked-in sources. No external source is linked directly.
 
@@ -58,7 +20,7 @@ icon/plus:        https://www.iconsdb.com/custom-color/plus-5-icon.html
 icon/question:    https://www.iconsdb.com/custom-color/question-mark-4-icon.html
 icon/zero:        https://www.iconsdb.com/custom-color/0-icon.html
 
-6) Colors
+B) Colors
 -----------------------
 - yellow color is #faff3b
 - red color is #9c2448 = 156/36/72
