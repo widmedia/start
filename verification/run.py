@@ -39,18 +39,21 @@ if len(testsToRun) > 0:
   driver = webdriver.Firefox()
   driver.set_window_size(500, 700) # about mobile size, portrait style
 
+  # TODO: those two calls just differ in the function to be called. Could be merged into a for loop?
   if allTests[0] in testsToRun:
     testNum = 1 # loginLogout
     if (not(doLoginLogout(driver, testNum))):
       finish(driver)
+    print("----")
   # end if 
 
   if allTests[1] in testsToRun:
     testNum = 2 # newUser
     if (not(doNewUser(driver, testNum))):
       finish(driver)
+    print("----")
   # end if 
 
-  printOkOrNot(ok=True, testNum="==>", text="All selected tests execution")
+  printOkOrNot(ok=True, testNum="==>", text="Selected tests execution")
   finish(driver)
 # end if len testsToRun
