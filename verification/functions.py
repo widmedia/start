@@ -63,8 +63,7 @@ def doCreateNewAccount(driver, username, password):
 # end def
 
 def finish (driver):
-  import sys
-  print("...exiting")
+  import sys  
   driver.quit() # close the browser window
   sys.exit()
 # end def

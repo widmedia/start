@@ -1,3 +1,4 @@
+import sys
 from selenium import webdriver
 from functions import finish, printOkOrNot
 from loginLogout import doLoginLogout
@@ -8,20 +9,48 @@ from newUser import doNewUser
 # available tests:
 # 1) loginLogout
 # 2) newUser
+def printUsage(allTests):
+  print("Usage: run.py [testName]")
+  print("run.py: runs all the available tests")
+  print("run.py testName: runs a single test")
+  print("  available tests are: ", end="")
+  for test in allTests:
+    print(test + " ", end="")
+# end def
 
-# Create a new instance of the Firefox driver
-driver = webdriver.Firefox()
-driver.set_window_size(500, 700) # about mobile size, portrait style
 
+allTests = ['loginLogout', 'newUser']
 
-# default mode: starting all tests, one after the other
-testNum = 1 # loginLogout
-if (not(doLoginLogout(driver, testNum))):
+testsToRun = []
+if len(sys.argv) < 2:  # this means no argument has been given. Running all tests
+  testsToRun = allTests  
+elif len(sys.argv) == 2:
+  if sys.argv[1] in allTests:  # find the argument
+    testsToRun = [sys.argv[1]]
+  else:
+    printUsage(allTests)
+  # end if 
+else:
+    printUsage(allTests)
+# end if
+
+if len(testsToRun) > 0:
+  # Create a new instance of the Firefox driver
+  driver = webdriver.Firefox()
+  driver.set_window_size(500, 700) # about mobile size, portrait style
+
+  if allTests[0] in testsToRun:
+    testNum = 1 # loginLogout
+    if (not(doLoginLogout(driver, testNum))):
+      finish(driver)
+  # end if 
+
+  if allTests[1] in testsToRun:
+    testNum = 2 # newUser
+    if (not(doNewUser(driver, testNum))):
+      finish(driver)
+  # end if 
+
+  printOkOrNot(ok=True, testNum="==>", text="All selected tests execution")
   finish(driver)
-
-testNum = 2 # newUser
-if (not(doNewUser(driver, testNum))):
-  finish(driver)
-
-printOkOrNot(ok=True, testNum="0.0    ", text="All tests have been executed successfully")
-finish(driver)
+# end if len testsToRun
