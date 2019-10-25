@@ -3,6 +3,7 @@ from selenium import webdriver
 from functions import finish, printOkOrNot
 from loginLogout import doLoginLogout
 from newUser import doNewUser
+from editLinks import doEditLinks
 
 # main file to start other tests
 #------------------------------------------------------------------------------
@@ -19,7 +20,7 @@ def printUsage(allTests):
 # end def
 
 
-allTests = ['loginLogout', 'newUser']
+allTests = ['loginLogout', 'newUser', 'editLinks']
 
 testsToRun = []
 if len(sys.argv) < 2:  # this means no argument has been given. Running all tests
@@ -50,6 +51,13 @@ if len(testsToRun) > 0:
   if allTests[1] in testsToRun:
     testNum = 2 # newUser
     if (not(doNewUser(driver, testNum))):
+      finish(driver)
+    print("----")
+  # end if 
+
+  if allTests[2] in testsToRun:
+    testNum = 3 # editLinks
+    if (not(doEditLinks(driver, testNum))):
       finish(driver)
     print("----")
   # end if 

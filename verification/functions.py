@@ -30,6 +30,16 @@ def siteHasId(driver, idToSearchFor):
   # end try/except
 # end def
 
+def gotoEditPage(driver, moduleTestNum):
+  moduleText = "Going to edit page"
+  driver.find_element_by_id("footerEditLink").click()
+  if (not(checkSiteTitle(driver, "Einstellungen"))):
+    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
+    return False
+  # end if
+  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are now on the edit page
+# end def
+
 def doLogin (driver, username, password):
   # find the elements I want to control
   emailField    = driver.find_element_by_name("email")

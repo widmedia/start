@@ -9,7 +9,7 @@
 # 4) delete this account          | id accountDeleteOkMessageSpan is present
 # 5) try to login again           | page title is not "Links"
 def doNewUser(driver, testNum):
-  from functions import doCreateNewAccount, siteHasId, doLogin, checkSiteTitle, printOkOrNot
+  from functions import doCreateNewAccount, siteHasId, doLogin, checkSiteTitle, printOkOrNot, gotoEditPage
 
   moduleTestNum = str(testNum)+".1"
   moduleText = "doCreateNewAccount"
@@ -35,13 +35,7 @@ def doNewUser(driver, testNum):
   printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are now on the links page
 
   moduleTestNum = str(testNum)+".3"
-  moduleText = "Going to edit page"
-  driver.find_element_by_id("footerEditLink").click()
-  if (not(checkSiteTitle(driver, "Einstellungen"))):
-    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
-    return False
-  # end if
-  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are now on the edit page
+  gotoEditPage(driver, moduleTestNum)
 
   moduleTestNum = str(testNum)+".4"
   moduleText = "deleteAccount"
