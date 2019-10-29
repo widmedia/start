@@ -1,11 +1,11 @@
 # does the login and logout
 # returns true if test is passing, false otherwise
 
-# action                          | test against
-#------------------------------------------------------------------------------
-# 1) login with correct name/pw   | page title is Links
-# 2) logout                       | page title is Startpage again
-# 3) login with faulty name/pw    | page title is still Startpage (but with different site content)
+# action                         
+#-------------------------------
+# 1) login with correct name/pw
+# 2) logout   
+# 3) login with faulty name/pw
 def doLoginLogout(driver, testNum):
   from functions import doLogin, doLogout, checkSiteTitleAndPrint
  

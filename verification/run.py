@@ -61,6 +61,7 @@ if len(testsToRun) > 0:
   # Create a new instance of the Firefox driver
   driver = webdriver.Firefox()
   driver.set_window_size(500, 700) # about mobile size, portrait style
+  driver.implicitly_wait(5) #wait 5 seconds when doing a find_element before carrying on  
 
   for i in range(0, len(ALL_TESTS)):
     callSingleTest(driver, i, ALL_TESTS, testsToRun)

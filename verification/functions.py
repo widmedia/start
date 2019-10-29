@@ -1,4 +1,3 @@
-import time
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -28,11 +27,11 @@ def checkSiteTitleAndPrint (driver, modDescription, expectedSiteTitle):
 
 #returns a boolean
 def siteHasId(driver, idToSearchFor):
-  time.sleep(1) # this is required. Otherwise the id is not found. Don't really know why (WebDriverWait(driver, 5) does not help)
   try:    
     element = driver.find_element_by_id(idToSearchFor)
     return True
   except: # most probably the timeout exception. TODO: check on just the timeout exception
+    import time
     print("the element with this ID has not been found: " + idToSearchFor)
     time.sleep(5) # not needed, to admire the page
     return False
@@ -111,4 +110,3 @@ def printOkOrNot(ok, testNum, text):
 # select = Select(driver.find_element_by_tag_name("select"))
 # select.deselect_all()
 # select.select_by_visible_text("Edam")
-# time.sleep(2) # not needed, to admire the page

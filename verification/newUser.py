@@ -1,13 +1,13 @@
 # does add a new user, login, delete the account again
 # returns true if test is passing, false otherwise
 
-# action                          | test against
-#------------------------------------------------------------------------------
-# 1) open a new account           | id accountCreateOkSpan is present
-# 2) login with this account      | page title is "Links"
-# 3) goto edit                    | page title is "Einstellungen"
-# 4) delete this account          | id accountDeleteOkMessageSpan is present
-# 5) try to login again           | page title is not "Links"
+# action
+#-------------------------------
+# 1) open a new account
+# 2) login with this account
+# 3) goto edit
+# 4) delete this account
+# 5) try to login again
 def doNewUser(driver, testNum):
   from functions import doCreateNewAccount, checkSiteHasIdAndPrint, doLogin, checkSiteTitle, checkSiteTitleAndPrint, gotoEditPage, printOkOrNot
 
