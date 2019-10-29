@@ -17,6 +17,15 @@ def checkSiteTitle (driver, expectedSiteTitle, outputOnFail=True):
   # end try/except
 # end def
 
+def checkSiteTitleAndPrint (driver, modDescription, expectedSiteTitle):  
+  if (not(checkSiteTitle(driver, expectedSiteTitle))):
+    printOkOrNot(ok=False, testNum=modDescription[0], text=modDescription[1])
+    return False
+  # end if
+  printOkOrNot(ok=True, testNum=modDescription[0], text=modDescription[1]) # we are now on the links page
+  return True
+# end def
+
 #returns a boolean
 def siteHasId(driver, idToSearchFor):
   time.sleep(1) # this is required. Otherwise the id is not found. Don't really know why (WebDriverWait(driver, 5) does not help)
@@ -28,6 +37,15 @@ def siteHasId(driver, idToSearchFor):
     time.sleep(5) # not needed, to admire the page
     return False
   # end try/except
+# end def
+
+def checkSiteHasIdAndPrint(driver, modDescription, idToSearchFor):
+  if (not(siteHasId(driver, idToSearchFor))):
+    printOkOrNot(ok=False, testNum=modDescription[0], text=modDescription[1])
+    return False
+  # end if
+  printOkOrNot(ok=True, testNum=modDescription[0], text=modDescription[1])
+  return True
 # end def
 
 def gotoEditPage(driver, moduleTestNum):

@@ -8,21 +8,40 @@
 # 3) TODO 
 
 def doEditLinks(driver, testNum):
-  from functions import printOkOrNot, doLogin, doLogout, checkSiteTitle, gotoEditPage
+  from functions import printOkOrNot, doLogin, doLogout, checkSiteTitleAndPrint, gotoEditPage, checkSiteHasIdAndPrint
+  import time
  
   driver.get("https://widmedia.ch/start") # go to the start page
   
-  moduleTestNum = str(testNum)+".1"
-  moduleText = "Login test with correct password"
-  doLogin(driver, username="widmer@web-organizer.ch", password="blabla") # this is the correct password
-  if (not(checkSiteTitle(driver, "Links"))):
-    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
+  modDescription = [(str(testNum)+".1"), "loginWithCorrectPassword"]
+  doLogin(driver, username="widmer@web-organizer.ch", password="blabla") # this is the correct password  
+  if (not(checkSiteTitleAndPrint(driver, modDescription, expectedSiteTitle="Links"))):
     return False
   # end if
-  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are now on the links page
 
-  moduleTestNum = str(testNum)+".2"
-  gotoEditPage(driver, moduleTestNum)
+  modDescription = [(str(testNum)+".2"), ""]  
+  gotoEditPage(driver, moduleTestNum=modDescription[0])
+  
+  modDescription = [(str(testNum)+".3"), "clickCategory2Edit"]
+  driver.find_element_by_id("editPageCategory_2_submit").click()
+  if (not(checkSiteHasIdAndPrint(driver, modDescription, idToSearchFor="editPageHrAfterAddNewLink"))):
+    return False
+  # end if
+  
+  urlField  = driver.find_element_by_id("editPageAddNewLinkUrlInput")
+  textField = driver.find_element_by_id("editPageAddNewLinkTextInput")
+  submitField = driver.find_element_by_id("editPageAddNewLinkSubmit")  
+  urlField.send_keys("https://someNonExistingPage.ch/widmedia/start/")
+  textField.send_keys("myNewLink")  
+  submitField.click()  
+  
+  modDescription = [(str(testNum)+".4"), "newLinkAdded"]
+  # will be redirected to links page after successfully adding a link
+  if (not(checkSiteTitleAndPrint(driver, modDescription, expectedSiteTitle="Links"))):
+    return False
+  # end if
+  
+  
   
   print('TODO: not yet finished')
   

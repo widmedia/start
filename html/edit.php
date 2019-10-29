@@ -9,7 +9,7 @@
     <div class="row">';          
     for ($i = 1; $i <= 3; $i++) {
       echo '<div class="four columns"><form action="edit.php?do=1&categoryInput='.$i.'" method="post">      
-      <input name="submit" type="submit" value="'.getLanguage($dbConn,36).getCategory($dbConn, $userid, $i).'"></form></div>';         
+      <input name="submit" type="submit" value="'.getLanguage($dbConn,36).getCategory($dbConn, $userid, $i).'" id="editPageCategory_'.$i.'_submit"></form></div>';         
     }                
     echo '</div>
     <div class="row twelve columns"><hr></div>';
@@ -148,19 +148,25 @@
   
   // prints 1 row to either add a new link or edit an existing one  
   function printSingleLinkFields (object $dbConn, bool $doAdd, int $category, int $linkId, string $link, string $text): void {
-    if ($doAdd) { // this means I edit a link
+    if ($doAdd) { // this means I add a new link
       $submitText = getLanguage($dbConn,38);      
       $deleteText = '';
+      $idUrl = 'id="editPageAddNewLinkUrlInput" ';
+      $idText = 'id="editPageAddNewLinkTextInput" ';
+      $idSubmit = 'id="editPageAddNewLinkSubmit" ';
     } else {
       $submitText = getLanguage($dbConn,39);
       $deleteText = '&nbsp;&nbsp;&nbsp;<a href="edit.php?id='.$linkId.'&do=4"><img src="images/icon/delete.png" alt="icon delete" class="logoImg"> '.getLanguage($dbConn,40).'</a>';
+      $idUrl = '';
+      $idText = '';
+      $idSubmit = '';
     }
     echo '
     <form action="edit.php?do=2&id='.$linkId.'&categoryInput='.$category.'" method="post">      
       <div class="row">
-        <div class="four columns"><input name="link" type="url"  maxlength="1023" value="'.$link.'" required></div>
-        <div class="four columns"><input name="text" type="text" maxlength="63"  value="'.$text.'" required></div>
-        <div class="four columns"><input name="submit" type="submit" value="'.$submitText.'">'.$deleteText.'</div>
+        <div class="four columns"><input name="link" '.$idUrl.'type="url"  maxlength="1023" value="'.$link.'" required></div>
+        <div class="four columns"><input name="text" '.$idText.'type="text" maxlength="63"  value="'.$text.'" required></div>
+        <div class="four columns"><input name="submit" '.$idSubmit.'type="submit" value="'.$submitText.'">'.$deleteText.'</div>
       </div>
     </form>';   
   } // function
@@ -172,7 +178,7 @@
     <input name="text" type="text" maxlength="63" value="'.$heading.'" required> &nbsp;<input name="submit" type="submit" value="'.getLanguage($dbConn,41).'"></form><div>';
     echo '<div class="row twelve columns"><h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,42).'</span></h3></div>';
     printSingleLinkFields($dbConn, true, $categorySafe, 0, 'https://', 'text');
-    echo '<div class="row twelve columns"><hr></div>';
+    echo '<div class="row twelve columns" id="editPageHrAfterAddNewLink"><hr></div>';
     // print one form per row, an edit form for every link
     if ($result = $dbConn->query('SELECT * FROM `links` WHERE `userid` = "'.$userid.'" AND `category` = "'.$categorySafe.'" ORDER BY `cntTot` DESC, `text` ASC LIMIT 100')) {
       while ($row = $result->fetch_assoc()) { // not an error if there is no row with this query
