@@ -7,36 +7,28 @@
 # 2) logout                       | page title is Startpage again
 # 3) login with faulty name/pw    | page title is still Startpage (but with different site content)
 def doLoginLogout(driver, testNum):
-  from functions import printOkOrNot, doLogin, doLogout, checkSiteTitle
+  from functions import doLogin, doLogout, checkSiteTitleAndPrint
  
   driver.get("https://widmedia.ch/start") # go to the start page
   
-  moduleTestNum = str(testNum)+".1"
-  moduleText = "Login test with correct password"
+  modDescription = [(str(testNum)+".1"), "loginWithCorrectPassword"]  
   doLogin(driver, username="widmer@web-organizer.ch", password="blabla") # this is the correct password
-  if (not(checkSiteTitle(driver, "Links"))):
-    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
+  if (not(checkSiteTitleAndPrint(driver, modDescription, expectedSiteTitle="Links"))):
     return False
   # end if
-  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are now on the links page
 
-  moduleTestNum = str(testNum)+".2"
-  moduleText = "Logout test"
+  modDescription = [(str(testNum)+".2"), "logout"]  
   doLogout(driver)
-  if (not(checkSiteTitle(driver, "Startpage"))):
-    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
+  if (not(checkSiteTitleAndPrint(driver, modDescription, expectedSiteTitle="Startpage"))):
     return False
   # end if
-  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are now on the start page again  
-
-  moduleTestNum = str(testNum)+".3"
-  moduleText = "Login test with wrong password"
+  
+  modDescription = [(str(testNum)+".3"), "loginWithWrongPassword"]  
   doLogin(driver, username="widmer@web-organizer.ch", password="wrongPassword")
-  if (not(checkSiteTitle(driver, "Startpage"))):
-    printOkOrNot(ok=False, testNum=moduleTestNum, text=moduleText)
+  # we are still on the start page (but only with error messages)
+  if (not(checkSiteTitleAndPrint(driver, modDescription, expectedSiteTitle="Startpage"))):
     return False
   # end if
-  printOkOrNot(ok=True, testNum=moduleTestNum, text=moduleText) # we are still on the start page (but only with error messages)  
   
   return True
 # end def

@@ -8,8 +8,8 @@
 # 3) TODO 
 
 def doEditLinks(driver, testNum):
-  from functions import printOkOrNot, doLogin, doLogout, checkSiteTitleAndPrint, gotoEditPage, checkSiteHasIdAndPrint
-  import time
+  from functions import doLogin, doLogout, checkSiteTitleAndPrint, gotoEditPage, checkSiteHasIdAndPrint
+  # import time
  
   driver.get("https://widmedia.ch/start") # go to the start page
   
