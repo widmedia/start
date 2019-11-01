@@ -18,7 +18,7 @@ def doEditLinks(driver, testNum):
   driver.get("https://widmedia.ch/start") # go to the start page
   
   modDescription = [(str(testNum)+".1"), "loginWithCorrectPassword"]
-  doLogin(driver, username="widmer@web-organizer.ch", password="blabla") # this is the correct password  
+  doLogin(driver, username="widmer@web-organizer.ch", password="blabla") # this is the correct password
   if (not(checkSiteTitleAndPrint(driver, modDescription, expectedSiteTitle="Links"))):
     return False
   # end if
