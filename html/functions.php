@@ -648,8 +648,8 @@ function styleDefTxt(int $subStyle, string $item): string {
 
 // returns the image name matching the style number
 function styleDefBgImg(int $subStyle): string {
-  //               0         1         2            3           4          5          6           7        
-  $styles = array('ice.jpg','ice.jpg','bamboo.jpg','water.jpg','pigs.jpg','monk.jpg','stone.jpg','smoke.jpg');
+  //               0          1          2             3            4           5           6            7        
+  $styles = array('ice.webp','ice.webp','bamboo.webp','water.webp','pigs.webp','monk.webp','stone.webp','smoke.webp');
   return $styles[$subStyle];
 }
 // returns the brightness of the background-overlay. May be more dark or more bright.
