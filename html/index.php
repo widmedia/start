@@ -33,7 +33,7 @@
   // 23 - function newUserLoginAndLinks ($dbConn, $newUserid, $pw)
   // 24 - function mail2userid ($dbConn, $emailSafe)
   // 25 - function newUserEmailConfirmation ($dbConn, $newUserid, $emailSqlSafe)
-  // 26 - function printUserStat ($dbConn)
+  // 26 - function printUserStat ($dbConn, $doSafe)
   // 27 - function printNewUserForm ($dbConn)
   // 28 - function printTitle($dbConn)
   // 29 - function printLogin($dbConn, $forgotPw)
@@ -142,9 +142,14 @@
   }
   
   // prints some graph with the user statistics 
-  function printUserStat (object $dbConn): void {
+  function printUserStat (object $dbConn, int $doSafe): void {
     $currentTime = time();
-    $year = 2019; // date('Y', $currentTime); // TODO: provide option to select another year
+    $externalYear = safeIntFromExt('GET', 'externalYear', 4); // 4 digit year from a link
+    $year = date('Y', $currentTime); // default: use current year
+    if ($externalYear > 2010 and $externalYear < 2300) { // additional sanity check
+      $year = $externalYear;
+    }
+    
     
     $result = $dbConn->query('SELECT `month`, `numUser` FROM `userStat` WHERE `year` = "'.$year.'" ORDER BY `month`');
     
@@ -158,11 +163,17 @@
       } 
     } // while
     
-    // print a table with the twelve months
+    // print a table with the twelve months (if all 12 exist)
+    // need to keep the old do (because otherwise I might be forwarded to links) and goto the userstats anchor
     echo '
     <div class="row twelve columns">&nbsp;</div>
     <div class="row twelve columns"><hr></div>
-    <h3 class="section-heading"><span class="bgCol">'.getLanguage($dbConn,56).$year.'</span></h3>';
+    <h3 class="section-heading"><span class="bgCol" id="userStats">'.getLanguage($dbConn,56).$year.'</span></h3>
+    <div class="row">
+      <div class="six columns"><a href="index.php?externalYear=2019&do='.$doSafe.'#userStats">2019</a></div>
+      <div class="six columns"><a href="index.php?externalYear=2020&do='.$doSafe.'#userStats">2020</a></div>
+    </div>'; // TODO: have a db-query to get the different (distinct) years. Currently it's just two different years
+
     $maxWidth = 300; // max width on mobile is about 300px, otherwise it messes up all the layout
 
     for ($i = 0; $i < 12; $i++) {
@@ -460,7 +471,7 @@
     printStartOfHtml($dbConn);
     printTitle($dbConn);
     printLogin($dbConn, false);
-    printUserStat($dbConn);
+    printUserStat($dbConn, $doSafe);
   } elseif ($doSafe == 1) { // log out
     $userid = getUserid();
     if (($userid > 0) and ($result = $dbConn->query('SELECT `style` FROM `user` WHERE `id` = "'.$userid.'"'))) {
@@ -473,7 +484,7 @@
     printStartOfHtml($dbConn);
     printTitle($dbConn);
     printNewUserForm($dbConn);
-    printUserStat($dbConn);
+    printUserStat($dbConn, $doSafe);
   } elseif ($doSafe == 3) { // process the new user form data, add a new user
     printStartOfHtml($dbConn);    
     addNewUser($dbConn, $emailUnsafe, $emailSqlSafe, $passwordUnsafe); 
@@ -486,7 +497,7 @@
     printStartOfHtml($dbConn);
     printTitle($dbConn);
     printLogin($dbConn, false);
-    printUserStat($dbConn);
+    printUserStat($dbConn, $doSafe);
   } elseif ($doSafe == 7) {  // forgot pw, present a form with the email field and a forgot PW title
     printStartOfHtml($dbConn);    
     printLogin($dbConn, true);
